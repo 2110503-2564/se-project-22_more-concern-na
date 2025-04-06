@@ -75,6 +75,28 @@
 
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --color-primary-gd: linear-gradient(to right, #E1C582 0%, #D2A047 100%);
+
+  --color-base-gd: #1F242F;
+
+  --color-cardfont-cl: #413030;
+
+  --color-cardfont-detail: #574242;
+
+  --color-bg-btn: #282F79;
+
+  --color-bg-btn-hover: #1F242F;
+
+  --color-bg-border: #545151;
+
+  --color-bg-placeholder: #ADAFB3;
+
+  --color-bg-navbar: #1F242F;
+
+  --color-bg-box: #161D30;
+
+  --color-bg-textfill: #2B3245;
+
 }
 
 :root {
@@ -217,7 +239,8 @@
 
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-base-gd);
+    @apply text-foreground;
 
   }
 
