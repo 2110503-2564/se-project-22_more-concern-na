@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'MCN: Hotel Booking System',
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>{children}</body>
+      <Toaster/>
     </html>
   );
 }

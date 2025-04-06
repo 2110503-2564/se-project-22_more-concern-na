@@ -6,10 +6,22 @@ import RoomCard from '@/components/RoomCard';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import dayjs, { Dayjs } from 'dayjs';
-import { MapPin, Star, Plus, Minus } from 'lucide-react';
+import { Check, Info, MapPin, Minus, Plus, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-// Type definitions based on the schemas
+import { toast } from 'sonner';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 interface Room {
   roomType: string;
   picture?: string;
@@ -47,10 +59,16 @@ export default function HotelDetail({
 }) {
   const session = 'null';
   const hotelId = params.hotelid;
-  const [selectedRooms, setSelectedRooms] = useState<SelectedRoomWithQuantity[]>([]);
+  const [selectedRooms, setSelectedRooms] = useState<
+    SelectedRoomWithQuantity[]
+  >([]);
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
   const [nights, setNights] = useState(0);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
+  const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -61,6 +79,7 @@ export default function HotelDetail({
     }
   }, [checkInDate, checkOutDate]);
 
+  // Mock hotel data
   const hotel: Hotel = {
     _id: '123456789012',
     name: 'Hotel Sunshine Luxury Resort',
@@ -116,6 +135,7 @@ export default function HotelDetail({
     ratingCount: 280,
   };
 
+  // MOCK REVIEW DATA
   const reviews: ReviewType[] = [
     {
       id: 1,
@@ -192,25 +212,64 @@ export default function HotelDetail({
         setCheckOutDate(null);
       }
     }
+    setIsAvailabilityConfirmed(false);
   };
 
   const handleCheckOutChange = (date: Dayjs) => {
     if (checkInDate && date.diff(checkInDate, 'day') <= 3) {
       setCheckOutDate(date);
+      setIsAvailabilityConfirmed(false);
     }
   };
 
-  const handleBooking = () => {
-    alert('Book ja');
+  const handleBooking = (e: any) => {
+    e.preventDefault();
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmBooking = (e: any) => {
+    e.preventDefault();
+    setIsConfirmOpen(false);
+
+    toast.success('Booking Confirmed!', {
+      description: `Your stay at ${hotel.name} has been successfully booked.`,
+      duration: 5000,
+      className: 'bg-blue-500 text-white border border-yellow-500',
+      icon: <Check className='h-5 w-5 text-luxe-gold' />,
+      action: {
+        label: 'View Booking',
+        onClick: () => console.log('View booking clicked'),
+      },
+    });
+
+    setTimeout(() => {
+      setSelectedRooms([]);
+      setCheckInDate(null);
+      setCheckOutDate(null);
+      setIsAvailabilityConfirmed(false);
+    }, 1000);
   };
 
   const handleCheckAvailable = () => {
-    alert('Check available ja');
+    if (!checkInDate || !checkOutDate) return;
+
+    setIsAvailabilityChecking(true);
+
+    setTimeout(() => {
+      setIsAvailabilityChecking(false);
+      setIsAvailabilityConfirmed(true);
+
+      toast.info('Rooms Available!', {
+        description: `We have rooms available for your selected dates.`,
+        className: 'bg-blue-500 text-white border border-yellow-500',
+        icon: <Info className='h-5 w-5 text-luxe-gold' />,
+      });
+    }, 1500);
   };
 
   const handleSelectRoom = (room: Room) => {
     const existingRoomIndex = selectedRooms.findIndex(
-      (item) => item.room.roomType === room.roomType
+      (item) => item.room.roomType === room.roomType,
     );
 
     if (existingRoomIndex >= 0) {
@@ -218,9 +277,24 @@ export default function HotelDetail({
       if (updatedRooms[existingRoomIndex].quantity < room.remainCount) {
         updatedRooms[existingRoomIndex].quantity += 1;
         setSelectedRooms(updatedRooms);
+
+        toast('Room Added', {
+          description: `Added 1 ${room.roomType} to your selection.`,
+          className: 'bg-blue-500 text-white border border-yellow-500',
+        });
+      } else {
+        toast.error('Maximum Reached', {
+          description: `You've selected all available ${room.roomType} rooms.`,
+          className: 'bg-red-500 text-white border border-red-400',
+        });
       }
     } else {
       setSelectedRooms([...selectedRooms, { room, quantity: 1 }]);
+
+      toast('Room Added', {
+        description: `Added 1 ${room.roomType} to your selection.`,
+        className: 'bg-blue-500 text-white border border-yellow-500',
+      });
     }
   };
 
@@ -234,14 +308,55 @@ export default function HotelDetail({
       }
       return item;
     });
-    
+
     const filteredRooms = updatedRooms.filter((item) => item.quantity > 0);
+
+    const originalRoom = selectedRooms.find(
+      (item) => item.room.roomType === roomType,
+    );
+    const updatedRoom = filteredRooms.find(
+      (item) => item.room.roomType === roomType,
+    );
+
+    if (!updatedRoom && originalRoom) {
+      toast('Room Removed', {
+        description: `Removed ${originalRoom.room.roomType} from your selection.`,
+        className: 'bg-blue-500 text-white border border-yellow-500',
+      });
+    } else if (
+      originalRoom &&
+      updatedRoom &&
+      originalRoom.quantity > updatedRoom.quantity
+    ) {
+      toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
+        className: 'bg-blue-500 text-white border border-yellow-500',
+      });
+    }
+
     setSelectedRooms(filteredRooms);
   };
 
   const increaseRoomQuantity = (roomType: string) => {
+    const roomToUpdate = selectedRooms.find(
+      (item) => item.room.roomType === roomType,
+    );
+
+    if (
+      roomToUpdate &&
+      roomToUpdate.quantity >= roomToUpdate.room.remainCount
+    ) {
+      toast.error('Maximum Reached', {
+        description: `You've selected all available ${roomType} rooms.`,
+        className: 'bg-red-500 text-white border border-red-400',
+      });
+      return;
+    }
+
     const updatedRooms = selectedRooms.map((item) => {
-      if (item.room.roomType === roomType && item.quantity < item.room.remainCount) {
+      if (
+        item.room.roomType === roomType &&
+        item.quantity < item.room.remainCount
+      ) {
         return {
           ...item,
           quantity: item.quantity + 1,
@@ -249,6 +364,20 @@ export default function HotelDetail({
       }
       return item;
     });
+
+    const updatedRoom = updatedRooms.find(
+      (item) => item.room.roomType === roomType,
+    );
+    if (
+      updatedRoom &&
+      roomToUpdate &&
+      updatedRoom.quantity > roomToUpdate.quantity
+    ) {
+      toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
+        className: 'bg-blue-500 text-white border border-yellow-500',
+      });
+    }
+
     setSelectedRooms(updatedRooms);
   };
 
@@ -369,26 +498,33 @@ export default function HotelDetail({
             </div>
 
             <p className='text-xs text-gray-400 mb-4'>
-              Note: You can book up to 3 nights.
+              Note: You can book up to 6 nights.
             </p>
 
             <Button
               variant='default'
               className='w-full bg-luxe-gold hover:bg-amber-500 text-black font-medium mb-6'
-              disabled={!checkInDate || !checkOutDate}
+              disabled={!checkInDate || !checkOutDate || isAvailabilityChecking}
               onClick={handleCheckAvailable}
             >
-              Check Available
+              {isAvailabilityChecking
+                ? 'Checking...'
+                : isAvailabilityConfirmed
+                  ? 'Available ✓'
+                  : 'Check Available'}
             </Button>
 
-            <Separator className='my-4 bg-white' />
+            <Separator className='my-4 bg-white/20' />
 
             <div className='mb-6'>
               <h3 className='text-lg font-medium mb-2'>Selected Rooms</h3>
               {selectedRooms.length > 0 ? (
                 <div className='space-y-3'>
                   {selectedRooms.map((item, index) => (
-                    <div key={index} className='p-3 bg-gray-800/50 border border-luxe-gold/30 rounded-md'>
+                    <div
+                      key={index}
+                      className='p-3 bg-gray-800/50 border border-luxe-gold/30 rounded-md'
+                    >
                       <div className='flex justify-between mb-2'>
                         <div className='font-medium'>{item.room.roomType}</div>
                         <div className='text-luxe-gold font-semibold'>
@@ -398,18 +534,26 @@ export default function HotelDetail({
                       <div className='flex items-center justify-between'>
                         <span>Quantity:</span>
                         <div className='flex items-center space-x-3'>
-                          <button 
-                            type="button"
-                            className='p-1 rounded-full bg-gray-700 hover:bg-gray-600'
-                            onClick={() => decreaseRoomQuantity(item.room.roomType)}
+                          <button
+                            type='button'
+                            className='p-1 rounded-full bg-gray-700 hover:bg-gray-600 text-white'
+                            onClick={() =>
+                              decreaseRoomQuantity(item.room.roomType)
+                            }
                           >
                             <Minus className='h-4 w-4' />
                           </button>
                           <span>{item.quantity}</span>
-                          <button 
-                            type="button"
-                            className='p-1 rounded-full bg-gray-700 hover:bg-gray-600'
-                            onClick={() => increaseRoomQuantity(item.room.roomType)}
+                          <button
+                            type='button'
+                            className={`p-1 rounded-full ${
+                              item.quantity >= item.room.remainCount
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                : 'bg-gray-700 hover:bg-gray-600 text-white'
+                            }`}
+                            onClick={() =>
+                              increaseRoomQuantity(item.room.roomType)
+                            }
                             disabled={item.quantity >= item.room.remainCount}
                           >
                             <Plus className='h-4 w-4' />
@@ -451,14 +595,23 @@ export default function HotelDetail({
                       <span>Number of Nights</span>
                       <span>{nights}</span>
                     </div>
-                    
+
                     {selectedRooms.map((item, index) => (
                       <div key={index} className='flex justify-between text-xs'>
-                        <span>{item.room.roomType} (x{item.quantity})</span>
-                        <span>${(item.room.price * item.quantity * nights).toLocaleString()}</span>
+                        <span>
+                          {item.room.roomType} (x{item.quantity})
+                        </span>
+                        <span>
+                          $
+                          {(
+                            item.room.price *
+                            item.quantity *
+                            nights
+                          ).toLocaleString()}
+                        </span>
                       </div>
                     ))}
-                    
+
                     <div className='flex justify-between'>
                       <span>Coupon</span>
                       <CouponDropDown />
@@ -470,12 +623,20 @@ export default function HotelDetail({
                       </span>
                     </div>
                     <Button
-                      className='w-full'
+                      className='w-full bg-luxe-gold hover:bg-amber-500 text-black mt-2'
                       onClick={handleBooking}
                       variant='default'
+                      disabled={!isAvailabilityConfirmed}
                     >
                       {session ? 'Book Now' : 'Login to Book'}
                     </Button>
+                    {!isAvailabilityConfirmed &&
+                      checkInDate &&
+                      checkOutDate && (
+                        <p className='text-xs text-amber-300 text-center mt-2'>
+                          Please check availability before booking
+                        </p>
+                      )}
                   </div>
                 </div>
               ) : null}
@@ -483,6 +644,92 @@ export default function HotelDetail({
           </div>
         </form>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <AlertDialogContent className='bg-[#1A1F2F] border-luxe-gold text-white'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='text-luxe-gold font-serif text-2xl'>
+              Confirm Your Booking
+            </AlertDialogTitle>
+            <AlertDialogDescription className='text-gray-300'>
+              <div className='space-y-4 py-2'>
+                <div className='p-4 bg-[#2A2F3F] rounded-md'>
+                  <h3 className='font-medium text-luxe-gold mb-2'>
+                    {hotel.name}
+                  </h3>
+                  <div className='text-sm space-y-2'>
+                    <div className='flex justify-between'>
+                      <span>Check-in:</span>
+                      <span className='font-medium'>
+                        {checkInDate?.format('MM/DD/YYYY')}
+                      </span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Check-out:</span>
+                      <span className='font-medium'>
+                        {checkOutDate?.format('MM/DD/YYYY')}
+                      </span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Duration:</span>
+                      <span className='font-medium'>{nights} nights</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className='font-medium text-luxe-gold mb-2'>
+                    Selected Rooms
+                  </h3>
+                  {selectedRooms.map((item, index) => (
+                    <div
+                      key={index}
+                      className='flex justify-between mb-1 text-sm'
+                    >
+                      <span>
+                        {item.room.roomType} (x{item.quantity})
+                      </span>
+                      <span className='font-medium'>
+                        $
+                        {(
+                          item.room.price *
+                          item.quantity *
+                          nights
+                        ).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className='flex justify-between pt-3 border-t border-gray-700'>
+                  <span className='font-bold'>Total Amount</span>
+                  <span className='font-bold text-luxe-gold'>
+                    ${calculateTotalPrice().toLocaleString()}
+                  </span>
+                </div>
+
+                <p className='text-xs text-gray-400 mt-4'>
+                  By confirming this booking, you agree to our terms and
+                  conditions. A confirmation email will be sent to your
+                  registered email address.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='gap-2'>
+            <AlertDialogCancel className='border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700'>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className='bg-luxe-gold hover:bg-amber-500 text-black'
+              onClick={handleConfirmBooking}
+            >
+              Confirm Booking
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
