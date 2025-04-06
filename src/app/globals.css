@@ -100,6 +100,12 @@
 
   --color-bg-textfill: #2B3245;
 
+  --font-heading: 'Vidaloka', serif;
+
+  --font-detail: 'Cormorant Garamond', serif;
+
+  --font-number: 'Cormorant Infant', serif;
+
 }
 
 :root {
