@@ -58,7 +58,6 @@ export default function HotelDetail({
   params: { hotelid: string };
 }) {
   const session = 'null';
-  const hotelId = params.hotelid;
   const [selectedRooms, setSelectedRooms] = useState<
     SelectedRoomWithQuantity[]
   >([]);

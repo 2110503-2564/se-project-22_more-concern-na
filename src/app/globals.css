@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Vidaloka&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Vidaloka&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Cormorant+Infant:ital,wght@0,300..700;1,300..700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Vidaloka&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -75,6 +78,28 @@
 
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --color-primary-gd: linear-gradient(to right, #E1C582 0%, #D2A047 100%);
+
+  --color-base-gd: #1F242F;
+
+  --color-cardfont-cl: #413030;
+
+  --color-cardfont-detail: #574242;
+
+  --color-bg-btn: #282F79;
+
+  --color-bg-btn-hover: #1F242F;
+
+  --color-bg-border: #545151;
+
+  --color-bg-placeholder: #ADAFB3;
+
+  --color-bg-navbar: #1F242F;
+
+  --color-bg-box: #161D30;
+
+  --color-bg-textfill: #2B3245;
+
 }
 
 :root {
@@ -142,6 +167,12 @@
   --sidebar-border: oklch(0.922 0 0);
 
   --sidebar-ring: oklch(0.708 0 0);
+
+  --font-heading: 'Vidaloka', serif;
+
+  --font-detail: 'Cormorant Garamond', serif;
+
+  --font-number: 'Cormorant Infant', serif;
 
 }
 
@@ -217,7 +248,8 @@
 
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-base-gd);
+    @apply text-foreground;
 
   }
 
