@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
-export default function ReviewDropDown() {
+export default function CouponDropDown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
