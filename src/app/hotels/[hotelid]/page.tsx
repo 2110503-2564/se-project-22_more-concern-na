@@ -55,7 +55,7 @@ interface SelectedRoomWithQuantity {
 export default function HotelDetail({
   params,
 }: {
-  params: { hotelid: string };
+  params: Promise<{ hotelid: string }>;
 }) {
   const session = 'null';
   const [selectedRooms, setSelectedRooms] = useState<
@@ -472,8 +472,8 @@ export default function HotelDetail({
 
         {/* Booking form */}
         <form className='md:w-96 mt-8 md:mt-0'>
-          <div className='bg-[#2A2F3F] rounded-md p-6 sticky top-6'>
-            <h2 className='text-xl font-bold mb-4 font-serif'>
+          <div className='bg-bg-box border-bg-border rounded-md p-6 sticky top-6'>
+            <h2 className='text-2xl font-bold mb-4 font-heading'>
               Book your stay
             </h2>
             <div className='mb-4'>
@@ -502,7 +502,7 @@ export default function HotelDetail({
 
             <Button
               variant='default'
-              className='w-full bg-luxe-gold hover:bg-amber-500 text-black font-medium mb-6'
+              className='w-full bg-amber-300 text-cardfont-cl font-medium mb-6'
               disabled={!checkInDate || !checkOutDate || isAvailabilityChecking}
               onClick={handleCheckAvailable}
             >

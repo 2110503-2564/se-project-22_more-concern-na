@@ -28,6 +28,7 @@ export default function DateBookFill({
         onChange={handleDateChange}
         shouldDisableDate={shouldDisableDate}
         disablePast
+        className='bg-bg-textfill text-bg-placeholder rounded border-bg-border w-full'
       />
     </LocalizationProvider>
   );
