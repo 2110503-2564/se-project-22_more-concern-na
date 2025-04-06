@@ -6,7 +6,7 @@ import RoomCard from '@/components/RoomCard';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import dayjs, { Dayjs } from 'dayjs';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, Plus, Minus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Type definitions based on the schemas
@@ -35,6 +35,11 @@ interface Hotel {
   ratingCount: number;
 }
 
+interface SelectedRoomWithQuantity {
+  room: Room;
+  quantity: number;
+}
+
 export default function HotelDetail({
   params,
 }: {
@@ -42,12 +47,11 @@ export default function HotelDetail({
 }) {
   const session = 'null';
   const hotelId = params.hotelid;
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedRooms, setSelectedRooms] = useState<SelectedRoomWithQuantity[]>([]);
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
   const [nights, setNights] = useState(0);
 
-  // Calculate nights when dates change
   useEffect(() => {
     if (checkInDate && checkOutDate) {
       const nights = checkOutDate.diff(checkInDate, 'day');
@@ -57,7 +61,6 @@ export default function HotelDetail({
     }
   }, [checkInDate, checkOutDate]);
 
-  // Mock hotel data
   const hotel: Hotel = {
     _id: '123456789012',
     name: 'Hotel Sunshine Luxury Resort',
@@ -113,13 +116,6 @@ export default function HotelDetail({
     ratingCount: 280,
   };
 
-  // Calculate average rating
-  const averageRating =
-    hotel.ratingCount > 0
-      ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
-      : '0.0';
-
-  // Example reviews with hotel replies
   const reviews: ReviewType[] = [
     {
       id: 1,
@@ -169,6 +165,11 @@ export default function HotelDetail({
     },
   ];
 
+  const averageRating =
+    hotel.ratingCount > 0
+      ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
+      : '0.0';
+
   const isCheckInDateDisabled = (date: Dayjs) => {
     return date.isBefore(dayjs(), 'day');
   };
@@ -205,6 +206,56 @@ export default function HotelDetail({
 
   const handleCheckAvailable = () => {
     alert('Check available ja');
+  };
+
+  const handleSelectRoom = (room: Room) => {
+    const existingRoomIndex = selectedRooms.findIndex(
+      (item) => item.room.roomType === room.roomType
+    );
+
+    if (existingRoomIndex >= 0) {
+      const updatedRooms = [...selectedRooms];
+      if (updatedRooms[existingRoomIndex].quantity < room.remainCount) {
+        updatedRooms[existingRoomIndex].quantity += 1;
+        setSelectedRooms(updatedRooms);
+      }
+    } else {
+      setSelectedRooms([...selectedRooms, { room, quantity: 1 }]);
+    }
+  };
+
+  const decreaseRoomQuantity = (roomType: string) => {
+    const updatedRooms = selectedRooms.map((item) => {
+      if (item.room.roomType === roomType) {
+        return {
+          ...item,
+          quantity: Math.max(0, item.quantity - 1),
+        };
+      }
+      return item;
+    });
+    
+    const filteredRooms = updatedRooms.filter((item) => item.quantity > 0);
+    setSelectedRooms(filteredRooms);
+  };
+
+  const increaseRoomQuantity = (roomType: string) => {
+    const updatedRooms = selectedRooms.map((item) => {
+      if (item.room.roomType === roomType && item.quantity < item.room.remainCount) {
+        return {
+          ...item,
+          quantity: item.quantity + 1,
+        };
+      }
+      return item;
+    });
+    setSelectedRooms(updatedRooms);
+  };
+
+  const calculateTotalPrice = () => {
+    return selectedRooms.reduce((total, item) => {
+      return total + item.room.price * item.quantity * nights;
+    }, 0);
   };
 
   const fullAddress = `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province} ${hotel.postalCode}`;
@@ -259,9 +310,7 @@ export default function HotelDetail({
               <RoomCard
                 key={index}
                 room={room}
-                onSelectRoom={(room) => {
-                  setSelectedRoom(room);
-                }}
+                onSelectRoom={handleSelectRoom}
               />
             ))}
           </div>
@@ -320,7 +369,7 @@ export default function HotelDetail({
             </div>
 
             <p className='text-xs text-gray-400 mb-4'>
-              Note: You can book up to 6 nights.
+              Note: You can book up to 3 nights.
             </p>
 
             <Button
@@ -335,13 +384,40 @@ export default function HotelDetail({
             <Separator className='my-4 bg-white' />
 
             <div className='mb-6'>
-              <h3 className='text-lg font-medium mb-2'>Selected Room</h3>
-              {selectedRoom ? (
-                <div className='p-3 bg-gray-800/50 border border-luxe-gold/30 rounded-md'>
-                  <div className='font-medium'>{selectedRoom.roomType}</div>
-                  <div className='text-luxe-gold font-semibold'>
-                    ${selectedRoom.price} per night
-                  </div>
+              <h3 className='text-lg font-medium mb-2'>Selected Rooms</h3>
+              {selectedRooms.length > 0 ? (
+                <div className='space-y-3'>
+                  {selectedRooms.map((item, index) => (
+                    <div key={index} className='p-3 bg-gray-800/50 border border-luxe-gold/30 rounded-md'>
+                      <div className='flex justify-between mb-2'>
+                        <div className='font-medium'>{item.room.roomType}</div>
+                        <div className='text-luxe-gold font-semibold'>
+                          ${item.room.price} per night
+                        </div>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <span>Quantity:</span>
+                        <div className='flex items-center space-x-3'>
+                          <button 
+                            type="button"
+                            className='p-1 rounded-full bg-gray-700 hover:bg-gray-600'
+                            onClick={() => decreaseRoomQuantity(item.room.roomType)}
+                          >
+                            <Minus className='h-4 w-4' />
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button 
+                            type="button"
+                            className='p-1 rounded-full bg-gray-700 hover:bg-gray-600'
+                            onClick={() => increaseRoomQuantity(item.room.roomType)}
+                            disabled={item.quantity >= item.room.remainCount}
+                          >
+                            <Plus className='h-4 w-4' />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <p className='text-gray-400 text-sm'>
@@ -351,7 +427,7 @@ export default function HotelDetail({
             </div>
 
             <div>
-              {selectedRoom && checkInDate && checkOutDate ? (
+              {selectedRooms.length > 0 && checkInDate && checkOutDate ? (
                 <div>
                   <h3 className='text-lg font-medium mb-2'>Booking Summary</h3>
                   <div className='space-y-2 text-sm'>
@@ -375,6 +451,14 @@ export default function HotelDetail({
                       <span>Number of Nights</span>
                       <span>{nights}</span>
                     </div>
+                    
+                    {selectedRooms.map((item, index) => (
+                      <div key={index} className='flex justify-between text-xs'>
+                        <span>{item.room.roomType} (x{item.quantity})</span>
+                        <span>${(item.room.price * item.quantity * nights).toLocaleString()}</span>
+                      </div>
+                    ))}
+                    
                     <div className='flex justify-between'>
                       <span>Coupon</span>
                       <CouponDropDown />
@@ -382,10 +466,7 @@ export default function HotelDetail({
                     <div className='flex justify-between pt-2 border-t border-gray-600'>
                       <span className='font-bold'>Total</span>
                       <span className='font-bold'>
-                        $
-                        {selectedRoom && nights > 0
-                          ? (selectedRoom.price * nights).toLocaleString()
-                          : '0'}
+                        ${calculateTotalPrice().toLocaleString()}
                       </span>
                     </div>
                     <Button
