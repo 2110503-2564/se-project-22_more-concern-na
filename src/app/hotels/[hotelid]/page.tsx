@@ -601,7 +601,7 @@ export default function HotelDetail({
             </div>
 
             <p className='text-xs text-gray-400 mb-4'>
-              Note: You can book up to 6 nights.
+              Note: You can book up to 3 nights.
             </p>
 
             <Button
