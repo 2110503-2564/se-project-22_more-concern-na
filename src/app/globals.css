@@ -78,7 +78,9 @@
 
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-primary-gd: linear-gradient(to right, #E1C582 0%, #D2A047 100%);
+  --color-gold-gd1: #E1C582;
+
+  --color-gold-gd2: #cc8b18;
 
   --color-base-gd: #1F242F;
 
