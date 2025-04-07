@@ -17,7 +17,6 @@ import {
   AlertDialogTitle,
 } from './ui/alert-dialog';
 
-
 export interface ReviewType {
   id: number;
   username: string;
@@ -184,7 +183,9 @@ export default function Review({
             className='w-[50px] h-[50px] rounded-full mr-3'
           />
           <div>
-            <h3 className='text-xl font-heading font-semibold'>{review.username}</h3>
+            <h3 className='text-xl font-heading font-semibold'>
+              {review.username}
+            </h3>
             <p className='text-sm text-gray-400'>
               Stayed {dayjs(review.date).format('MMMM YYYY')}
             </p>
@@ -240,7 +241,9 @@ export default function Review({
           // Normal display
           <>
             <div className='mt-2 flex items-center'>
-              <h4 className='text-xl font-medium font-heading mr-3'>{review.title}</h4>
+              <h4 className='text-xl font-medium font-heading mr-3'>
+                {review.title}
+              </h4>
               <Rating
                 value={review.rating}
                 readOnly
@@ -265,44 +268,51 @@ export default function Review({
         )}
       </div>
       {showReplyForm && !review.reply && (
-        <div className="ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mb-4">
-          <h4 className="text-lg font-semibold text-[#FFD400] mb-2">Write a Reply</h4>
+        <div className='ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mb-4'>
+          <h4 className='text-lg font-semibold text-[#FFD400] mb-2'>
+            Write a Reply
+          </h4>
           <textarea
-            className="w-full p-2 bg-gray-100 text-black rounded"
+            className='w-full p-2 bg-gray-100 text-black rounded'
             rows={3}
-            placeholder="Write your reply here..."
+            placeholder='Write your reply here...'
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
           />
-          <div className="flex gap-2 mt-3">
-            <Button variant="default" onClick={handleSubmitReply}>
+          <div className='flex gap-2 mt-3'>
+            <Button variant='default' onClick={handleSubmitReply}>
               Submit Reply
             </Button>
-            <Button variant="secondary" onClick={handleCancelReply}>
+            <Button variant='secondary' onClick={handleCancelReply}>
               Cancel
             </Button>
           </div>
         </div>
       )}
-      {review.reply && <HotelReply reply={review.reply} onDeleteReply={(replyId)=>{
-        onDeleteReply?.(review.id, replyId);
-      }} />}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent
-          className="bg-bg-box border text-white"
-        >
+      {review.reply && (
+        <HotelReply
+          reply={review.reply}
+          onDeleteReply={(replyId) => {
+            onDeleteReply?.(review.id, replyId);
+          }}
+        />
+      )}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent className='bg-bg-box border text-white'>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl text-gold-gd1 font-heading">
+            <AlertDialogTitle className='text-2xl text-gold-gd1 font-heading'>
               Confirm Deletion
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300 font-medium text-base font-detail">
-              Are you sure you want to delete this review? This action cannot be undone.
+            <AlertDialogDescription className='text-gray-300 font-medium text-base font-detail'>
+              Are you sure you want to delete this review? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
-            <AlertDialogCancel
-              className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700'
-            >
+          <AlertDialogFooter className='mt-4'>
+            <AlertDialogCancel className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700'>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

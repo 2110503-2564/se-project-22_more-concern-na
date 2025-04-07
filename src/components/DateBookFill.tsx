@@ -29,7 +29,7 @@ export default function DateBookFill({
         shouldDisableDate={shouldDisableDate}
         disablePast
         className='bg-bg-textfill rounded border-bg-border w-full'
-        sx={{ '& input': {color: '#ADAFB3'} }}
+        sx={{ '& input': { color: '#ADAFB3' } }}
         slotProps={{
           openPickerIcon: {
             sx: {
@@ -38,7 +38,7 @@ export default function DateBookFill({
           },
           openPickerButton: {
             sx: {
-              color: '#D2A047', 
+              color: '#D2A047',
               '&:hover': {
                 backgroundColor: '#FFF4E0',
               },

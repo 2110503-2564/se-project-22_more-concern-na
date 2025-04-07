@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { MapPin, Phone, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -27,24 +27,27 @@ interface Hotel {
   ratingCount: number;
 }
 
-export default function HotelCard({hotel}: {hotel: Hotel}) {
+export default function HotelCard({ hotel }: { hotel: Hotel }) {
   const fullAddress = `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province} ${hotel.postalCode}`;
   const averageRating =
     hotel.ratingCount > 0
       ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
       : '0.0';
-  
-      const router = useRouter();
-      const handleClick = () => {
-        router.push(`/hotel/${hotel._id}`);
-      };
 
-      const formatPhone = (phoneNumber: string) => {
-        return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
-      };
+  const router = useRouter();
+  const handleClick = () => {
+    router.push(`/hotel/${hotel._id}`);
+  };
+
+  const formatPhone = (phoneNumber: string) => {
+    return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
+  };
 
   return (
-    <div className='max-w-sm overflow-hidden bg-gradient-to-r from-gold-gd1 to-gold-gd2 rounded-lg text-cardfont-detail font-detail' onClick={handleClick}>
+    <div
+      className='max-w-sm overflow-hidden bg-gradient-to-r from-gold-gd1 to-gold-gd2 rounded-lg text-cardfont-detail font-detail'
+      onClick={handleClick}
+    >
       <div className='rounded-t-lg h-44 bg-gray-600'>
         <img
           src={hotel.picture || '/img/hotel.jpg'}
@@ -58,15 +61,19 @@ export default function HotelCard({hotel}: {hotel: Hotel}) {
           <span className='ml-1 font-semibold'>{averageRating}</span>
         </div>
         <div className='absolute bottom-2 left-2 px-2 py-1'>
-          <span className='text-sm font-medium'>{hotel.ratingCount} reviews</span>
+          <span className='text-sm font-medium'>
+            {hotel.ratingCount} reviews
+          </span>
         </div>
-        <h2 className='text-2xl font-semibold text-cardfont-cl mt-4 mb-2'>{hotel.name}</h2>
+        <h2 className='text-2xl font-semibold text-cardfont-cl mt-4 mb-2'>
+          {hotel.name}
+        </h2>
         <div className='flex items-center mb-2'>
           <MapPin className='w-5 h-5' />
           <span className='ml-2 font-medium'>{fullAddress}</span>
         </div>
         <div className='flex items-center'>
-          <Phone  className='w-5 h-5'/>
+          <Phone className='w-5 h-5' />
           <span className='ml-2 font-medium'>{formatPhone(hotel.tel)}</span>
         </div>
       </div>

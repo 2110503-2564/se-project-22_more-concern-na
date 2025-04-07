@@ -27,7 +27,11 @@ interface HotelReplyProps {
   onUpdateReply?: (updatedReply: HotelReplyType) => void;
 }
 
-export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: HotelReplyProps) {
+export default function HotelReply({
+  reply,
+  onDeleteReply,
+  onUpdateReply,
+}: HotelReplyProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedReply, setEditedReply] = useState(reply.comment);
 
@@ -39,7 +43,7 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
 
   const handleDeleteReply = () => {
     setIsDeleteDialogOpen(true);
-  }
+  };
 
   const confirmDeleteReply = async () => {
     setIsDeleteDialogOpen(false);
@@ -48,9 +52,9 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
       // await fetch(`/api/hotel-reply/${replyId}`, {
       //   method: 'DELETE',
       // });
-      if(onDeleteReply) {
+      if (onDeleteReply) {
         onDeleteReply(reply.id);
-      }else{
+      } else {
         alert('Reply deleted! (placeholder)');
       }
     } catch (err) {
@@ -69,7 +73,7 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
       reply.comment = editedReply;
       setIsEditing(false);
 
-      if (onUpdateReply){
+      if (onUpdateReply) {
         onUpdateReply(reply);
       }
     } catch (err) {
@@ -88,9 +92,7 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
       </div>
 
       <div className='flex items-center mb-3'>
-        <p className='text-xl text-[#FFD400]'>
-          {reply.hotelName} Response
-        </p>
+        <p className='text-xl text-[#FFD400]'>{reply.hotelName} Response</p>
       </div>
 
       {isEditing ? (
@@ -104,10 +106,13 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
             <Button variant='default' onClick={handleSaveEditedReply}>
               Save Change
             </Button>
-            <Button variant='secondary' onClick={() => {
+            <Button
+              variant='secondary'
+              onClick={() => {
                 setEditedReply(reply.comment);
                 setIsEditing(false);
-              }}>
+              }}
+            >
               Cancel
             </Button>
           </div>
@@ -115,17 +120,21 @@ export default function HotelReply({ reply, onDeleteReply, onUpdateReply }: Hote
       ) : (
         <p className='font-normal text-sm text-[#d7d7d7]'>{reply.comment}</p>
       )}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-bg-box border text-white">
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent className='bg-bg-box border text-white'>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl text-gold-gd1 font-heading">
+            <AlertDialogTitle className='text-2xl text-gold-gd1 font-heading'>
               Confirm Deletion
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300 font-medium text-base font-detail">
-              Are you sure you want to delete this reply? This action cannot be undone.
+            <AlertDialogDescription className='text-gray-300 font-medium text-base font-detail'>
+              Are you sure you want to delete this reply? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
+          <AlertDialogFooter className='mt-4'>
             <AlertDialogCancel className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700'>
               Cancel
             </AlertDialogCancel>
