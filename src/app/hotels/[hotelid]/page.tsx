@@ -528,13 +528,13 @@ export default function HotelDetail({
       {/* Main content */}
       <div className='container mx-auto px-4 py-8 flex flex-col md:flex-row'>
         <div className='flex-1 md:mr-8'>
-          <p className='text-lg font-normal font-detail text-white mb-8'>
+          <div className='text-lg font-normal font-detail text-white mb-8'>
             {hotel.description}
             <div className='flex mt-3 items-center'>
               <Phone className='h-4 w-4 mr-2'/> <span>{formatPhone(hotel.tel)}</span>
             </div>
             
-          </p>
+          </div>
 
           <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

@@ -622,7 +622,7 @@ export default function Hotels() {
     place-items-center
   ">
       {hotels.map((hotel, index) => (
-        <HotelCard key={index} hotel={hotel}/>
+        <HotelCard key={index} type='edit' hotel={hotel}/>
       ))}
     </div>
   )
