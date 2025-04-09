@@ -3,11 +3,13 @@
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Lock, User, Calendar } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const [active, setActive] = useState(1);
   const [upcoming, setUpcoming] = useState(4);
   const [past, setPast] = useState(2);
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch user profile and booking data
@@ -33,13 +35,31 @@ export default function ProfilePage() {
   rounded-lg
 `;
 
+  const handleInventoryClick = () => {
+    router.push('/redeemtion');
+  };
+
+  const handleEditProfileClick = () => {
+    router.push('/profile/edit');
+  };
+
+  const handleManageBookingsClick = () => {
+    router.push('/bookings');
+  };
+
   return (
     <main className='flex flex-col items-center p-8 bg-[#16192b] min-h-screen text-white'>
       {/* Profile content */}
       <div className='w-full max-w-4xl'>
         <div className='flex justify-between items-center mb-6'>
           <h1 className='text-4xl font-bold'>Your Profile</h1>
-          <div className={buttonClass}>
+          <div 
+            className={buttonClass}
+            onClick={handleInventoryClick}
+            role="button"
+            tabIndex={0}
+            aria-label="Your Inventory"
+          >
             <div className={buttonInnerClass}>Your Inventory</div>
           </div>
         </div>
@@ -49,14 +69,20 @@ export default function ProfilePage() {
           <div className='flex flex-wrap'>
             {/* Left side - picture and info */}
             <div className='flex-1 flex gap-6'>
-              <div className='w-36 h-40 bg-gray-200 text-gray-800 flex items-center justify-center border-2 border-[#D2A047]'>
+              <div className='w-36 h-40 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047]'>
                 picture
               </div>
               <div className='flex flex-col justify-center'>
                 <p className='text-xl mb-2'>Name : </p>
                 <p className='text-xl mb-2'>Email : </p>
                 <p className='text-xl mb-2'>Telephone : </p>
-                <div className={`${buttonClass} mt-4 w-32 h-10`}>
+                <div 
+                  className={`${buttonClass} mt-4 w-32 h-10`}
+                  onClick={handleEditProfileClick}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Edit Profile"
+                >
                   <div className={buttonInnerClass}>Edit Profile</div>
                 </div>
               </div>
@@ -86,7 +112,13 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className='flex justify-center'>
-                  <div className={`${buttonClass} w-40 h-10`}>
+                  <div 
+                    className={`${buttonClass} w-40 h-10`}
+                    onClick={handleManageBookingsClick}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Manage Bookings"
+                  >
                     <div className={buttonInnerClass}>Manage Bookings</div>
                   </div>
                 </div>
