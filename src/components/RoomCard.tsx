@@ -1,6 +1,7 @@
 import { Button } from './ui/button';
 
 interface Room {
+  id: string;
   roomType: string;
   picture?: string;
   capacity: number;
@@ -11,10 +12,12 @@ interface Room {
 
 interface RoomCardProps {
   room: Room;
-  onSelectRoom: (room: Room) => void;
+  type?: 'view' | 'manage';
+  onSelectRoom?: (room: Room) => void;
+  onManageRoom?: (room: Room) => void;
 }
 
-export default function RoomCard({ room, onSelectRoom }: RoomCardProps) {
+export default function RoomCard({ room, type, onSelectRoom, onManageRoom }: RoomCardProps) {
   return (
     <div className='w-[70%] bg-gradient-to-r font-detail from-gold-gd1 to-gold-gd2 rounded-lg shadow overflow-hidden'>
       <div className='relative h-44 bg-gray-600'>
@@ -41,13 +44,20 @@ export default function RoomCard({ room, onSelectRoom }: RoomCardProps) {
           <p className='mt-3 text-sm text-gray-600'>
             {room.remainCount} rooms available
           </p>
-          <Button
+          {type === 'manage' ? <Button
             variant='default'
-            onClick={() => onSelectRoom(room)}
+            onClick={() => onManageRoom?.(room)}
+            className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+          >
+            Manage Room
+          </Button>  : <Button
+            variant='default'
+            onClick={() => onSelectRoom?.(room)}
             className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
           >
             Select Room
-          </Button>
+          </Button> }
+          
         </div>
       </div>
     </div>

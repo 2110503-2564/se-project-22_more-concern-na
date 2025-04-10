@@ -21,8 +21,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 
 interface Room {
+  id:string
   roomType: string;
   picture?: string;
   capacity: number;
@@ -140,6 +142,7 @@ export default function HotelDetail({
     tel: '0123456789',
     rooms: [
       {
+        id: "1",
         roomType: 'Deluxe Ocean View',
         picture:
           'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=2070&auto=format&fit=crop',
@@ -149,6 +152,7 @@ export default function HotelDetail({
         price: 2150,
       },
       {
+        id: "2",
         roomType: 'Premium Suite',
         picture:
           'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop',
@@ -158,6 +162,7 @@ export default function HotelDetail({
         price: 3250,
       },
       {
+        id: "3",
         roomType: 'Executive Room',
         picture:
           'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop',
@@ -167,6 +172,7 @@ export default function HotelDetail({
         price: 1750,
       },
       {
+        id: "4",
         roomType: 'Family Suite',
         picture:
           'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2074&auto=format&fit=crop',
