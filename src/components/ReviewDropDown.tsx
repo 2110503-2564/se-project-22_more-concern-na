@@ -31,7 +31,6 @@ export default function ReviewDropDown({
     'NSFW/Adult Content',
     'Spam/Unwanted Content',
     'Scam/Fraudulent Activity',
-    'Other (Please specify)',
   ];
 
   return (
