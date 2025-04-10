@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Lock, User, Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const [active, setActive] = useState(1);
@@ -36,7 +37,7 @@ export default function ProfilePage() {
 `;
 
   const handleInventoryClick = () => {
-    router.push('/redeemtion');
+    router.push('/redemption');
   };
 
   const handleEditProfileClick = () => {
@@ -54,13 +55,13 @@ export default function ProfilePage() {
         <div className='flex justify-between items-center mb-6'>
           <h1 className='text-4xl font-bold'>Your Profile</h1>
           <div 
-            className={buttonClass}
+            className={cn(buttonClass)}
             onClick={handleInventoryClick}
             role="button"
             tabIndex={0}
             aria-label="Your Inventory"
           >
-            <div className={buttonInnerClass}>Your Inventory</div>
+            <div className={cn(buttonInnerClass)}>Your Inventory</div>
           </div>
         </div>
         
@@ -77,13 +78,13 @@ export default function ProfilePage() {
                 <p className='text-xl mb-2'>Email : </p>
                 <p className='text-xl mb-2'>Telephone : </p>
                 <div 
-                  className={`${buttonClass} mt-4 w-32 h-10`}
+                  className={cn(buttonClass, 'mt-4 w-32 h-10')}
                   onClick={handleEditProfileClick}
                   role="button"
                   tabIndex={0}
                   aria-label="Edit Profile"
                 >
-                  <div className={buttonInnerClass}>Edit Profile</div>
+                  <div className={cn(buttonInnerClass)}>Edit Profile</div>
                 </div>
               </div>
             </div>
@@ -113,13 +114,13 @@ export default function ProfilePage() {
                 
                 <div className='flex justify-center'>
                   <div 
-                    className={`${buttonClass} w-40 h-10`}
+                    className={cn(buttonClass, 'w-40 h-10')}
                     onClick={handleManageBookingsClick}
                     role="button"
                     tabIndex={0}
                     aria-label="Manage Bookings"
                   >
-                    <div className={buttonInnerClass}>Manage Bookings</div>
+                    <div className={cn(buttonInnerClass)}>Manage Bookings</div>
                   </div>
                 </div>
               </div>
