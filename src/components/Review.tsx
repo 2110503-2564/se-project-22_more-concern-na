@@ -1,6 +1,6 @@
 import { Rating } from '@mui/material';
 import dayjs from 'dayjs';
-import { Reply } from 'lucide-react';
+import { Reply, Trash } from 'lucide-react';
 import { useState } from 'react';
 import HotelReply, { HotelReplyType } from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
@@ -21,6 +21,7 @@ export interface ReviewType {
 
 interface ReviewProps {
   review: ReviewType;
+  isReported?: boolean;
   onDeleteReview?: (reviewId: number) => void;
   onUpdateReview?: (updatedReview: ReviewType) => void;
   onDeleteReply?: (reviewId: number, replyId: number) => void;
@@ -31,6 +32,7 @@ export default function Review({
   onDeleteReview,
   onUpdateReview,
   onDeleteReply,
+  isReported = false,
 }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedComment, setEditedComment] = useState(review.comment);
@@ -160,12 +162,19 @@ export default function Review({
     <div>
       <div className='relative bg-[#434A5B] text-white font-detail rounded-sm px-6 pt-6 mb-4 shadow'>
         <div className='absolute top-2 right-6'>
-          <ReviewDropDown
-            reviewId={review.id}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onReport={handleReport}
-          />
+          {isReported ? (
+            <Trash
+              onClick={handleDelete}
+              className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
+            />
+          ) : (
+            <ReviewDropDown
+              reviewId={review.id}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onReport={handleReport}
+            />
+          )}
         </div>
         <div className='flex items-center'>
           <img
@@ -246,7 +255,7 @@ export default function Review({
           </>
         )}
 
-        {isHotelManager && !review.reply && (
+        {isHotelManager && !review.reply && !isReported && (
           <div className='flex justify-end'>
             <Button
               variant='link'
@@ -280,7 +289,7 @@ export default function Review({
           </div>
         </div>
       )}
-      {review.reply && (
+      {review.reply && !isReported && (
         <HotelReply
           reply={review.reply}
           onDeleteReply={(replyId) => {
