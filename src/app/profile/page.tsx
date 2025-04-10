@@ -49,13 +49,13 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className='flex flex-col items-center p-8 bg-[#16192b] min-h-screen text-white'>
+    <main className='flex flex-col items-center p-8 bg-base-gd min-h-screen text-white'>
       {/* Profile content */}
       <div className='w-full max-w-4xl'>
         <div className='flex justify-between items-center mb-6'>
-          <h1 className='text-4xl font-bold'>Your Profile</h1>
+          <h1 className='text-4xl font-bold font-heading ml-15'>Your Profile</h1>
           <div 
-            className={cn(buttonClass)}
+            className={cn(buttonClass, 'w-40')}
             onClick={handleInventoryClick}
             role="button"
             tabIndex={0}
@@ -64,21 +64,17 @@ export default function ProfilePage() {
             <div className={cn(buttonInnerClass)}>Your Inventory</div>
           </div>
         </div>
-        
-        {/* Main profile container */}
-        <div className='p-6 bg-[#1e2341] border border-[#2a3050]'>
+        <div className='p-6 bg-[#161D30] border border-[#2a3050] shadow-md shadow-black/50 rounded'>
           <div className='flex flex-wrap'>
-            {/* Left side - picture and info */}
-            <div className='flex-1 flex gap-6'>
-              <div className='w-36 h-40 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047]'>
-                picture
-              </div>
-              <div className='flex flex-col justify-center'>
-                <p className='text-xl mb-2'>Name : </p>
-                <p className='text-xl mb-2'>Email : </p>
-                <p className='text-xl mb-2'>Telephone : </p>
+            {/* Profile section with picture and user info */}
+            <div className='flex flex-wrap mr-8'>
+              {/* Left column - picture and button */}
+              <div className='flex flex-col items-center'>
+                <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
+                  picture
+                </div>
                 <div 
-                  className={cn(buttonClass, 'mt-4 w-32 h-10')}
+                  className={cn(buttonClass, 'w-48')}
                   onClick={handleEditProfileClick}
                   role="button"
                   tabIndex={0}
@@ -87,34 +83,41 @@ export default function ProfilePage() {
                   <div className={cn(buttonInnerClass)}>Edit Profile</div>
                 </div>
               </div>
+              
+              {/* Right column - user info */}
+              <div className='flex flex-col justify-center ml-6 font-details'>
+                <p className='text-xl mb-6'>Name : </p>
+                <p className='text-xl mb-6'>Email : </p>
+                <p className='text-xl mb-6'>Tel : </p>
+              </div>
             </div>
             
-            {/* Right side - bookings info - now more narrow */}
-            <div className='w-64 pl-6'>
-              <h2 className='text-2xl font-bold mb-4'>Your Bookings</h2>
+            {/* Bookings info section */}
+            <div className='w-64 ml-auto'>
+              <h2 className='text-2xl font-bold mb-9 font-heading text-center'>Your Bookings</h2>
               
-              <div className='w-full'>
-                <div className='flex justify-between mb-4'>
+              <div className='w-full text-l'>
+                <div className='flex justify-between mb-6 font-details'>
                   <p>Active</p>
                   <p className='font-bold'>{active}</p>
                 </div>
-                <div className='flex justify-between mb-4'>
+                <div className='flex justify-between mb-6'>
                   <p>Upcoming</p>
                   <p className='font-bold'>{upcoming}</p>
                 </div>
-                <div className='flex justify-between mb-4'>
+                <div className='flex justify-between mb-8'>
                   <p>Past</p>
                   <p className='font-bold'>{past}</p>
                 </div>
                 
-                <div className='flex justify-between font-bold mt-4 mb-6'>
+                <div className='flex justify-between font-bold mt-4 mb-10'>
                   <p>Total</p>
                   <p>{active + upcoming + past}</p>
                 </div>
                 
                 <div className='flex justify-center'>
                   <div 
-                    className={cn(buttonClass, 'w-40 h-10')}
+                    className={cn(buttonClass, 'w-full h-10')}
                     onClick={handleManageBookingsClick}
                     role="button"
                     tabIndex={0}
