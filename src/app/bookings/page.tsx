@@ -4,66 +4,66 @@ import { useState, useEffect } from "react";
 import { BookingCard } from "@/components/BookingCard";
 import { ArrowLeft, Hotel } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-// Mock booking data with dates matching the Figma design
+// Mock booking data
 const mockBookings = [
-  // Upcoming bookings from Figma
   {
     id: "book-001",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-04-09"), // Today (should be active)
-    checkOutDate: new Date("2025-04-12"),
+    checkInDate: new Date(), // Today
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 3)),
     location: "location"
   },
   {
     id: "book-002",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-04-09"), // Today (should be active)
-    checkOutDate: new Date("2025-04-11"),
+    checkInDate: new Date(), // Today
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 2)),
     location: "location"
   },
   {
     id: "book-003",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-04-19"),
-    checkOutDate: new Date("2025-04-24"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() + 10)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 15)),
     location: "location"
   },
   {
     id: "book-004",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-04-29"),
-    checkOutDate: new Date("2025-05-02"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() + 20)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 23)),
     location: "location"
   },
   {
     id: "book-005",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-05-09"),
-    checkOutDate: new Date("2025-05-14"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 35)),
     location: "location"
   },
   {
     id: "book-006",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-05-19"),
-    checkOutDate: new Date("2025-05-24"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() + 40)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 45)),
     location: "location"
   },
   // Past bookings
   {
     id: "book-007",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-03-20"),
-    checkOutDate: new Date("2025-03-25"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() - 10)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() - 7)),
     location: "location"
   },
   {
     id: "book-008",
     hotelName: "Hotel Name",
-    checkInDate: new Date("2025-03-10"),
-    checkOutDate: new Date("2025-03-15"),
+    checkInDate: new Date(new Date().setDate(new Date().getDate() - 20)),
+    checkOutDate: new Date(new Date().setDate(new Date().getDate() - 15)),
     location: "location"
   },
 ];
@@ -76,23 +76,29 @@ interface Booking {
   location: string;
 }
 
+// Function to get today's date with time set to midnight
+const getTodayDate = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
+
+// Function to create a date for comparison (without time component)
+const createDateForComparison = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+};
+
 export default function BookingsPage() {
   const router = useRouter();
   const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
-
+  
   useEffect(() => {
-    // Use April 9, 2025 as today to match the Figma mock
-    const today = new Date("2025-04-09");
-    today.setHours(0, 0, 0, 0);
-
-    // Create comparator dates without time component
-    const createDateForComparison = (date: Date) => {
-      const newDate = new Date(date);
-      newDate.setHours(0, 0, 0, 0);
-      return newDate;
-    };
+    // Get today's date
+    const today = getTodayDate();
 
     // Filter bookings into the three categories
     const active = mockBookings.filter(booking => {
@@ -131,6 +137,29 @@ export default function BookingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <header className="p-4 flex justify-between items-center border-b border-gray-800">
+        <div className="flex items-center">
+          <div className="flex items-center">
+            <span className="text-white mr-1">MCN</span>
+            <span className="text-xl font-semibold text-amber-500">MCN</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <button className="flex items-center px-4 py-2 border border-gray-700 rounded-md">
+            <Hotel className="h-5 w-5 mr-2" />
+            View Hotels
+          </button>
+          
+          <Link href="/profile">
+            <button className="px-6 py-2 bg-amber-500 text-gray-900 font-medium rounded-md">
+              Profile
+            </button>
+          </Link>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         {/* Back Navigation */}

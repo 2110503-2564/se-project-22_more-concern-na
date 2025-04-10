@@ -10,6 +10,20 @@ interface BookingCardProps {
   type: "active" | "upcoming" | "past";
 }
 
+// Function to get today's date with time set to midnight
+const getTodayDate = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
+
+// Function to create a date for comparison (without time component)
+const createDateForComparison = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+};
+
 export const BookingCard = ({ 
   id, 
   hotelName, 
@@ -31,11 +45,8 @@ export const BookingCard = ({
   const getDaysUntil = () => {
     if (type !== "upcoming") return null;
     
-    const today = new Date("2025-04-09"); // Use the same reference date
-    today.setHours(0, 0, 0, 0);
-    
-    const checkIn = new Date(checkInDate);
-    checkIn.setHours(0, 0, 0, 0);
+    const today = getTodayDate();
+    const checkIn = createDateForComparison(checkInDate);
     
     const timeDiff = checkIn.getTime() - today.getTime();
     const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
