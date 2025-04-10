@@ -1,18 +1,8 @@
 import { useState } from 'react';
 import ReplyDropDown from './ReplyDropDown';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from './ui/alert-dialog';
-import { Button } from './ui/button';
 import AlertConfirmation from './AlertConfirmation';
+import { Button } from './ui/button';
 
 export interface HotelReplyType {
   id: number;

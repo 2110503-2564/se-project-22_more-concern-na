@@ -17,7 +17,12 @@ interface RoomCardProps {
   onManageRoom?: (room: Room) => void;
 }
 
-export default function RoomCard({ room, type, onSelectRoom, onManageRoom }: RoomCardProps) {
+export default function RoomCard({
+  room,
+  type,
+  onSelectRoom,
+  onManageRoom,
+}: RoomCardProps) {
   return (
     <div className='w-[70%] bg-gradient-to-r font-detail from-gold-gd1 to-gold-gd2 rounded-lg shadow overflow-hidden'>
       <div className='relative h-44 bg-gray-600'>
@@ -44,20 +49,23 @@ export default function RoomCard({ room, type, onSelectRoom, onManageRoom }: Roo
           <p className='mt-3 text-sm text-gray-600'>
             {room.remainCount} rooms available
           </p>
-          {type === 'manage' ? <Button
-            variant='default'
-            onClick={() => onManageRoom?.(room)}
-            className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
-          >
-            Manage Room
-          </Button>  : <Button
-            variant='default'
-            onClick={() => onSelectRoom?.(room)}
-            className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
-          >
-            Select Room
-          </Button> }
-          
+          {type === 'manage' ? (
+            <Button
+              variant='default'
+              onClick={() => onManageRoom?.(room)}
+              className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+            >
+              Manage Room
+            </Button>
+          ) : (
+            <Button
+              variant='default'
+              onClick={() => onSelectRoom?.(room)}
+              className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+            >
+              Select Room
+            </Button>
+          )}
         </div>
       </div>
     </div>

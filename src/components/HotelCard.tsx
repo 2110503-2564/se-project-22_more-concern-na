@@ -34,30 +34,29 @@ interface hotelCardProps {
 }
 
 export default function HotelCard({ hotel, type }: hotelCardProps) {
-
   const router = useRouter();
 
   const handleClick = () => {
-    if(type === 'view') {
+    if (type === 'view') {
       router.push(`/hotel/${hotel._id}`);
     }
   };
 
-  const handleEdit = (e:React.MouseEvent) => {
+  const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     router.push(`/manage/hotel/${hotel._id}`);
-  }
+  };
 
-  const handleDelete = (e:React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }
+  };
 
   const formatPhone = (phoneNumber: string) => {
     return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
   };
 
   const fullAddress = `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province} ${hotel.postalCode}`;
-  
+
   const averageRating =
     hotel.ratingCount > 0
       ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
@@ -76,12 +75,12 @@ export default function HotelCard({ hotel, type }: hotelCardProps) {
         />
         {type === 'edit' && (
           <Button
-            variant="ghost"
-            size="icon"
+            variant='ghost'
+            size='icon'
             onClick={handleDelete}
-            className="absolute top-2 right-2 bg-[#a52a2a] text-white hover:bg-white hover:text-[#a52a2a] rounded-full p-1"
+            className='absolute top-2 right-2 bg-[#a52a2a] text-white hover:bg-white hover:text-[#a52a2a] rounded-full p-1'
           >
-            <X className="w-5 h-5" />
+            <X className='w-5 h-5' />
           </Button>
         )}
       </div>
@@ -108,15 +107,17 @@ export default function HotelCard({ hotel, type }: hotelCardProps) {
         </div>
       </div>
 
-      {
-        type === 'edit' && (
-          <div className="absolute bottom-2 right-2">
-          <Button variant="default" onClick={handleEdit} className='bg-bg-btn ml-7 text-white text-sm px-8 py-2 rounded hover:bg-blue-700'>
+      {type === 'edit' && (
+        <div className='absolute bottom-2 right-2'>
+          <Button
+            variant='default'
+            onClick={handleEdit}
+            className='bg-bg-btn ml-7 text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+          >
             Edit
           </Button>
         </div>
-        )
-      }
+      )}
     </div>
   );
 }
