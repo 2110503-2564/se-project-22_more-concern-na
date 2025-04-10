@@ -6,16 +6,7 @@ import HotelReply, { HotelReplyType } from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from './ui/alert-dialog';
+import AlertConfirmation from './AlertConfirmation';
 
 export interface ReviewType {
   id: number;
@@ -297,33 +288,12 @@ export default function Review({
           }}
         />
       )}
-      <AlertDialog
-        open={isDeleteDialogOpen}
+      <AlertConfirmation
+        onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent className='bg-bg-box border text-white'>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='text-2xl text-gold-gd1 font-heading'>
-              Confirm Deletion
-            </AlertDialogTitle>
-            <AlertDialogDescription className='text-gray-300 font-medium text-base font-detail'>
-              Are you sure you want to delete this review? This action cannot be
-              undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className='mt-4'>
-            <AlertDialogCancel className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700'>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeleteReview}
-              className='font-detail text-sm font-medium bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
-            >
-              Yes, Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        type='delete'
+        onConfirm={confirmDeleteReview}
+      />
     </div>
   );
 }
