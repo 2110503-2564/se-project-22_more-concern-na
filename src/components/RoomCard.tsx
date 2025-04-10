@@ -51,17 +51,17 @@ export default function RoomCard({
           </p>
           {type === 'manage' ? (
             <Button
-              variant='default'
+              variant='bluely'
               onClick={() => onManageRoom?.(room)}
-              className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+              className='ml-7 w-[55%]'
             >
               Manage Room
             </Button>
           ) : (
             <Button
-              variant='default'
+              variant='bluely'
               onClick={() => onSelectRoom?.(room)}
-              className='bg-bg-btn ml-7 w-[55%] text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+              className='ml-7 w-[55%]'
             >
               Select Room
             </Button>

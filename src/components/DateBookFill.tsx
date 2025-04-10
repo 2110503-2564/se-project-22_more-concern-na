@@ -8,6 +8,7 @@ interface DateReserveProps {
   onDateChange: (date: Dayjs) => void;
   shouldDisableDate: (date: Dayjs) => boolean;
   disableBeforeDate?: Dayjs | null;
+  disabled?: boolean;
 }
 
 export default function DateBookFill({
@@ -15,15 +16,18 @@ export default function DateBookFill({
   onDateChange,
   shouldDisableDate,
   disableBeforeDate,
+  disabled = false,
 }: DateReserveProps) {
   const handleDateChange = (date: Dayjs | null) => {
     if (date && !shouldDisableDate(date)) {
       onDateChange(date);
     }
   };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        disabled={disabled}
         value={selectedDate}
         onChange={handleDateChange}
         shouldDisableDate={shouldDisableDate}
@@ -31,18 +35,9 @@ export default function DateBookFill({
         className='bg-bg-textfill rounded border-bg-border w-full'
         sx={{ '& input': { color: '#ADAFB3' } }}
         slotProps={{
-          openPickerIcon: {
-            sx: {
-              color: '#D2A047',
-            },
-          },
+          openPickerIcon: { sx: { color: '#D2A047' } },
           openPickerButton: {
-            sx: {
-              color: '#D2A047',
-              '&:hover': {
-                backgroundColor: '#FFF4E0',
-              },
-            },
+            sx: { color: '#D2A047', '&:hover': { backgroundColor: '#FFF4E0' } },
           },
         }}
       />

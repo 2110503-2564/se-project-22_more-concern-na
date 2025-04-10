@@ -603,6 +603,7 @@ export default function HotelDetail({
                 onDateChange={handleCheckOutChange}
                 shouldDisableDate={isCheckOutDateDisabled}
                 disableBeforeDate={checkInDate}
+                disabled={!checkInDate}
               />
             </div>
 
@@ -611,8 +612,8 @@ export default function HotelDetail({
             </p>
 
             <Button
-              variant='default'
-              className='w-full bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-cardfont-cl font-detail text-base font-medium mb-6'
+              variant='golden'
+              className='w-full text-base mb-6'
               disabled={!checkInDate || !checkOutDate || isAvailabilityChecking}
               onClick={handleCheckAvailable}
             >
@@ -732,9 +733,9 @@ export default function HotelDetail({
                       </span>
                     </div>
                     <Button
-                      className='w-full bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-cardfont-cl text-base font-medium mt-2'
+                      className='w-full text-base mt-2'
                       onClick={handleBooking}
-                      variant='default'
+                      variant='golden'
                       disabled={!isAvailabilityConfirmed}
                     >
                       {session ? 'Book Now' : 'Login to Book'}
