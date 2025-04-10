@@ -17,11 +17,11 @@ export default function ProfilePage() {
   }, []);
 
   const buttonClass = `
-  relative bg-gradient-to-r from-[#E1C582] to-[#D2A047] text-black 
+  relative bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black 
   hover:text-[#161D30]
   transition-all duration-300
   before:absolute before:inset-0 before:p-0.5
-  before:bg-gradient-to-r before:from-[#E1C582] before:to-[#D2A047] 
+  before:bg-gradient-to-l before:from-gold-gd1 before:to-gold-gd2 
   before:opacity-0 hover:before:opacity-100 before:transition-opacity
   overflow-hidden
   flex justify-center items-center cursor-pointer
@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
   const buttonInnerClass = `
   relative z-10 bg-inherit px-4 py-2 
-  hover:bg-gradient-to-r hover:from-[#D2A047] hover:to-[#E1C582]
+  hover:bg-gradient-to-r hover:from-gold-gd2 hover:to-gold-gd1
   transition-colors duration-300
   flex justify-center items-center w-full h-full
   rounded-lg
