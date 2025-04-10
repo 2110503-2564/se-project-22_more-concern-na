@@ -137,29 +137,6 @@ export default function BookingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="p-4 flex justify-between items-center border-b border-gray-800">
-        <div className="flex items-center">
-          <div className="flex items-center">
-            <span className="text-white mr-1">MCN</span>
-            <span className="text-xl font-semibold text-amber-500">MCN</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <button className="flex items-center px-4 py-2 border border-gray-700 rounded-md">
-            <Hotel className="h-5 w-5 mr-2" />
-            View Hotels
-          </button>
-          
-          <Link href="/profile">
-            <button className="px-6 py-2 bg-amber-500 text-gray-900 font-medium rounded-md">
-              Profile
-            </button>
-          </Link>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         {/* Back Navigation */}
