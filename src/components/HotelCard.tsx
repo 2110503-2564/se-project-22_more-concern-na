@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 
 interface Room {
+  id: string;
   roomType: string;
   picture?: string;
   capacity: number;
