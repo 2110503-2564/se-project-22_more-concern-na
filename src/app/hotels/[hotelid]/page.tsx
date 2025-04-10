@@ -6,7 +6,7 @@ import RoomCard from '@/components/RoomCard';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import dayjs, { Dayjs } from 'dayjs';
-import { Check, Info, MapPin, Minus, Plus, Star } from 'lucide-react';
+import { Check, Info, MapPin, Minus, Phone, Plus, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
@@ -21,8 +21,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 
 interface Room {
+  id:string
   roomType: string;
   picture?: string;
   capacity: number;
@@ -64,6 +66,52 @@ export default function HotelDetail({
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
   const [nights, setNights] = useState(0);
+  const [filteredreview, setfilteredReview] = useState<ReviewType[]>([{
+    id: 1,
+    username: 'John Doe',
+    avatarUrl: '/john-avatar.png',
+    date: '2023-04-10',
+    rating: 4,
+    title: 'Great stay!',
+    comment:
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
+    reply: {
+      id: 101,
+      hotelName: 'hotel.name',
+      avatarUrl: '/hotel-logo.png',
+      date: '2023-04-11',
+      comment:
+        "Thank you for your kind review! We're delighted that you enjoyed your stay with us and appreciate your feedback. We hope to welcome you back soon for another wonderful experience.",
+    },
+  },
+  {
+    id: 2,
+    username: 'Jane Smith',
+    avatarUrl: '/jane-avatar.png',
+    date: '2023-03-22',
+    rating: 5,
+    title: 'Excellent!',
+    comment:
+      'Beautiful hotel with stunning views. The staff was incredibly attentive and the amenities were top-notch. Will definitely be coming back soon!',
+  },
+  {
+    id: 3,
+    username: 'Michael Johnson',
+    avatarUrl: '/michael-avatar.png',
+    date: '2023-02-15',
+    rating: 3,
+    title: 'Decent stay but room for improvement',
+    comment:
+      "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
+    reply: {
+      id: 102,
+      hotelName: 'hotel.name',
+      avatarUrl: '/hotel-logo.png',
+      date: '2023-02-16',
+      comment:
+        "We apologize for the inconvenience you experienced during your stay. We take your feedback seriously and are working to improve our check-in process and response times. We hope you'll give us another chance to provide you with a better experience.",
+    },
+  },]);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
@@ -94,6 +142,7 @@ export default function HotelDetail({
     tel: '0123456789',
     rooms: [
       {
+        id: "1",
         roomType: 'Deluxe Ocean View',
         picture:
           'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=2070&auto=format&fit=crop',
@@ -103,6 +152,7 @@ export default function HotelDetail({
         price: 2150,
       },
       {
+        id: "2",
         roomType: 'Premium Suite',
         picture:
           'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop',
@@ -112,6 +162,7 @@ export default function HotelDetail({
         price: 3250,
       },
       {
+        id: "3",
         roomType: 'Executive Room',
         picture:
           'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop',
@@ -121,6 +172,7 @@ export default function HotelDetail({
         price: 1750,
       },
       {
+        id: "4",
         roomType: 'Family Suite',
         picture:
           'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2074&auto=format&fit=crop',
@@ -189,6 +241,24 @@ export default function HotelDetail({
       ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
       : '0.0';
 
+  const handleDeleteReview = (reviewId: number) => {
+    setfilteredReview((prevReviews) =>
+      prevReviews.filter((r) => r.id !== reviewId),
+    );
+  }
+
+  const handleDeleteReply = async (reviewId:number, replyId: number) => {
+    setfilteredReview((prevReviews) =>
+      prevReviews.map((review) => {
+        if (review.id === reviewId && review.reply?.id === replyId) {
+          return { ...review, reply: undefined };
+        } else {
+          return review;
+        }
+      }),
+    );
+  }
+
   const isCheckInDateDisabled = (date: Dayjs) => {
     return date.isBefore(dayjs(), 'day');
   };
@@ -233,11 +303,15 @@ export default function HotelDetail({
     toast.success('Booking Confirmed!', {
       description: `Your stay at ${hotel.name} has been successfully booked.`,
       duration: 5000,
-      className: 'bg-blue-500 text-white border border-yellow-500',
       icon: <Check className='h-5 w-5 text-luxe-gold' />,
       action: {
         label: 'View Booking',
         onClick: () => console.log('View booking clicked'),
+      },
+      style: {
+        backgroundColor: '#06402b',
+        color: 'var(--color-bg-placeholder)',
+        border: '1px solid var(--color-bg-border)',
       },
     });
 
@@ -260,8 +334,12 @@ export default function HotelDetail({
 
       toast.info('Rooms Available!', {
         description: `We have rooms available for your selected dates.`,
-        className: 'bg-blue-500 text-white border border-yellow-500',
         icon: <Info className='h-5 w-5 text-luxe-gold' />,
+        style: {
+          backgroundColor: '#2A2F3F',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
       });
     }, 1500);
   };
@@ -279,12 +357,20 @@ export default function HotelDetail({
 
         toast('Room Added', {
           description: `Added 1 ${room.roomType} to your selection.`,
-          className: 'bg-blue-500 text-white border border-yellow-500',
+          style: {
+            backgroundColor: '#2A2F3F',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          },
         });
       } else {
         toast.error('Maximum Reached', {
           description: `You've selected all available ${room.roomType} rooms.`,
-          className: 'bg-red-500 text-white border border-red-400',
+          style: {
+            backgroundColor: '#a52a2a',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          }
         });
       }
     } else {
@@ -292,7 +378,11 @@ export default function HotelDetail({
 
       toast('Room Added', {
         description: `Added 1 ${room.roomType} to your selection.`,
-        className: 'bg-blue-500 text-white border border-yellow-500',
+        style: {
+          backgroundColor: '#2A2F3F',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
       });
     }
   };
@@ -320,7 +410,11 @@ export default function HotelDetail({
     if (!updatedRoom && originalRoom) {
       toast('Room Removed', {
         description: `Removed ${originalRoom.room.roomType} from your selection.`,
-        className: 'bg-blue-500 text-white border border-yellow-500',
+        style: {
+          backgroundColor: '#2A2F3F',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
       });
     } else if (
       originalRoom &&
@@ -328,7 +422,11 @@ export default function HotelDetail({
       originalRoom.quantity > updatedRoom.quantity
     ) {
       toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
-        className: 'bg-blue-500 text-white border border-yellow-500',
+        style: {
+          backgroundColor: '#2A2F3F',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
       });
     }
 
@@ -346,7 +444,11 @@ export default function HotelDetail({
     ) {
       toast.error('Maximum Reached', {
         description: `You've selected all available ${roomType} rooms.`,
-        className: 'bg-red-500 text-white border border-red-400',
+        style: {
+          backgroundColor: '#a52a2a',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        }
       });
       return;
     }
@@ -373,7 +475,11 @@ export default function HotelDetail({
       updatedRoom.quantity > roomToUpdate.quantity
     ) {
       toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
-        className: 'bg-blue-500 text-white border border-yellow-500',
+        style: {
+          backgroundColor: 'var(--color-bg-box)',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
       });
     }
 
@@ -400,22 +506,22 @@ export default function HotelDetail({
           className='absolute inset-0 bg-gray-600 bg-cover bg-center bg-no-repeat'
           style={{ backgroundImage: `url(${hotel.picture})` }}
         />
-        <div className='absolute inset-0 bg-gradient-to-t from-luxe-dark via-transparent to-transparent'></div>
-        <div className='absolute bottom-0 left-0 right-0 p-6 md:p-8 luxe-container'>
+        <div className='absolute inset-0 bg-gradient-to-t from-base-gd via-transparent to-transparent'></div>
+        <div className='absolute bottom-0 left-0 right-0 p-6 md:p-8'>
           <div className='flex flex-col md:flex-row justify-between items-start md:items-end'>
             <div>
-              <h1 className='text-3xl md:text-4xl font-serif font-bold mb-2'>
+              <h1 className='text-3xl md:text-4xl font-heading font-bold mb-2'>
                 {hotel.name}
               </h1>
               <div className='flex items-center mb-2'>
-                <MapPin className='h-4 w-4 text-luxe-gold mr-1' />
-                <span className='text-gray-300'>{fullAddress}</span>
+                <MapPin className='h-4 w-4 mr-1' />
+                <span className='text-gray-300 font-detail'>{fullAddress}</span>
               </div>
               <div className='flex items-center'>
                 <div className='flex items-center mr-4'>
-                  <Star className='h-4 w-4 fill-luxe-gold text-luxe-gold mr-1' />
-                  <span className='font-medium'>{averageRating}</span>
-                  <span className='text-gray-400 ml-2'>
+                  <Star className='h-4 w-4 fill-amber-300 text-amber-300 mr-1' />
+                  <span className='font-medium font-detail'>{averageRating}</span>
+                  <span className='text-gray-400 font-detail ml-2'>
                     ({hotel.ratingCount} reviews)
                   </span>
                 </div>
@@ -428,11 +534,15 @@ export default function HotelDetail({
       {/* Main content */}
       <div className='container mx-auto px-4 py-8 flex flex-col md:flex-row'>
         <div className='flex-1 md:mr-8'>
-          <p className='text-lg font-normal text-black mb-8'>
+          <div className='text-lg font-normal font-detail text-white mb-8'>
             {hotel.description}
-          </p>
+            <div className='flex mt-3 items-center'>
+              <Phone className='h-4 w-4 mr-2'/> <span>{formatPhone(hotel.tel)}</span>
+            </div>
+            
+          </div>
 
-          <h2 className='text-2xl font-bold mb-6 font-serif'>Our Rooms</h2>
+          <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             {hotel.rooms.map((room, index) => (
               <RoomCard
@@ -444,12 +554,12 @@ export default function HotelDetail({
           </div>
 
           <section className='mt-10'>
-            <h2 className='text-2xl font-bold mb-6 font-serif'>
+            <h2 className='text-2xl font-bold mb-6 font-detail'>
               Guest Reviews
             </h2>
             <div className='space-y-6'>
-              {reviews.map((review) => (
-                <Review key={review.id} review={review} />
+              {filteredreview.map((review) => (
+                <Review key={review.id} review={review} onDeleteReview={handleDeleteReview} onDeleteReply={handleDeleteReply}/>
               ))}
             </div>
             <div className='flex justify-center mt-6'>
@@ -497,12 +607,12 @@ export default function HotelDetail({
             </div>
 
             <p className='text-xs text-gray-400 mb-4'>
-              Note: You can book up to 6 nights.
+              Note: You can book up to 3 nights.
             </p>
 
             <Button
               variant='default'
-              className='w-full bg-amber-300 text-cardfont-cl font-medium mb-6'
+              className='w-full bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-cardfont-cl font-detail text-base font-medium mb-6'
               disabled={!checkInDate || !checkOutDate || isAvailabilityChecking}
               onClick={handleCheckAvailable}
             >
@@ -516,17 +626,17 @@ export default function HotelDetail({
             <Separator className='my-4 bg-white/20' />
 
             <div className='mb-6'>
-              <h3 className='text-lg font-medium mb-2'>Selected Rooms</h3>
+              <h3 className='text-lg font-detail font-medium mb-2'>Selected Rooms</h3>
               {selectedRooms.length > 0 ? (
-                <div className='space-y-3'>
+                <div className='space-y-3 font-detail'>
                   {selectedRooms.map((item, index) => (
                     <div
                       key={index}
-                      className='p-3 bg-gray-800/50 border border-luxe-gold/30 rounded-md'
+                      className='p-3 bg-gray-800/50 border border-bg-border rounded-md'
                     >
                       <div className='flex justify-between mb-2'>
                         <div className='font-medium'>{item.room.roomType}</div>
-                        <div className='text-luxe-gold font-semibold'>
+                        <div className='text-amber-300 font-semibold'>
                           ${item.room.price} per night
                         </div>
                       </div>
@@ -563,7 +673,7 @@ export default function HotelDetail({
                   ))}
                 </div>
               ) : (
-                <p className='text-gray-400 text-sm'>
+                <p className='text-gray-400 font-number text-sm'>
                   Please Select At Least 1 Room
                 </p>
               )}
@@ -571,7 +681,7 @@ export default function HotelDetail({
 
             <div>
               {selectedRooms.length > 0 && checkInDate && checkOutDate ? (
-                <div>
+                <div className='font-detail'>
                   <h3 className='text-lg font-medium mb-2'>Booking Summary</h3>
                   <div className='space-y-2 text-sm'>
                     <div className='flex justify-between'>
@@ -622,7 +732,7 @@ export default function HotelDetail({
                       </span>
                     </div>
                     <Button
-                      className='w-full bg-luxe-gold hover:bg-amber-500 text-black mt-2'
+                      className='w-full bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-cardfont-cl text-base font-medium mt-2'
                       onClick={handleBooking}
                       variant='default'
                       disabled={!isAvailabilityConfirmed}
@@ -646,12 +756,12 @@ export default function HotelDetail({
 
       {/* Confirmation Dialog */}
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <AlertDialogContent className='bg-[#1A1F2F] border-luxe-gold text-white'>
+        <AlertDialogContent className='bg-bg-box border-bg-border text-white'>
           <AlertDialogHeader>
-            <AlertDialogTitle className='text-luxe-gold font-serif text-2xl'>
+            <AlertDialogTitle className='text-white font-heading text-2xl'>
               Confirm Your Booking
             </AlertDialogTitle>
-            <AlertDialogDescription className='text-gray-300'>
+            <AlertDialogDescription className='text-gray-300 font-detail'>
               <div className='space-y-4 py-2'>
                 <div className='p-4 bg-[#2A2F3F] rounded-md'>
                   <h3 className='font-medium text-luxe-gold mb-2'>
@@ -717,11 +827,11 @@ export default function HotelDetail({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='gap-2'>
-            <AlertDialogCancel className='border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700'>
+            <AlertDialogCancel className='border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700'>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              className='bg-luxe-gold hover:bg-amber-500 text-black'
+              className='bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
               onClick={handleConfirmBooking}
             >
               Confirm Booking

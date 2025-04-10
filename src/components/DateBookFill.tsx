@@ -28,7 +28,23 @@ export default function DateBookFill({
         onChange={handleDateChange}
         shouldDisableDate={shouldDisableDate}
         disablePast
-        className='bg-bg-textfill text-bg-placeholder rounded border-bg-border w-full'
+        className='bg-bg-textfill rounded border-bg-border w-full'
+        sx={{ '& input': { color: '#ADAFB3' } }}
+        slotProps={{
+          openPickerIcon: {
+            sx: {
+              color: '#D2A047',
+            },
+          },
+          openPickerButton: {
+            sx: {
+              color: '#D2A047',
+              '&:hover': {
+                backgroundColor: '#FFF4E0',
+              },
+            },
+          },
+        }}
       />
     </LocalizationProvider>
   );
