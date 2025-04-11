@@ -1,36 +1,36 @@
 // interface.ts
 
 // ---------- Shared Types ----------
-interface GenericResponse {
+export interface GenericResponse {
     success: boolean;
     msg ?: string
 }
 
-interface RoomAvailability {
+export interface RoomAvailability {
     type: string;
     remainCount: number;
 }
 
-interface SelectedRoom {
+export interface SelectedRoom {
     type: string;
     count: number;
 }
 
 // ---------- GET /hotels/:id/reviews ----------
-interface HotelReviewsQuery {
+export interface HotelReviewsQuery {
     selfPage: number;
     selfPageSize: number;
     otherPage: number;
     otherPageSize: number;
 }
 
-interface ReviewPagination {
+export interface ReviewPagination {
     prev?: number;
     next?: number;
     count: number;
 }
 
-interface Review {
+export interface Review {
     userName: string;
     picture: string;
     stayMonth: Date;
@@ -41,23 +41,23 @@ interface Review {
     replyText?: string;
 }
 
-interface ReviewResponseSection {
+export interface ReviewResponseSection {
     pagination: ReviewPagination;
     data: Review[];
 }
 
-interface HotelReviewsResponse extends GenericResponse {
+export interface HotelReviewsResponse extends GenericResponse {
     self: ReviewResponseSection;
     other: ReviewResponseSection;
 }
 
 // ---------- GET /hotels/:id/available ----------
-interface HotelAvailabilityResponse extends GenericResponse {
+export interface HotelAvailabilityResponse extends GenericResponse {
     rooms: RoomAvailability[];
 }
 
 // ---------- POST /bookings ----------
-interface BookingRequest {
+export interface BookingRequest {
     hotel?: string;
     user?: string;
     price: number;
@@ -67,12 +67,12 @@ interface BookingRequest {
 }
 
 //TODO-Notyet
-interface CreateBookingResponse extends GenericResponse{
+export interface CreateBookingResponse extends GenericResponse{
     redirectUrl: string; // to user’s manage booking page
 }
 
 // ---------- PUT /reviews/:id ----------
-interface UpdateReviewBody {
+export interface UpdateReviewBody {
     title?: string;
     rating?: number;
     text?: string;
@@ -81,7 +81,7 @@ interface UpdateReviewBody {
 
 
 // ---------- POST /reports ----------
-interface CreateReportBody {
+export interface CreateReportBody {
     review: string;
     reportReason: string;
 }
@@ -89,7 +89,7 @@ interface CreateReportBody {
 
 // ---------- Shared ----------
 // TODO-NOTYET
-interface BookingSummary {
+export interface BookingSummary {
     active: number;
     upcoming: number;
     past: number;
@@ -97,7 +97,7 @@ interface BookingSummary {
 
 // ---------- GET /user ----------
 //TODO-NOTYET
-interface GetUserResponse extends GenericResponse{
+export interface GetUserResponse extends GenericResponse{
     picture?: string;
     name: string;
     email: string;
@@ -107,14 +107,14 @@ interface GetUserResponse extends GenericResponse{
 }
 
 // ---------- POST /user ----------
-interface CreateUserBody {
+export interface CreateUserBody {
     name?: string;
     picture?: string;
     tel?: string;
     password?: string;
 }
 
-interface CreateUserResponse extends GenericResponse{
+export interface CreateUserResponse extends GenericResponse{
     picture?: string;
     name?: string;
     tel?: string;
@@ -123,7 +123,7 @@ interface CreateUserResponse extends GenericResponse{
 
 
 // ---------- Register ----------
-interface RegisterRequest {
+export interface RegisterRequest {
     email: string;
     password: string;
     name: string;
@@ -131,15 +131,15 @@ interface RegisterRequest {
 }
 
 // ---------- Login ----------
-interface LoginRequest {
+export interface LoginRequest {
     email: string;
     password: string;
 }
 
 // ---------- Auth Response ----------
-type UserRole = 'guest' | 'admin' | 'user' | 'hotelManager'; // Adjust as needed
+export type UserRole = 'guest' | 'admin' | 'user' | 'hotelManager'; // Adjust as needed
 
-interface AuthResponse extends GenericResponse{
+export interface AuthResponse extends GenericResponse{
     token: string;
     data: {
         name: string;
@@ -150,7 +150,7 @@ interface AuthResponse extends GenericResponse{
 }
 
 // ---------- Bookings Request ----------
-interface BookingsRequest {
+export interface BookingsRequest {
     hotel: string;
     user: string;
     status?: string;
@@ -165,7 +165,7 @@ interface BookingsRequest {
 
 
 // ---------- Hotels Request ----------
-interface HotelRoom {
+export interface HotelRoom {
     _id?: string;
     roomType: string;
     picture?: string;
@@ -174,7 +174,7 @@ interface HotelRoom {
     price: number;
 }
 
-interface IHotel {
+export interface IHotel {
     _id?: string;
     name: string;
     description?: string;
@@ -190,7 +190,7 @@ interface IHotel {
     ratingCount: number;
 }
 //---------GET /hotels-----------
-interface HotelResponse extends GenericResponse{
+export interface HotelResponse extends GenericResponse{
     count: number;
     pagination: {
         next?: {
@@ -206,7 +206,7 @@ interface HotelResponse extends GenericResponse{
 }
 
 //---------GET /bookings-----------
-interface BookingQuery {
+export interface BookingQuery {
     activePage?: number;
     activePageSize?: number;
     upcomingPage?: number;
@@ -215,25 +215,25 @@ interface BookingQuery {
     pastPageSize?: number;
 }
 
-interface BookingPagination {
+export interface BookingPagination {
     prev?: number;
     next?: number;
     count: number; // count data that query after offset
 }
 
-interface Booking {
+export interface Booking {
     hotelName: string;
     startDate: Date;
     endDate: Date;
     address: string;
 }
 
-interface BookingData {
+export interface BookingData {
     pagination: BookingPagination;
     data: Booking[];
 }
 
-interface BookingResponse extends GenericResponse{
+export interface BookingResponse extends GenericResponse{
     active: BookingData;
     upcoming: BookingData;
     past: BookingData;
