@@ -1,36 +1,11 @@
 'use client';
 import { MapPin, Phone, Star, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { IHotel } from '../../interface';
 import { Button } from './ui/button';
 
-interface Room {
-  id: string;
-  roomType: string;
-  picture?: string;
-  capacity: number;
-  maxCount: number;
-  remainCount: number;
-  price: number;
-}
-
-interface Hotel {
-  _id: string;
-  name: string;
-  description?: string;
-  picture?: string;
-  buildingNumber: string;
-  street: string;
-  district: string;
-  province: string;
-  postalCode: string;
-  tel: string;
-  rooms: Room[];
-  ratingSum: number;
-  ratingCount: number;
-}
-
 interface hotelCardProps {
-  hotel: Hotel;
+  hotel: IHotel;
   type?: 'view' | 'edit';
 }
 
@@ -39,7 +14,7 @@ export default function HotelCard({ hotel, type }: hotelCardProps) {
 
   const handleClick = () => {
     if (type === 'view') {
-      router.push(`/hotel/${hotel._id}`);
+      router.push(`/hotels/${hotel._id}`);
     }
   };
 

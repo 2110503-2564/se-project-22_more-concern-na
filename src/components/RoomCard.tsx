@@ -1,20 +1,11 @@
+import { HotelRoom } from '../../interface';
 import { Button } from './ui/button';
 
-interface Room {
-  id: string;
-  roomType: string;
-  picture?: string;
-  capacity: number;
-  maxCount: number;
-  remainCount: number;
-  price: number;
-}
-
 interface RoomCardProps {
-  room: Room;
+  room: HotelRoom;
   type?: 'view' | 'manage';
-  onSelectRoom?: (room: Room) => void;
-  onManageRoom?: (room: Room) => void;
+  onSelectRoom?: (room: HotelRoom) => void;
+  onManageRoom?: (room: HotelRoom) => void;
 }
 
 export default function RoomCard({
@@ -47,7 +38,7 @@ export default function RoomCard({
         </div>
         <div className='mt-4 flex justify-between'>
           <p className='mt-3 text-sm text-gray-600'>
-            {room.remainCount} rooms available
+            {room.maxCount} rooms available
           </p>
           {type === 'manage' ? (
             <Button
