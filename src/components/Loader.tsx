@@ -1,41 +1,40 @@
-import React from 'react';
 import styled from 'styled-components';
 
 const Loader = () => {
   return (
     <StyledWrapper>
-      <div className="loader">
-        <div className="box box0">
+      <div className='loader'>
+        <div className='box box0'>
           <div />
         </div>
-        <div className="box box1">
+        <div className='box box1'>
           <div />
         </div>
-        <div className="box box2">
+        <div className='box box2'>
           <div />
         </div>
-        <div className="box box3">
+        <div className='box box3'>
           <div />
         </div>
-        <div className="box box4">
+        <div className='box box4'>
           <div />
         </div>
-        <div className="box box5">
+        <div className='box box5'>
           <div />
         </div>
-        <div className="box box6">
+        <div className='box box6'>
           <div />
         </div>
-        <div className="box box7">
+        <div className='box box7'>
           <div />
         </div>
-        <div className="ground">
+        <div className='ground'>
           <div />
         </div>
       </div>
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   .loader {
@@ -55,15 +54,16 @@ const StyledWrapper = styled.div`
     }
   }
 
-  .loader:before, .loader:after {
+  .loader:before,
+  .loader:after {
     --r: 20.5deg;
-    content: "";
+    content: '';
     width: 320px;
     height: 140px;
     position: absolute;
     right: 32%;
     bottom: -11px;
-  /* change the back groung color on switching from light to dark mood */
+    /* change the back groung color on switching from light to dark mood */
     transform: translateZ(200px) rotate(var(--r));
     -webkit-animation: mask var(--duration) linear forwards infinite;
     animation: mask var(--duration) linear forwards infinite;
@@ -84,29 +84,38 @@ const StyledWrapper = styled.div`
   }
 
   .loader .ground div {
-    transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(0);
+    transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+      translateZ(100px) scale(0);
     width: 200px;
     height: 200px;
     background: var(--primary);
-    background: linear-gradient(45deg, var(--primary) 0%, var(--primary) 50%, var(--primary-light) 50%, var(--primary-light) 100%);
+    background: linear-gradient(
+      45deg,
+      var(--primary) 0%,
+      var(--primary) 50%,
+      var(--primary-light) 50%,
+      var(--primary-light) 100%
+    );
     transform-style: preserve-3d;
     -webkit-animation: ground var(--duration) linear forwards infinite;
     animation: ground var(--duration) linear forwards infinite;
   }
 
-  .loader .ground div:before, .loader .ground div:after {
+  .loader .ground div:before,
+  .loader .ground div:after {
     --rx: 90deg;
     --ry: 0deg;
     --x: 44px;
     --y: 162px;
     --z: -50px;
-    content: "";
+    content: '';
     width: 156px;
     height: 300px;
     opacity: 0;
     background: linear-gradient(var(--primary), var(--primary-rgba));
     position: absolute;
-    transform: rotateX(var(--rx)) rotateY(var(--ry)) translate(var(--x), var(--y)) translateZ(var(--z));
+    transform: rotateX(var(--rx)) rotateY(var(--ry))
+      translate(var(--x), var(--y)) translateZ(var(--z));
     -webkit-animation: ground-shine var(--duration) linear forwards infinite;
     animation: ground-shine var(--duration) linear forwards infinite;
   }
@@ -139,18 +148,20 @@ const StyledWrapper = styled.div`
     transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
   }
 
-  .loader .box div:before, .loader .box div:after {
+  .loader .box div:before,
+  .loader .box div:after {
     --rx: 90deg;
     --ry: 0deg;
     --z: 24px;
     --y: -24px;
     --x: 0;
-    content: "";
+    content: '';
     position: absolute;
     background-color: inherit;
     width: inherit;
     height: inherit;
-    transform: rotateX(var(--rx)) rotateY(var(--ry)) translate(var(--x), var(--y)) translateZ(var(--z));
+    transform: rotateX(var(--rx)) rotateY(var(--ry))
+      translate(var(--x), var(--y)) translateZ(var(--z));
     filter: brightness(var(--b, 1.2));
   }
 
@@ -303,7 +314,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    25%, 52% {
+    25%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -311,7 +323,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -321,7 +334,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    25%, 52% {
+    25%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -329,7 +343,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -339,7 +354,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    14%, 100% {
+    14%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -349,7 +365,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    14%, 100% {
+    14%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -359,7 +376,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    29%, 52% {
+    29%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -367,7 +385,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -377,7 +396,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    29%, 52% {
+    29%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -385,7 +405,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -395,7 +416,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    18%, 100% {
+    18%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -405,7 +427,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    18%, 100% {
+    18%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -415,7 +438,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    33%, 52% {
+    33%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -423,7 +447,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -433,7 +458,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    33%, 52% {
+    33%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -441,7 +467,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -451,7 +478,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    22%, 100% {
+    22%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -461,7 +489,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    22%, 100% {
+    22%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -471,7 +500,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    37%, 52% {
+    37%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -479,7 +509,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -489,7 +520,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    37%, 52% {
+    37%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -497,7 +529,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -507,7 +540,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    26%, 100% {
+    26%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -517,7 +551,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    26%, 100% {
+    26%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -527,7 +562,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    41%, 52% {
+    41%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -535,7 +571,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -545,7 +582,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    41%, 52% {
+    41%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -553,7 +591,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -563,7 +602,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    30%, 100% {
+    30%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -573,7 +613,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    30%, 100% {
+    30%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -583,7 +624,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    45%, 52% {
+    45%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -591,7 +633,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -601,7 +644,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    45%, 52% {
+    45%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -609,7 +653,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -619,7 +664,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    34%, 100% {
+    34%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -629,7 +675,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    34%, 100% {
+    34%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -639,7 +686,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    49%, 52% {
+    49%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -647,7 +695,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -657,7 +706,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    49%, 52% {
+    49%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -665,7 +715,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -675,7 +726,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    38%, 100% {
+    38%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -685,7 +737,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    38%, 100% {
+    38%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -695,7 +748,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    53%, 52% {
+    53%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -703,7 +757,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -713,7 +768,8 @@ const StyledWrapper = styled.div`
       transform: translate(var(--x), var(--y));
     }
 
-    53%, 52% {
+    53%,
+    52% {
       transform: translate(0, 0);
     }
 
@@ -721,7 +777,8 @@ const StyledWrapper = styled.div`
       transform: translate(0, -32px);
     }
 
-    90%, 100% {
+    90%,
+    100% {
       transform: translate(0, 188px);
     }
   }
@@ -731,7 +788,8 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    42%, 100% {
+    42%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
@@ -741,45 +799,58 @@ const StyledWrapper = styled.div`
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0);
     }
 
-    42%, 100% {
+    42%,
+    100% {
       transform: rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1);
     }
   }
 
   @-webkit-keyframes ground {
-    0%, 65% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(0);
+    0%,
+    65% {
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(0);
     }
 
-    75%, 90% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(1);
+    75%,
+    90% {
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(1);
     }
 
     100% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(0);
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(0);
     }
   }
 
   @keyframes ground {
-    0%, 65% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(0);
+    0%,
+    65% {
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(0);
     }
 
-    75%, 90% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(1);
+    75%,
+    90% {
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(1);
     }
 
     100% {
-      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px) translateZ(100px) scale(0);
+      transform: rotateX(90deg) rotateY(0deg) translate(-48px, -120px)
+        translateZ(100px) scale(0);
     }
   }
 
   @-webkit-keyframes ground-shine {
-    0%, 70% {
+    0%,
+    70% {
       opacity: 0;
     }
 
-    75%, 87% {
+    75%,
+    87% {
       opacity: 0.2;
     }
 
@@ -789,11 +860,13 @@ const StyledWrapper = styled.div`
   }
 
   @keyframes ground-shine {
-    0%, 70% {
+    0%,
+    70% {
       opacity: 0;
     }
 
-    75%, 87% {
+    75%,
+    87% {
       opacity: 0.2;
     }
 
@@ -803,23 +876,28 @@ const StyledWrapper = styled.div`
   }
 
   @-webkit-keyframes mask {
-    0%, 65% {
+    0%,
+    65% {
       opacity: 0;
     }
 
-    66%, 100% {
+    66%,
+    100% {
       opacity: 1;
     }
   }
 
   @keyframes mask {
-    0%, 65% {
+    0%,
+    65% {
       opacity: 0;
     }
 
-    66%, 100% {
+    66%,
+    100% {
       opacity: 1;
     }
-  }`;
+  }
+`;
 
 export default Loader;

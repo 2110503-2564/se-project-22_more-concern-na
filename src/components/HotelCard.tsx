@@ -1,8 +1,8 @@
 'use client';
 import { MapPin, Phone, Star, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Button } from './ui/button';
 import { IHotel } from '../../interface';
+import { Button } from './ui/button';
 
 interface hotelCardProps {
   hotel: IHotel;

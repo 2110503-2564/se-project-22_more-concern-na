@@ -1,11 +1,11 @@
-import axios from "axios";
-import { apiPath } from "./shared";
-import { GenericResponse, HotelRoom } from "../../interface";
+import axios from 'axios';
+import { GenericResponse, HotelRoom } from '../../interface';
+import { apiPath } from './shared';
 
 export const addRoom = async (
   hotelId: string,
   roomData: Omit<HotelRoom, '_id'>,
-  token?: string
+  token?: string,
 ): Promise<GenericResponse> => {
   try {
     const response = await axios.post(
@@ -14,9 +14,9 @@ export const addRoom = async (
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : undefined
-        }
-      }
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
     );
 
     if (response.status !== 201) {
@@ -27,7 +27,9 @@ export const addRoom = async (
   } catch (error: any) {
     console.error(`Error adding room to hotel ${hotelId}:`, error);
     if (error.response && error.response.data) {
-      throw new Error(error.response.data.msg || `Error: ${error.response.status}`);
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
     }
     throw error;
   }
@@ -37,7 +39,7 @@ export const updateRoom = async (
   hotelId: string,
   roomId: string,
   roomData: Partial<HotelRoom>,
-  token?: string
+  token?: string,
 ): Promise<GenericResponse> => {
   try {
     const response = await axios.put(
@@ -46,9 +48,9 @@ export const updateRoom = async (
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : undefined
-        }
-      }
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
     );
 
     if (response.status !== 200) {
@@ -59,7 +61,9 @@ export const updateRoom = async (
   } catch (error: any) {
     console.error(`Error updating room ${roomId} in hotel ${hotelId}:`, error);
     if (error.response && error.response.data) {
-      throw new Error(error.response.data.msg || `Error: ${error.response.status}`);
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
     }
     throw error;
   }
@@ -68,16 +72,16 @@ export const updateRoom = async (
 export const deleteRoom = async (
   hotelId: string,
   roomId: string,
-  token?: string
+  token?: string,
 ): Promise<GenericResponse> => {
   try {
     const response = await axios.delete(
       apiPath(`/hotels/${hotelId}/rooms/${roomId}`),
       {
         headers: {
-          'Authorization': token ? `Bearer ${token}` : undefined
-        }
-      }
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
     );
 
     if (response.status !== 200) {
@@ -86,9 +90,14 @@ export const deleteRoom = async (
 
     return await response.data;
   } catch (error: any) {
-    console.error(`Error deleting room ${roomId} from hotel ${hotelId}:`, error);
+    console.error(
+      `Error deleting room ${roomId} from hotel ${hotelId}:`,
+      error,
+    );
     if (error.response && error.response.data) {
-      throw new Error(error.response.data.msg || `Error: ${error.response.status}`);
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
     }
     throw error;
   }
@@ -102,20 +111,26 @@ export const getRooms = async (hotelId: string): Promise<HotelRoom[]> => {
       throw new Error(`Error: ${response.status}`);
     }
 
-    return await response.data.hotel.rooms || [];
+    return (await response.data.hotel.rooms) || [];
   } catch (error) {
     console.error(`Error fetching rooms for hotel ${hotelId}:`, error);
     throw error;
   }
 };
 
-export const getRoom = async (hotelId: string, roomId: string): Promise<HotelRoom | null> => {
+export const getRoom = async (
+  hotelId: string,
+  roomId: string,
+): Promise<HotelRoom | null> => {
   try {
     const rooms = await getRooms(hotelId);
-    const room = rooms.find(room => room._id === roomId);
-    return await room || null;
+    const room = rooms.find((room) => room._id === roomId);
+    return (await room) || null;
   } catch (error) {
-    console.error(`Error fetching room ${roomId} from hotel ${hotelId}:`, error);
+    console.error(
+      `Error fetching room ${roomId} from hotel ${hotelId}:`,
+      error,
+    );
     throw error;
   }
 };
