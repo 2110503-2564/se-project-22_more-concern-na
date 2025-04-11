@@ -80,7 +80,7 @@ const reportedReasons: {
 
 export default function ManageReportedReviewsPage() {
   return (
-    <div className="bg-[--color-bg-box] min-h-screen px-6 py-8 text-[--color-foreground]">
+    <div className="bg-bg-box min-h-screen px-6 py-8 text-[--color-foreground]">
       <Link href="/admin" className="text-sm font-detail text-muted-foreground hover:underline">
         ← Back to Admin Dashboard
       </Link>
@@ -97,7 +97,7 @@ export default function ManageReportedReviewsPage() {
           <h2 className="text-4xl font-heading mb-2 text-white">Report Reason</h2>
 
           {reasonBlock.hotels.map((hotel, j) => (
-            <div key={j} className="bg-[--color-base-gd] rounded-md p-4 space-y-4">
+            <div key={j} className="bg-base-gd rounded-md p-4 space-y-4">
               <h3 className="text-2xl font-heading mb-2 text-white">
                 From the “{hotel.name}”
               </h3>
