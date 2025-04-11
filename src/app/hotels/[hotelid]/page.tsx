@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
 
+import Loader from '@/components/Loader';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,11 +23,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { HotelRoom, IHotel } from '../../../../interface';
-import Loader from '@/components/Loader';
 
-import { getHotel, getHotelReviews, checkAvailability } from '@/lib/hotelService';
 import { createHotelBooking } from '@/lib/bookingService';
-import { HotelAvailabilityResponse, BookingRequest, HotelReviewsResponse } from '../../../../interface';
+import {
+  checkAvailability,
+  getHotel,
+  getHotelReviews,
+} from '@/lib/hotelService';
+import {
+  BookingRequest,
+  HotelAvailabilityResponse,
+  HotelReviewsResponse,
+} from '../../../../interface';
 
 interface SelectedRoomWithQuantity {
   room: HotelRoom;
@@ -47,54 +55,59 @@ export default function HotelDetail({
   const [nights, setNights] = useState(0);
   const [hotel, setHotel] = useState<IHotel | null>(null);
   const [loading, setLoading] = useState(true);
-  const [availabilityData, setAvailabilityData] = useState<HotelAvailabilityResponse | null>(null);
-  const [reviewsData, setReviewsData] = useState<HotelReviewsResponse | null>(null);
-  const [filteredreview, setfilteredReview] = useState<ReviewType[]>([{
-    id: 1,
-    username: 'John Doe',
-    avatarUrl: '/john-avatar.png',
-    date: '2023-04-10',
-    rating: 4,
-    title: 'Great stay!',
-    comment:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
-    reply: {
-      id: 101,
-      hotelName: 'hotel.name',
-      avatarUrl: '/hotel-logo.png',
-      date: '2023-04-11',
+  const [availabilityData, setAvailabilityData] =
+    useState<HotelAvailabilityResponse | null>(null);
+  const [reviewsData, setReviewsData] = useState<HotelReviewsResponse | null>(
+    null,
+  );
+  const [filteredreview, setfilteredReview] = useState<ReviewType[]>([
+    {
+      id: 1,
+      username: 'John Doe',
+      avatarUrl: '/john-avatar.png',
+      date: '2023-04-10',
+      rating: 4,
+      title: 'Great stay!',
       comment:
-        "Thank you for your kind review! We're delighted that you enjoyed your stay with us and appreciate your feedback. We hope to welcome you back soon for another wonderful experience.",
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
+      reply: {
+        id: 101,
+        hotelName: 'hotel.name',
+        avatarUrl: '/hotel-logo.png',
+        date: '2023-04-11',
+        comment:
+          "Thank you for your kind review! We're delighted that you enjoyed your stay with us and appreciate your feedback. We hope to welcome you back soon for another wonderful experience.",
+      },
     },
-  },
-  {
-    id: 2,
-    username: 'Jane Smith',
-    avatarUrl: '/jane-avatar.png',
-    date: '2023-03-22',
-    rating: 5,
-    title: 'Excellent!',
-    comment:
-      'Beautiful hotel with stunning views. The staff was incredibly attentive and the amenities were top-notch. Will definitely be coming back soon!',
-  },
-  {
-    id: 3,
-    username: 'Michael Johnson',
-    avatarUrl: '/michael-avatar.png',
-    date: '2023-02-15',
-    rating: 3,
-    title: 'Decent stay but room for improvement',
-    comment:
-      "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
-    reply: {
-      id: 102,
-      hotelName: 'hotel.name',
-      avatarUrl: '/hotel-logo.png',
-      date: '2023-02-16',
+    {
+      id: 2,
+      username: 'Jane Smith',
+      avatarUrl: '/jane-avatar.png',
+      date: '2023-03-22',
+      rating: 5,
+      title: 'Excellent!',
       comment:
-        "We apologize for the inconvenience you experienced during your stay. We take your feedback seriously and are working to improve our check-in process and response times. We hope you'll give us another chance to provide you with a better experience.",
+        'Beautiful hotel with stunning views. The staff was incredibly attentive and the amenities were top-notch. Will definitely be coming back soon!',
     },
-  },]);
+    {
+      id: 3,
+      username: 'Michael Johnson',
+      avatarUrl: '/michael-avatar.png',
+      date: '2023-02-15',
+      rating: 3,
+      title: 'Decent stay but room for improvement',
+      comment:
+        "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
+      reply: {
+        id: 102,
+        hotelName: 'hotel.name',
+        avatarUrl: '/hotel-logo.png',
+        date: '2023-02-16',
+        comment:
+          "We apologize for the inconvenience you experienced during your stay. We take your feedback seriously and are working to improve our check-in process and response times. We hope you'll give us another chance to provide you with a better experience.",
+      },
+    },
+  ]);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
@@ -116,9 +129,9 @@ export default function HotelDetail({
       const response = await getHotel(hotelId);
       setHotel(response);
       setLoading(false);
-    }
+    };
     fetchHotel();
-  },[params])
+  }, [params]);
   console.log('hotel', hotel);
 
   useEffect(() => {
@@ -130,19 +143,19 @@ export default function HotelDetail({
           selfPage: 1,
           selfPageSize: 5,
           otherPage: 1,
-          otherPageSize: 5
+          otherPageSize: 5,
         });
         setReviewsData(response);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
     };
-    
+
     if (hotel?._id) {
       fetchReviews();
     }
   }, [hotel?._id, params]);
-  
+
   // MOCK REVIEW DATA
   const reviews: ReviewType[] = [
     {
@@ -202,9 +215,9 @@ export default function HotelDetail({
     setfilteredReview((prevReviews) =>
       prevReviews.filter((r) => r.id !== reviewId),
     );
-  }
+  };
 
-  const handleDeleteReply = async (reviewId:number, replyId: number) => {
+  const handleDeleteReply = async (reviewId: number, replyId: number) => {
     setfilteredReview((prevReviews) =>
       prevReviews.map((review) => {
         if (review.id === reviewId && review.reply?.id === replyId) {
@@ -214,7 +227,7 @@ export default function HotelDetail({
         }
       }),
     );
-  }
+  };
 
   const isCheckInDateDisabled = (date: Dayjs) => {
     return date.isBefore(dayjs(), 'day');
@@ -260,16 +273,16 @@ export default function HotelDetail({
     if (!hotel?._id || !checkInDate || !checkOutDate) return;
 
     try {
-      const rooms = selectedRooms.map(item => ({
+      const rooms = selectedRooms.map((item) => ({
         type: item.room.roomType,
-        count: item.quantity
+        count: item.quantity,
       }));
 
       const bookingData: Omit<BookingRequest, 'hotel'> = {
         price: calculateTotalPrice(),
         startDate: checkInDate.toDate(),
         endDate: checkOutDate.toDate(),
-        rooms: rooms
+        rooms: rooms,
       };
 
       const response = await createHotelBooking(hotel._id, bookingData);
@@ -281,7 +294,7 @@ export default function HotelDetail({
           icon: <Check className='h-5 w-5 text-luxe-gold' />,
           action: {
             label: 'View Booking',
-            onClick: () => window.location.href = response.redirectUrl,
+            onClick: () => (window.location.href = response.redirectUrl),
           },
           style: {
             backgroundColor: '#06402b',
@@ -303,7 +316,7 @@ export default function HotelDetail({
             backgroundColor: '#a52a2a',
             color: 'var(--color-bg-placeholder)',
             border: '1px solid var(--color-bg-border)',
-          }
+          },
         });
       }
     } catch (error: any) {
@@ -314,12 +327,12 @@ export default function HotelDetail({
           backgroundColor: '#a52a2a',
           color: 'var(--color-bg-placeholder)',
           border: '1px solid var(--color-bg-border)',
-        }
+        },
       });
     }
   };
 
-    const handleCheckAvailable = async () => {
+  const handleCheckAvailable = async () => {
     if (!checkInDate || !checkOutDate || !hotel?._id) return;
 
     setIsAvailabilityChecking(true);
@@ -332,10 +345,10 @@ export default function HotelDetail({
         checkInDate.format('YYYY-MM-DD'),
         checkOutDate.format('YYYY-MM-DD'),
       );
-      
+
       setAvailabilityData(response);
       setIsAvailabilityChecking(false);
-      
+
       if (response.success) {
         setIsAvailabilityConfirmed(true);
         toast.info('Rooms Available!', {
@@ -354,7 +367,7 @@ export default function HotelDetail({
             backgroundColor: '#a52a2a',
             color: 'var(--color-bg-placeholder)',
             border: '1px solid var(--color-bg-border)',
-          }
+          },
         });
       }
     } catch (error) {
@@ -366,7 +379,7 @@ export default function HotelDetail({
           backgroundColor: '#a52a2a',
           color: 'var(--color-bg-placeholder)',
           border: '1px solid var(--color-bg-border)',
-        }
+        },
       });
     }
   };
@@ -417,7 +430,7 @@ export default function HotelDetail({
             backgroundColor: '#a52a2a',
             color: 'var(--color-bg-placeholder)',
             border: '1px solid var(--color-bg-border)',
-          }
+          },
         });
       }
     } else {
@@ -485,17 +498,14 @@ export default function HotelDetail({
       (item) => item.room.roomType === roomType,
     );
 
-    if (
-      roomToUpdate &&
-      roomToUpdate.quantity >= roomToUpdate.room.maxCount
-    ) {
+    if (roomToUpdate && roomToUpdate.quantity >= roomToUpdate.room.maxCount) {
       toast.error('Maximum Reached', {
         description: `You've selected all available ${roomType} rooms.`,
         style: {
           backgroundColor: '#a52a2a',
           color: 'var(--color-bg-placeholder)',
           border: '1px solid var(--color-bg-border)',
-        }
+        },
       });
       return;
     }
@@ -547,7 +557,7 @@ export default function HotelDetail({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <Loader />
       </div>
     );
@@ -575,7 +585,9 @@ export default function HotelDetail({
               <div className='flex items-center'>
                 <div className='flex items-center mr-4'>
                   <Star className='h-4 w-4 fill-amber-300 text-amber-300 mr-1' />
-                  <span className='font-medium font-detail'>{averageRating}</span>
+                  <span className='font-medium font-detail'>
+                    {averageRating}
+                  </span>
                   <span className='text-gray-400 font-detail ml-2'>
                     ({hotel?.ratingCount} reviews)
                   </span>
@@ -592,9 +604,9 @@ export default function HotelDetail({
           <div className='text-lg font-normal font-detail text-white mb-8'>
             {hotel?.description}
             <div className='flex mt-3 items-center'>
-              <Phone className='h-4 w-4 mr-2'/> <span>{formatPhone(hotel?.tel ?? "")}</span>
+              <Phone className='h-4 w-4 mr-2' />{' '}
+              <span>{formatPhone(hotel?.tel ?? '')}</span>
             </div>
-            
           </div>
 
           <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
@@ -614,7 +626,12 @@ export default function HotelDetail({
             </h2>
             <div className='space-y-6'>
               {filteredreview.map((review) => (
-                <Review key={review.id} review={review} onDeleteReview={handleDeleteReview} onDeleteReply={handleDeleteReply}/>
+                <Review
+                  key={review.id}
+                  review={review}
+                  onDeleteReview={handleDeleteReview}
+                  onDeleteReply={handleDeleteReply}
+                />
               ))}
             </div>
             <div className='flex justify-center mt-6'>
@@ -682,7 +699,9 @@ export default function HotelDetail({
             <Separator className='my-4 bg-white/20' />
 
             <div className='mb-6'>
-              <h3 className='text-lg font-detail font-medium mb-2'>Selected Rooms</h3>
+              <h3 className='text-lg font-detail font-medium mb-2'>
+                Selected Rooms
+              </h3>
               {selectedRooms.length > 0 ? (
                 <div className='space-y-3 font-detail'>
                   {selectedRooms.map((item, index) => (

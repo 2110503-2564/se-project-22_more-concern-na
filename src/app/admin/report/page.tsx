@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import Review, { ReviewType } from '@/components/Review';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 const reportedReasons: {
   reason: string;
@@ -80,25 +80,30 @@ const reportedReasons: {
 
 export default function ManageReportedReviewsPage() {
   return (
-    <div className="bg-bg-box min-h-screen px-6 py-8 text-[--color-foreground]">
-      <Link href="/admin" className="text-sm font-detail text-muted-foreground hover:underline">
+    <div className='bg-bg-box min-h-screen px-6 py-8 text-[--color-foreground]'>
+      <Link
+        href='/admin'
+        className='text-sm font-detail text-muted-foreground hover:underline'
+      >
         ← Back to Admin Dashboard
       </Link>
 
-      <h1 className="text-5xl font-heading mt-4 mb-2 text-white">
+      <h1 className='text-5xl font-heading mt-4 mb-2 text-white'>
         Manage Reported Reviews
       </h1>
-      <p className="text-base font-detail text-muted-foreground mb-8">
+      <p className='text-base font-detail text-muted-foreground mb-8'>
         Manage reported reviews listings
       </p>
 
       {reportedReasons.map((reasonBlock, i) => (
-        <div key={i} className="mb-12 space-y-6">
-          <h2 className="text-4xl font-heading mb-2 text-white">Report Reason</h2>
+        <div key={i} className='mb-12 space-y-6'>
+          <h2 className='text-4xl font-heading mb-2 text-white'>
+            Report Reason
+          </h2>
 
           {reasonBlock.hotels.map((hotel, j) => (
-            <div key={j} className="bg-base-gd rounded-md p-4 space-y-4">
-              <h3 className="text-2xl font-heading mb-2 text-white">
+            <div key={j} className='bg-base-gd rounded-md p-4 space-y-4'>
+              <h3 className='text-2xl font-heading mb-2 text-white'>
                 From the “{hotel.name}”
               </h3>
 
@@ -108,7 +113,7 @@ export default function ManageReportedReviewsPage() {
             </div>
           ))}
 
-          {i !== reportedReasons.length - 1 && <Separator className="my-6" />}
+          {i !== reportedReasons.length - 1 && <Separator className='my-6' />}
         </div>
       ))}
     </div>

@@ -1,10 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
-import { Lock, User, Calendar } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const [active, setActive] = useState(1);
@@ -53,13 +51,15 @@ export default function ProfilePage() {
       {/* Profile content */}
       <div className='w-full max-w-4xl'>
         <div className='flex justify-between items-center mb-6'>
-          <h1 className='text-4xl font-bold font-heading ml-15'>Your Profile</h1>
-          <div 
+          <h1 className='text-4xl font-bold font-heading ml-15'>
+            Your Profile
+          </h1>
+          <div
             className={cn(buttonClass, 'w-40')}
             onClick={handleInventoryClick}
-            role="button"
+            role='button'
             tabIndex={0}
-            aria-label="Your Inventory"
+            aria-label='Your Inventory'
           >
             <div className={cn(buttonInnerClass)}>Your Inventory</div>
           </div>
@@ -73,17 +73,17 @@ export default function ProfilePage() {
                 <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
                   picture
                 </div>
-                <div 
+                <div
                   className={cn(buttonClass, 'w-48')}
                   onClick={handleEditProfileClick}
-                  role="button"
+                  role='button'
                   tabIndex={0}
-                  aria-label="Edit Profile"
+                  aria-label='Edit Profile'
                 >
                   <div className={cn(buttonInnerClass)}>Edit Profile</div>
                 </div>
               </div>
-              
+
               {/* Right column - user info */}
               <div className='flex flex-col justify-center ml-6 font-details'>
                 <p className='text-xl mb-6'>Name : </p>
@@ -91,11 +91,13 @@ export default function ProfilePage() {
                 <p className='text-xl mb-6'>Tel : </p>
               </div>
             </div>
-            
+
             {/* Bookings info section */}
             <div className='w-64 ml-auto'>
-              <h2 className='text-2xl font-bold mb-9 font-heading text-center'>Your Bookings</h2>
-              
+              <h2 className='text-2xl font-bold mb-9 font-heading text-center'>
+                Your Bookings
+              </h2>
+
               <div className='w-full text-l'>
                 <div className='flex justify-between mb-6 font-details'>
                   <p>Active</p>
@@ -109,19 +111,19 @@ export default function ProfilePage() {
                   <p>Past</p>
                   <p className='font-bold'>{past}</p>
                 </div>
-                
+
                 <div className='flex justify-between font-bold mt-4 mb-10'>
                   <p>Total</p>
                   <p>{active + upcoming + past}</p>
                 </div>
-                
+
                 <div className='flex justify-center'>
-                  <div 
+                  <div
                     className={cn(buttonClass, 'w-full h-10')}
                     onClick={handleManageBookingsClick}
-                    role="button"
+                    role='button'
                     tabIndex={0}
-                    aria-label="Manage Bookings"
+                    aria-label='Manage Bookings'
                   >
                     <div className={cn(buttonInnerClass)}>Manage Bookings</div>
                   </div>

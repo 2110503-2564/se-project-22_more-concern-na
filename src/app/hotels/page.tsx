@@ -1,9 +1,9 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+'use client';
 import HotelCard from '@/components/HotelCard';
-import { HotelResponse, IHotel } from '../../../interface';
-import { getHotels } from '@/lib/hotelService';
 import Loader from '@/components/Loader';
+import { getHotels } from '@/lib/hotelService';
+import { useEffect, useState } from 'react';
+import { HotelResponse, IHotel } from '../../../interface';
 
 export default function Hotels() {
   const [hotels, setHotels] = useState<HotelResponse>({
@@ -30,7 +30,7 @@ export default function Hotels() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <Loader />
       </div>
     );
@@ -38,7 +38,7 @@ export default function Hotels() {
 
   return (
     <div
-      className="
+      className='
         grid 
         grid-cols-1 
         sm:grid-cols-2 
@@ -46,10 +46,10 @@ export default function Hotels() {
         gap-6 
         p-4
         place-items-center
-      "
+      '
     >
       {hotels.data.map((hotel: IHotel, index) => (
-        <HotelCard key={index} type="view" hotel={hotel} />
+        <HotelCard key={index} type='view' hotel={hotel} />
       ))}
     </div>
   );
