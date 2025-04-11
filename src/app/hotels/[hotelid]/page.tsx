@@ -21,9 +21,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useRouter } from 'next/navigation';
-import { getHotel } from '@/lib/hotelService';
 import { HotelRoom, IHotel } from '../../../../interface';
+import Loader from '@/components/Loader';
+
+import { getHotel, getHotelReviews, checkAvailability } from '@/lib/hotelService';
+import { createHotelBooking } from '@/lib/bookingService';
+import { HotelAvailabilityResponse, BookingRequest, HotelReviewsResponse } from '../../../../interface';
 
 interface SelectedRoomWithQuantity {
   room: HotelRoom;
@@ -43,6 +46,9 @@ export default function HotelDetail({
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
   const [nights, setNights] = useState(0);
   const [hotel, setHotel] = useState<IHotel | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [availabilityData, setAvailabilityData] = useState<HotelAvailabilityResponse | null>(null);
+  const [reviewsData, setReviewsData] = useState<HotelReviewsResponse | null>(null);
   const [filteredreview, setfilteredReview] = useState<ReviewType[]>([{
     id: 1,
     username: 'John Doe',
@@ -109,10 +115,33 @@ export default function HotelDetail({
       const hotelId = resolveParams.hotelid;
       const response = await getHotel(hotelId);
       setHotel(response);
+      setLoading(false);
     }
     fetchHotel();
   },[params])
   console.log('hotel', hotel);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const resolveParams = await params;
+        const hotelId = resolveParams.hotelid;
+        const response = await getHotelReviews(hotelId, {
+          selfPage: 1,
+          selfPageSize: 5,
+          otherPage: 1,
+          otherPageSize: 5
+        });
+        setReviewsData(response);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+    
+    if (hotel?._id) {
+      fetchReviews();
+    }
+  }, [hotel?._id, params]);
   
   // MOCK REVIEW DATA
   const reviews: ReviewType[] = [
@@ -224,53 +253,143 @@ export default function HotelDetail({
     setIsConfirmOpen(true);
   };
 
-  const handleConfirmBooking = (e: any) => {
+  const handleConfirmBooking = async (e: any) => {
     e.preventDefault();
     setIsConfirmOpen(false);
 
-    toast.success('Booking Confirmed!', {
-      description: `Your stay at ${hotel?.name} has been successfully booked.`,
-      duration: 5000,
-      icon: <Check className='h-5 w-5 text-luxe-gold' />,
-      action: {
-        label: 'View Booking',
-        onClick: () => console.log('View booking clicked'),
-      },
-      style: {
-        backgroundColor: '#06402b',
-        color: 'var(--color-bg-placeholder)',
-        border: '1px solid var(--color-bg-border)',
-      },
-    });
+    if (!hotel?._id || !checkInDate || !checkOutDate) return;
 
-    setTimeout(() => {
-      setSelectedRooms([]);
-      setCheckInDate(null);
-      setCheckOutDate(null);
-      setIsAvailabilityConfirmed(false);
-    }, 1000);
+    try {
+      const rooms = selectedRooms.map(item => ({
+        type: item.room.roomType,
+        count: item.quantity
+      }));
+
+      const bookingData: Omit<BookingRequest, 'hotel'> = {
+        price: calculateTotalPrice(),
+        startDate: checkInDate.toDate(),
+        endDate: checkOutDate.toDate(),
+        rooms: rooms
+      };
+
+      const response = await createHotelBooking(hotel._id, bookingData);
+
+      if (response.success) {
+        toast.success('Booking Confirmed!', {
+          description: `Your stay at ${hotel.name} has been successfully booked.`,
+          duration: 5000,
+          icon: <Check className='h-5 w-5 text-luxe-gold' />,
+          action: {
+            label: 'View Booking',
+            onClick: () => window.location.href = response.redirectUrl,
+          },
+          style: {
+            backgroundColor: '#06402b',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          },
+        });
+
+        setTimeout(() => {
+          setSelectedRooms([]);
+          setCheckInDate(null);
+          setCheckOutDate(null);
+          setIsAvailabilityConfirmed(false);
+        }, 1000);
+      } else {
+        toast.error('Booking Failed', {
+          description: response.msg || 'Something went wrong',
+          style: {
+            backgroundColor: '#a52a2a',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          }
+        });
+      }
+    } catch (error: any) {
+      console.error('Error creating booking:', error);
+      toast.error('Booking Failed', {
+        description: error.message || 'Something went wrong',
+        style: {
+          backgroundColor: '#a52a2a',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        }
+      });
+    }
   };
 
-  const handleCheckAvailable = () => {
-    if (!checkInDate || !checkOutDate) return;
+    const handleCheckAvailable = async () => {
+    if (!checkInDate || !checkOutDate || !hotel?._id) return;
 
     setIsAvailabilityChecking(true);
 
-    setTimeout(() => {
+    try {
+      const resolveParams = await params;
+      const hotelId = resolveParams.hotelid;
+      const response = await checkAvailability(
+        hotelId,
+        checkInDate.format('YYYY-MM-DD'),
+        checkOutDate.format('YYYY-MM-DD'),
+      );
+      
+      setAvailabilityData(response);
       setIsAvailabilityChecking(false);
-      setIsAvailabilityConfirmed(true);
-
-      toast.info('Rooms Available!', {
-        description: `We have rooms available for your selected dates.`,
-        icon: <Info className='h-5 w-5 text-luxe-gold' />,
+      
+      if (response.success) {
+        setIsAvailabilityConfirmed(true);
+        toast.info('Rooms Available!', {
+          description: `We have rooms available for your selected dates.`,
+          icon: <Info className='h-5 w-5 text-luxe-gold' />,
+          style: {
+            backgroundColor: '#2A2F3F',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          },
+        });
+      } else {
+        toast.error('No Availability', {
+          description: response.msg || 'No rooms available for selected dates',
+          style: {
+            backgroundColor: '#a52a2a',
+            color: 'var(--color-bg-placeholder)',
+            border: '1px solid var(--color-bg-border)',
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      setIsAvailabilityChecking(false);
+      toast.error('Error', {
+        description: 'Failed to check room availability',
         style: {
-          backgroundColor: '#2A2F3F',
+          backgroundColor: '#a52a2a',
           color: 'var(--color-bg-placeholder)',
           border: '1px solid var(--color-bg-border)',
-        },
+        }
       });
-    }, 1500);
+    }
   };
+  // const handleCheckAvailable = () => {
+  //   if (!checkInDate || !checkOutDate) return;
+
+  //   setIsAvailabilityChecking(true);
+
+  //   setTimeout(() => {
+  //     setIsAvailabilityChecking(false);
+  //     setIsAvailabilityConfirmed(true);
+
+  //     toast.info('Rooms Available!', {
+  //       description: `We have rooms available for your selected dates.`,
+  //       icon: <Info className='h-5 w-5 text-luxe-gold' />,
+  //       style: {
+  //         backgroundColor: '#2A2F3F',
+  //         color: 'var(--color-bg-placeholder)',
+  //         border: '1px solid var(--color-bg-border)',
+  //       },
+  //     });
+  //   }, 1500);
+  // };
 
   const handleSelectRoom = (room: HotelRoom) => {
     const existingRoomIndex = selectedRooms.findIndex(
@@ -425,6 +544,14 @@ export default function HotelDetail({
   const formatPhone = (phoneNumber: string) => {
     return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <main className='flex-grow bg-luxe-dark text-white'>
