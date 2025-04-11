@@ -22,35 +22,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
-
-interface Room {
-  id:string
-  roomType: string;
-  picture?: string;
-  capacity: number;
-  maxCount: number;
-  remainCount: number;
-  price: number;
-}
-
-interface Hotel {
-  _id: string;
-  name: string;
-  description?: string;
-  picture?: string;
-  buildingNumber: string;
-  street: string;
-  district: string;
-  province: string;
-  postalCode: string;
-  tel: string;
-  rooms: Room[];
-  ratingSum: number;
-  ratingCount: number;
-}
+import { getHotel } from '@/lib/hotelService';
+import { HotelRoom, IHotel } from '../../../../interface';
 
 interface SelectedRoomWithQuantity {
-  room: Room;
+  room: HotelRoom;
   quantity: number;
 }
 
@@ -66,6 +42,7 @@ export default function HotelDetail({
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
   const [nights, setNights] = useState(0);
+  const [hotel, setHotel] = useState<IHotel | null>(null);
   const [filteredreview, setfilteredReview] = useState<ReviewType[]>([{
     id: 1,
     username: 'John Doe',
@@ -126,66 +103,17 @@ export default function HotelDetail({
     }
   }, [checkInDate, checkOutDate]);
 
-  // Mock hotel data
-  const hotel: Hotel = {
-    _id: '123456789012',
-    name: 'Hotel Sunshine Luxury Resort',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
-    picture:
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop',
-    buildingNumber: '123',
-    street: 'Beachfront Boulevard',
-    district: 'Coastal District',
-    province: 'Paradise Province',
-    postalCode: '10540',
-    tel: '0123456789',
-    rooms: [
-      {
-        id: "1",
-        roomType: 'Deluxe Ocean View',
-        picture:
-          'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=2070&auto=format&fit=crop',
-        capacity: 2,
-        maxCount: 5,
-        remainCount: 3,
-        price: 2150,
-      },
-      {
-        id: "2",
-        roomType: 'Premium Suite',
-        picture:
-          'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop',
-        capacity: 2,
-        maxCount: 8,
-        remainCount: 6,
-        price: 3250,
-      },
-      {
-        id: "3",
-        roomType: 'Executive Room',
-        picture:
-          'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop',
-        capacity: 2,
-        maxCount: 10,
-        remainCount: 7,
-        price: 1750,
-      },
-      {
-        id: "4",
-        roomType: 'Family Suite',
-        picture:
-          'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2074&auto=format&fit=crop',
-        capacity: 4,
-        maxCount: 4,
-        remainCount: 2,
-        price: 3950,
-      },
-    ],
-    ratingSum: 1260,
-    ratingCount: 280,
-  };
-
+  useEffect(() => {
+    const fetchHotel = async () => {
+      const resolveParams = await params;
+      const hotelId = resolveParams.hotelid;
+      const response = await getHotel(hotelId);
+      setHotel(response);
+    }
+    fetchHotel();
+  },[params])
+  console.log('hotel', hotel);
+  
   // MOCK REVIEW DATA
   const reviews: ReviewType[] = [
     {
@@ -199,7 +127,7 @@ export default function HotelDetail({
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
       reply: {
         id: 101,
-        hotelName: hotel.name,
+        hotelName: hotel?.name || '',
         avatarUrl: '/hotel-logo.png',
         date: '2023-04-11',
         comment:
@@ -227,7 +155,7 @@ export default function HotelDetail({
         "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
       reply: {
         id: 102,
-        hotelName: hotel.name,
+        hotelName: hotel?.name || '',
         avatarUrl: '/hotel-logo.png',
         date: '2023-02-16',
         comment:
@@ -237,7 +165,7 @@ export default function HotelDetail({
   ];
 
   const averageRating =
-    hotel.ratingCount > 0
+    hotel?.ratingCount && hotel.ratingCount > 0
       ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
       : '0.0';
 
@@ -301,7 +229,7 @@ export default function HotelDetail({
     setIsConfirmOpen(false);
 
     toast.success('Booking Confirmed!', {
-      description: `Your stay at ${hotel.name} has been successfully booked.`,
+      description: `Your stay at ${hotel?.name} has been successfully booked.`,
       duration: 5000,
       icon: <Check className='h-5 w-5 text-luxe-gold' />,
       action: {
@@ -344,14 +272,14 @@ export default function HotelDetail({
     }, 1500);
   };
 
-  const handleSelectRoom = (room: Room) => {
+  const handleSelectRoom = (room: HotelRoom) => {
     const existingRoomIndex = selectedRooms.findIndex(
       (item) => item.room.roomType === room.roomType,
     );
 
     if (existingRoomIndex >= 0) {
       const updatedRooms = [...selectedRooms];
-      if (updatedRooms[existingRoomIndex].quantity < room.remainCount) {
+      if (updatedRooms[existingRoomIndex].quantity < room.maxCount) {
         updatedRooms[existingRoomIndex].quantity += 1;
         setSelectedRooms(updatedRooms);
 
@@ -440,7 +368,7 @@ export default function HotelDetail({
 
     if (
       roomToUpdate &&
-      roomToUpdate.quantity >= roomToUpdate.room.remainCount
+      roomToUpdate.quantity >= roomToUpdate.room.maxCount
     ) {
       toast.error('Maximum Reached', {
         description: `You've selected all available ${roomType} rooms.`,
@@ -456,7 +384,7 @@ export default function HotelDetail({
     const updatedRooms = selectedRooms.map((item) => {
       if (
         item.room.roomType === roomType &&
-        item.quantity < item.room.remainCount
+        item.quantity < item.room.maxCount
       ) {
         return {
           ...item,
@@ -492,7 +420,7 @@ export default function HotelDetail({
     }, 0);
   };
 
-  const fullAddress = `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province} ${hotel.postalCode}`;
+  const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
 
   const formatPhone = (phoneNumber: string) => {
     return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
@@ -504,14 +432,14 @@ export default function HotelDetail({
       <div className='relative h-80 md:h-96'>
         <div
           className='absolute inset-0 bg-gray-600 bg-cover bg-center bg-no-repeat'
-          style={{ backgroundImage: `url(${hotel.picture})` }}
+          style={{ backgroundImage: `url(${hotel?.picture})` }}
         />
         <div className='absolute inset-0 bg-gradient-to-t from-base-gd via-transparent to-transparent'></div>
         <div className='absolute bottom-0 left-0 right-0 p-6 md:p-8'>
           <div className='flex flex-col md:flex-row justify-between items-start md:items-end'>
             <div>
               <h1 className='text-3xl md:text-4xl font-heading font-bold mb-2'>
-                {hotel.name}
+                {hotel?.name}
               </h1>
               <div className='flex items-center mb-2'>
                 <MapPin className='h-4 w-4 mr-1' />
@@ -522,7 +450,7 @@ export default function HotelDetail({
                   <Star className='h-4 w-4 fill-amber-300 text-amber-300 mr-1' />
                   <span className='font-medium font-detail'>{averageRating}</span>
                   <span className='text-gray-400 font-detail ml-2'>
-                    ({hotel.ratingCount} reviews)
+                    ({hotel?.ratingCount} reviews)
                   </span>
                 </div>
               </div>
@@ -535,16 +463,16 @@ export default function HotelDetail({
       <div className='container mx-auto px-4 py-8 flex flex-col md:flex-row'>
         <div className='flex-1 md:mr-8'>
           <div className='text-lg font-normal font-detail text-white mb-8'>
-            {hotel.description}
+            {hotel?.description}
             <div className='flex mt-3 items-center'>
-              <Phone className='h-4 w-4 mr-2'/> <span>{formatPhone(hotel.tel)}</span>
+              <Phone className='h-4 w-4 mr-2'/> <span>{formatPhone(hotel?.tel ?? "")}</span>
             </div>
             
           </div>
 
           <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {hotel.rooms.map((room, index) => (
+            {hotel?.rooms?.map((room, index) => (
               <RoomCard
                 key={index}
                 room={room}
@@ -657,14 +585,14 @@ export default function HotelDetail({
                           <button
                             type='button'
                             className={`p-1 rounded-full ${
-                              item.quantity >= item.room.remainCount
+                              item.quantity >= item.room.maxCount
                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                 : 'bg-gray-700 hover:bg-gray-600 text-white'
                             }`}
                             onClick={() =>
                               increaseRoomQuantity(item.room.roomType)
                             }
-                            disabled={item.quantity >= item.room.remainCount}
+                            disabled={item.quantity >= item.room.maxCount}
                           >
                             <Plus className='h-4 w-4' />
                           </button>
@@ -766,7 +694,7 @@ export default function HotelDetail({
               <div className='space-y-4 py-2'>
                 <div className='p-4 bg-[#2A2F3F] rounded-md'>
                   <h3 className='font-medium text-luxe-gold mb-2'>
-                    {hotel.name}
+                    {hotel?.name}
                   </h3>
                   <div className='text-sm space-y-2'>
                     <div className='flex justify-between'>
