@@ -1,7 +1,8 @@
 import axios from "axios";
 import { apiPath } from "./shared";
+import { HotelResponse, IHotel } from "../../interface";
 
-export const getHotels = async (searchParams?: { hotel?: string; province?: string }) => {
+export const getHotels = async (searchParams?: { hotel?: string; province?: string }): Promise<HotelResponse> => {
     try {
         const response = await axios.get(apiPath("/hotels"), {
         params: searchParams,
@@ -19,15 +20,15 @@ export const getHotels = async (searchParams?: { hotel?: string; province?: stri
     }
 }
 
-export const getHotel = async (id: string) => {
+export const getHotel = async (id: string) : Promise<IHotel> => {
     try {
         const response = await axios.get(apiPath(`/hotels/${id}`));
 
         if (response.status !== 200) {
             throw new Error(`Error: ${response.status}`);
         }
-        
-        return await response.data;
+        const hotelresponse = await response.data;
+        return await hotelresponse.hotel;
 
     } catch (error) {
         console.error(`Error fetching hotel with ID ${id}:`, error);
