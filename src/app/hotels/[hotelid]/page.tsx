@@ -287,8 +287,8 @@ export default function HotelDetail({
 
       const bookingData: Omit<BookingRequest, 'hotel'> = {
         price: calculateTotalPrice(),
-        startDate: checkInDate.toDate(),
-        endDate: checkOutDate.toDate(),
+        startDate: checkInDate.format('YYYY-MM-DD'),
+        endDate: checkOutDate.format('YYYY-MM-DD'),
         rooms: rooms,
       };
       console.log('Booking Data:', bookingData);
