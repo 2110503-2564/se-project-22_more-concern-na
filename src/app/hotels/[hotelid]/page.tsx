@@ -30,6 +30,7 @@ import {
   getHotel,
   getHotelReviews,
 } from '@/lib/hotelService';
+import { useSession } from 'next-auth/react';
 import {
   BookingRequest,
   HotelAvailabilityResponse,
@@ -46,7 +47,6 @@ export default function HotelDetail({
 }: {
   params: Promise<{ hotelid: string }>;
 }) {
-  const session = 'null';
   const [selectedRooms, setSelectedRooms] = useState<
     SelectedRoomWithQuantity[]
   >([]);
@@ -112,6 +112,8 @@ export default function HotelDetail({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
+
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {

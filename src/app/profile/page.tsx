@@ -1,6 +1,8 @@
 'use client';
 
+import { getCurrentUser } from '@/lib/authService';
 import { cn } from '@/lib/utils';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -8,10 +10,22 @@ export default function ProfilePage() {
   const [active, setActive] = useState(1);
   const [upcoming, setUpcoming] = useState(4);
   const [past, setPast] = useState(2);
+  const [userProfile, setUserProfile] = useState<any>(undefined);
+  const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch user profile and booking data
+    if (!session) {
+      signIn();
+      return;
+    }
+
+    const fetchUser = async () => {
+      const user = await getCurrentUser((session as any)?.user?.token);
+      console.log(user);
+      setUserProfile(user);
+    };
+    fetchUser();
   }, []);
 
   const buttonClass = `
@@ -64,74 +78,80 @@ export default function ProfilePage() {
             <div className={cn(buttonInnerClass)}>Your Inventory</div>
           </div>
         </div>
-        <div className='p-6 bg-[#161D30] border border-[#2a3050] shadow-md shadow-black/50 rounded'>
-          <div className='flex flex-wrap'>
-            {/* Profile section with picture and user info */}
-            <div className='flex flex-wrap mr-8'>
-              {/* Left column - picture and button */}
-              <div className='flex flex-col items-center'>
-                <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
-                  picture
-                </div>
-                <div
-                  className={cn(buttonClass, 'w-48')}
-                  onClick={handleEditProfileClick}
-                  role='button'
-                  tabIndex={0}
-                  aria-label='Edit Profile'
-                >
-                  <div className={cn(buttonInnerClass)}>Edit Profile</div>
-                </div>
-              </div>
-
-              {/* Right column - user info */}
-              <div className='flex flex-col justify-center ml-6 font-details'>
-                <p className='text-xl mb-6'>Name : </p>
-                <p className='text-xl mb-6'>Email : </p>
-                <p className='text-xl mb-6'>Tel : </p>
-              </div>
-            </div>
-
-            {/* Bookings info section */}
-            <div className='w-64 ml-auto'>
-              <h2 className='text-2xl font-bold mb-9 font-heading text-center'>
-                Your Bookings
-              </h2>
-
-              <div className='w-full text-l'>
-                <div className='flex justify-between mb-6 font-details'>
-                  <p>Active</p>
-                  <p className='font-bold'>{active}</p>
-                </div>
-                <div className='flex justify-between mb-6'>
-                  <p>Upcoming</p>
-                  <p className='font-bold'>{upcoming}</p>
-                </div>
-                <div className='flex justify-between mb-8'>
-                  <p>Past</p>
-                  <p className='font-bold'>{past}</p>
-                </div>
-
-                <div className='flex justify-between font-bold mt-4 mb-10'>
-                  <p>Total</p>
-                  <p>{active + upcoming + past}</p>
-                </div>
-
-                <div className='flex justify-center'>
+        {userProfile && (
+          <div className='p-6 bg-[#161D30] border border-[#2a3050] shadow-md shadow-black/50 rounded'>
+            <div className='flex flex-wrap'>
+              {/* Profile section with picture and user info */}
+              <div className='flex flex-wrap mr-8'>
+                {/* Left column - picture and button */}
+                <div className='flex flex-col items-center'>
+                  <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
+                    picture
+                  </div>
                   <div
-                    className={cn(buttonClass, 'w-full h-10')}
-                    onClick={handleManageBookingsClick}
+                    className={cn(buttonClass, 'w-48')}
+                    onClick={handleEditProfileClick}
                     role='button'
                     tabIndex={0}
-                    aria-label='Manage Bookings'
+                    aria-label='Edit Profile'
                   >
-                    <div className={cn(buttonInnerClass)}>Manage Bookings</div>
+                    <div className={cn(buttonInnerClass)}>Edit Profile</div>
+                  </div>
+                </div>
+
+                {/* Right column - user info */}
+                <div className='flex flex-col justify-center ml-6 font-details'>
+                  <p className='text-xl mb-6'>Name : {userProfile.data.name}</p>
+                  <p className='text-xl mb-6'>
+                    Email : {userProfile.data.email}
+                  </p>
+                  <p className='text-xl mb-6'>Tel : {userProfile.data.tel} </p>
+                </div>
+              </div>
+
+              {/* Bookings info section */}
+              <div className='w-64 ml-auto'>
+                <h2 className='text-2xl font-bold mb-9 font-heading text-center'>
+                  Your Bookings
+                </h2>
+
+                <div className='w-full text-l'>
+                  <div className='flex justify-between mb-6 font-details'>
+                    <p>Active</p>
+                    <p className='font-bold'>{active}</p>
+                  </div>
+                  <div className='flex justify-between mb-6'>
+                    <p>Upcoming</p>
+                    <p className='font-bold'>{upcoming}</p>
+                  </div>
+                  <div className='flex justify-between mb-8'>
+                    <p>Past</p>
+                    <p className='font-bold'>{past}</p>
+                  </div>
+
+                  <div className='flex justify-between font-bold mt-4 mb-10'>
+                    <p>Total</p>
+                    <p>{active + upcoming + past}</p>
+                  </div>
+
+                  <div className='flex justify-center'>
+                    <div
+                      className={cn(buttonClass, 'w-full h-10')}
+                      onClick={handleManageBookingsClick}
+                      role='button'
+                      tabIndex={0}
+                      aria-label='Manage Bookings'
+                    >
+                      <div className={cn(buttonInnerClass)}>
+                        Manage Bookings
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
