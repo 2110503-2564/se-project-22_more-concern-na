@@ -134,6 +134,7 @@ export const checkAvailability = async (
   hotelId: string,
   checkin: string,
   checkout: string,
+  token?: string,
 ): Promise<HotelAvailabilityResponse> => {
   try {
     const response = await axios.get(apiPath(`/hotels/${hotelId}/available`), {
@@ -141,6 +142,9 @@ export const checkAvailability = async (
         checkin,
         checkout,
       },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
     });
 
     if (response.status !== 200) {

@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
 import { HotelRoom, IHotel } from '../../../../interface';
 
 import { createHotelBooking } from '@/lib/bookingService';
@@ -37,18 +38,13 @@ import {
   HotelReviewsResponse,
 } from '../../../../interface';
 
-interface SelectedRoomWithQuantity {
-  room: HotelRoom;
-  quantity: number;
-}
-
 export default function HotelDetail({
   params,
 }: {
   params: Promise<{ hotelid: string }>;
 }) {
   const [selectedRooms, setSelectedRooms] = useState<
-    SelectedRoomWithQuantity[]
+    { type: string; count: number; room: HotelRoom }[]
   >([]);
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
@@ -134,7 +130,6 @@ export default function HotelDetail({
     };
     fetchHotel();
   }, [params]);
-  console.log('hotel', hotel);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -268,16 +263,26 @@ export default function HotelDetail({
     setIsConfirmOpen(true);
   };
 
-  const handleConfirmBooking = async (e: any) => {
+  const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsConfirmOpen(false);
 
-    if (!hotel?._id || !checkInDate || !checkOutDate) return;
+    if (!hotel?._id || !checkInDate || !checkOutDate || !session?.user.token) {
+      toast.error('Booking Failed', {
+        description: 'Missing required booking information or not logged in',
+        style: {
+          backgroundColor: '#a52a2a',
+          color: 'var(--color-bg-placeholder)',
+          border: '1px solid var(--color-bg-border)',
+        },
+      });
+      return;
+    }
 
     try {
       const rooms = selectedRooms.map((item) => ({
-        type: item.room.roomType,
-        count: item.quantity,
+        roomType: item.type,
+        count: item.count,
       }));
 
       const bookingData: Omit<BookingRequest, 'hotel'> = {
@@ -286,8 +291,13 @@ export default function HotelDetail({
         endDate: checkOutDate.toDate(),
         rooms: rooms,
       };
+      console.log('Booking Data:', bookingData);
 
-      const response = await createHotelBooking(hotel._id, bookingData);
+      const response = await createHotelBooking(
+        hotel._id,
+        bookingData,
+        session.user.token,
+      );
 
       if (response.success) {
         toast.success('Booking Confirmed!', {
@@ -305,6 +315,7 @@ export default function HotelDetail({
           },
         });
 
+        // Reset form data after successful booking
         setTimeout(() => {
           setSelectedRooms([]);
           setCheckInDate(null);
@@ -342,11 +353,18 @@ export default function HotelDetail({
     try {
       const resolveParams = await params;
       const hotelId = resolveParams.hotelid;
+      console.log('Hotel ID:', hotelId);
+      console.log('Check-in Date:', checkInDate.format('YYYY-MM-DD'));
+      console.log('Check-out Date:', checkOutDate.format('YYYY-MM-DD'));
+      console.log('Session Token:', session?.user.token);
       const response = await checkAvailability(
         hotelId,
         checkInDate.format('YYYY-MM-DD'),
         checkOutDate.format('YYYY-MM-DD'),
+        session?.user.token,
       );
+
+      console.log('Availability Response:', response);
 
       setAvailabilityData(response);
       setIsAvailabilityChecking(false);
@@ -362,6 +380,8 @@ export default function HotelDetail({
             border: '1px solid var(--color-bg-border)',
           },
         });
+
+        setSelectedRooms([]);
       } else {
         toast.error('No Availability', {
           description: response.msg || 'No rooms available for selected dates',
@@ -385,36 +405,16 @@ export default function HotelDetail({
       });
     }
   };
-  // const handleCheckAvailable = () => {
-  //   if (!checkInDate || !checkOutDate) return;
-
-  //   setIsAvailabilityChecking(true);
-
-  //   setTimeout(() => {
-  //     setIsAvailabilityChecking(false);
-  //     setIsAvailabilityConfirmed(true);
-
-  //     toast.info('Rooms Available!', {
-  //       description: `We have rooms available for your selected dates.`,
-  //       icon: <Info className='h-5 w-5 text-luxe-gold' />,
-  //       style: {
-  //         backgroundColor: '#2A2F3F',
-  //         color: 'var(--color-bg-placeholder)',
-  //         border: '1px solid var(--color-bg-border)',
-  //       },
-  //     });
-  //   }, 1500);
-  // };
 
   const handleSelectRoom = (room: HotelRoom) => {
     const existingRoomIndex = selectedRooms.findIndex(
-      (item) => item.room.roomType === room.roomType,
+      (item) => item.type === room.roomType,
     );
 
     if (existingRoomIndex >= 0) {
       const updatedRooms = [...selectedRooms];
-      if (updatedRooms[existingRoomIndex].quantity < room.maxCount) {
-        updatedRooms[existingRoomIndex].quantity += 1;
+      if (updatedRooms[existingRoomIndex].count < room.maxCount) {
+        updatedRooms[existingRoomIndex].count += 1;
         setSelectedRooms(updatedRooms);
 
         toast('Room Added', {
@@ -436,7 +436,10 @@ export default function HotelDetail({
         });
       }
     } else {
-      setSelectedRooms([...selectedRooms, { room, quantity: 1 }]);
+      setSelectedRooms([
+        ...selectedRooms,
+        { type: room.roomType, count: 1, room },
+      ]);
 
       toast('Room Added', {
         description: `Added 1 ${room.roomType} to your selection.`,
@@ -451,27 +454,23 @@ export default function HotelDetail({
 
   const decreaseRoomQuantity = (roomType: string) => {
     const updatedRooms = selectedRooms.map((item) => {
-      if (item.room.roomType === roomType) {
+      if (item.type === roomType) {
         return {
           ...item,
-          quantity: Math.max(0, item.quantity - 1),
+          count: Math.max(0, item.count - 1),
         };
       }
       return item;
     });
 
-    const filteredRooms = updatedRooms.filter((item) => item.quantity > 0);
+    const filteredRooms = updatedRooms.filter((item) => item.count > 0);
 
-    const originalRoom = selectedRooms.find(
-      (item) => item.room.roomType === roomType,
-    );
-    const updatedRoom = filteredRooms.find(
-      (item) => item.room.roomType === roomType,
-    );
+    const originalRoom = selectedRooms.find((item) => item.type === roomType);
+    const updatedRoom = filteredRooms.find((item) => item.type === roomType);
 
     if (!updatedRoom && originalRoom) {
       toast('Room Removed', {
-        description: `Removed ${originalRoom.room.roomType} from your selection.`,
+        description: `Removed ${originalRoom.type} from your selection.`,
         style: {
           backgroundColor: '#2A2F3F',
           color: 'var(--color-bg-placeholder)',
@@ -481,9 +480,9 @@ export default function HotelDetail({
     } else if (
       originalRoom &&
       updatedRoom &&
-      originalRoom.quantity > updatedRoom.quantity
+      originalRoom.count > updatedRoom.count
     ) {
-      toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
+      toast(`Updated ${roomType} quantity to ${updatedRoom.count}.`, {
         style: {
           backgroundColor: '#2A2F3F',
           color: 'var(--color-bg-placeholder)',
@@ -496,11 +495,9 @@ export default function HotelDetail({
   };
 
   const increaseRoomQuantity = (roomType: string) => {
-    const roomToUpdate = selectedRooms.find(
-      (item) => item.room.roomType === roomType,
-    );
+    const roomToUpdate = selectedRooms.find((item) => item.type === roomType);
 
-    if (roomToUpdate && roomToUpdate.quantity >= roomToUpdate.room.maxCount) {
+    if (roomToUpdate && roomToUpdate.count >= roomToUpdate.room.maxCount) {
       toast.error('Maximum Reached', {
         description: `You've selected all available ${roomType} rooms.`,
         style: {
@@ -513,29 +510,20 @@ export default function HotelDetail({
     }
 
     const updatedRooms = selectedRooms.map((item) => {
-      if (
-        item.room.roomType === roomType &&
-        item.quantity < item.room.maxCount
-      ) {
+      if (item.type === roomType && item.count < item.room.maxCount) {
         return {
           ...item,
-          quantity: item.quantity + 1,
+          count: item.count + 1,
         };
       }
       return item;
     });
 
-    const updatedRoom = updatedRooms.find(
-      (item) => item.room.roomType === roomType,
-    );
-    if (
-      updatedRoom &&
-      roomToUpdate &&
-      updatedRoom.quantity > roomToUpdate.quantity
-    ) {
-      toast(`Updated ${roomType} quantity to ${updatedRoom.quantity}.`, {
+    const updatedRoom = updatedRooms.find((item) => item.type === roomType);
+    if (updatedRoom && roomToUpdate && updatedRoom.count > roomToUpdate.count) {
+      toast(`Updated ${roomType} quantity to ${updatedRoom.count}.`, {
         style: {
-          backgroundColor: 'var(--color-bg-box)',
+          backgroundColor: '#2A2F3F',
           color: 'var(--color-bg-placeholder)',
           border: '1px solid var(--color-bg-border)',
         },
@@ -547,7 +535,7 @@ export default function HotelDetail({
 
   const calculateTotalPrice = () => {
     return selectedRooms.reduce((total, item) => {
-      return total + item.room.price * item.quantity * nights;
+      return total + item.room.price * item.count * nights;
     }, 0);
   };
 
@@ -613,13 +601,41 @@ export default function HotelDetail({
 
           <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {hotel?.rooms?.map((room, index) => (
-              <RoomCard
-                key={index}
-                room={room}
-                onSelectRoom={handleSelectRoom}
-              />
-            ))}
+            {hotel?.rooms?.map((room, index) => {
+              // Find availability information for this room type
+              const availabilityInfo =
+                isAvailabilityConfirmed && availabilityData?.rooms
+                  ? availabilityData.rooms.find(
+                      (avail) => avail.type === room.roomType,
+                    )
+                  : null;
+
+              // Determine how many rooms are available
+              const availableCount = availabilityInfo
+                ? availabilityInfo.remainCount
+                : null;
+
+              return (
+                <RoomCard
+                  key={index}
+                  room={{
+                    ...room,
+                    // Override maxCount with available count when available
+                    maxCount:
+                      availableCount !== null ? availableCount : room.maxCount,
+                  }}
+                  onSelectRoom={handleSelectRoom}
+                  availability={
+                    isAvailabilityConfirmed
+                      ? {
+                          checkedDates: true,
+                          availableCount: availableCount,
+                        }
+                      : undefined
+                  }
+                />
+              );
+            })}
           </div>
 
           <section className='mt-10'>
@@ -729,18 +745,18 @@ export default function HotelDetail({
                           >
                             <Minus className='h-4 w-4' />
                           </button>
-                          <span>{item.quantity}</span>
+                          <span>{item.count}</span>
                           <button
                             type='button'
                             className={`p-1 rounded-full ${
-                              item.quantity >= item.room.maxCount
+                              item.count >= item.room.maxCount
                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                 : 'bg-gray-700 hover:bg-gray-600 text-white'
                             }`}
                             onClick={() =>
                               increaseRoomQuantity(item.room.roomType)
                             }
-                            disabled={item.quantity >= item.room.maxCount}
+                            disabled={item.count >= item.room.maxCount}
                           >
                             <Plus className='h-4 w-4' />
                           </button>
@@ -785,13 +801,13 @@ export default function HotelDetail({
                     {selectedRooms.map((item, index) => (
                       <div key={index} className='flex justify-between text-xs'>
                         <span>
-                          {item.room.roomType} (x{item.quantity})
+                          {item.room.roomType} (x{item.count})
                         </span>
                         <span>
                           $
                           {(
                             item.room.price *
-                            item.quantity *
+                            item.count *
                             nights
                           ).toLocaleString()}
                         </span>
@@ -874,13 +890,13 @@ export default function HotelDetail({
                       className='flex justify-between mb-1 text-sm'
                     >
                       <span>
-                        {item.room.roomType} (x{item.quantity})
+                        {item.room.roomType} (x{item.count})
                       </span>
                       <span className='font-medium'>
                         $
                         {(
                           item.room.price *
-                          item.quantity *
+                          item.count *
                           nights
                         ).toLocaleString()}
                       </span>
