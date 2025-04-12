@@ -5,11 +5,13 @@ import { cn } from '@/lib/utils';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { getBookings } from '@/lib/bookingService';
+
 
 export default function ProfilePage() {
-  const [active, setActive] = useState(1);
-  const [upcoming, setUpcoming] = useState(4);
-  const [past, setPast] = useState(2);
+  const [active, setActive] = useState(0);
+  const [upcoming, setUpcoming] = useState(0);
+  const [past, setPast] = useState(0);
   const [userProfile, setUserProfile] = useState<any>(undefined);
   const { data: session } = useSession();
   const router = useRouter();
@@ -21,9 +23,36 @@ export default function ProfilePage() {
     }
 
     const fetchUser = async () => {
-      const user = await getCurrentUser((session as any)?.user?.token);
+      const token = ((session as any)?.user?.token);
+      const user = await getCurrentUser(token);
       console.log(user);
       setUserProfile(user);
+
+      try{
+        const allBookings = await getBookings({}, token);
+        const bookings = Array.isArray(allBookings)
+        ? allBookings
+        : (allBookings as any).data || [];
+
+      const activeCount = bookings.filter(
+        (booking: any) => booking.status === 'active'
+      ).length;
+
+      const upcomingCount = bookings.filter(
+        (booking: any) => booking.status === 'upcoming'
+      ).length;
+
+      const pastCount = bookings.filter(
+        (booking: any) => booking.status === 'past'
+      ).length;
+
+      setActive(activeCount);
+      setUpcoming(upcomingCount);
+      setPast(pastCount);
+      }catch (error) {
+        console.error('Failed to fetch bookings:', error);
+      }
+
     };
     fetchUser();
   }, []);
