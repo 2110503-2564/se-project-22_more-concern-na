@@ -34,36 +34,36 @@ export const BookingCard = ({
     <div className='w-full bg-bg-box border border-bg-border bg-opacity-30 p-4 rounded-lg font-detail'>
       <div className='flex justify-between items-start'>
         <div>
-          <h3 className='text-xl font-semibold font-heading text-white'>
+          <h3 className='text-xl font-semibold font-heading text-white font-heading'>
             {hotelName}
           </h3>
 
           <div className='mt-3 text-gray-300 space-y-2'>
             <div className='flex items-center'>
               <Calendar className='h-4 w-4 mr-2' />
-              <span>check-in: {formatDate(checkInDate)}</span>
+              <span className='font-detail'>check-in: {formatDate(checkInDate)}</span>
             </div>
 
             <div className='flex items-center'>
               <Calendar className='h-4 w-4 mr-2' />
-              <span>check-out: {formatDate(checkOutDate)}</span>
+              <span className='font-detail'>check-out: {formatDate(checkOutDate)}</span>
             </div>
 
             <div className='flex items-center'>
               <MapPin className='h-4 w-4 mr-2' />
-              <span>{location}</span>
+              <span className='font-detail'>{location}</span>
             </div>
           </div>
         </div>
 
         {type === 'upcoming' && daysUntil !== undefined && (
-          <div className='text-white font-medium text-sm'>
+          <div className='text-white font-medium text-sm font-detail'>
             In {daysUntil} {daysUntil === 1 ? 'Day' : 'Days'}
           </div>
         )}
       </div>
 
-      <div className='mt-4'>
+      <div className='mt-4 font-heading'>
         <Link href={`/bookings/${id}`} passHref>
           <Button variant='bluely' className='px-6'>
             View Details

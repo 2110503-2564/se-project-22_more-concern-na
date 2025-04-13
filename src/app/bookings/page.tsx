@@ -115,7 +115,7 @@ export default function BookingsPage() {
 
         {/* Active Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
             Active Bookings : {bookingsData?.active?.data?.length || 0}
           </h2>
 
@@ -140,7 +140,7 @@ export default function BookingsPage() {
 
         {/* Upcoming Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
             Upcoming Bookings : {bookingsData?.upcoming?.data?.length || 0}
           </h2>
 
@@ -175,7 +175,7 @@ export default function BookingsPage() {
 
         {/* Past Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
             Past Bookings : {bookingsData?.past?.data?.length || 0}
           </h2>
 

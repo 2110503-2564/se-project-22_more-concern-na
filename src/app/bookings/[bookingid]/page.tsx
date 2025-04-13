@@ -257,7 +257,7 @@ export default function BookingDetailPage({
   const isPastBooking = bookingStatus === 'Completed';
 
   return (
-    <div className='text-white p-6 bg-base-gd min-h-screen'>
+    <div className='text-white p-6 bg-base-gd min-h-screen font-detail'>
       <div className='container mx-auto max-w-5xl'>
         <div className='mb-8'>
           <Button
@@ -270,7 +270,7 @@ export default function BookingDetailPage({
           </Button>
         </div>
 
-        <h1 className='text-4xl font-bold font-heading mb-6'>Booking Details</h1>
+        <h1 className='text-4xl font-bold font-heading mb-6 font-heading'>Booking Details</h1>
 
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
           {/* Left column - Hotel info */}
@@ -308,7 +308,7 @@ export default function BookingDetailPage({
             </div>
 
             <div className='bg-bg-box border border-bg-border rounded-md p-6 mb-6'>
-              <h2 className='text-2xl font-bold font-heading mb-4'>Stay Details</h2>
+              <h2 className='text-2xl font-bold font-heading mb-4 font-heading'>Stay Details</h2>
               
               <div className='flex justify-between items-start mb-4'>
                 <div className='space-y-4'>
@@ -371,7 +371,7 @@ export default function BookingDetailPage({
             </div>
             
             <div className='bg-bg-box border border-bg-border rounded-md p-6'>
-              <h2 className='text-2xl font-bold font-heading mb-4'>Guest Information</h2>
+              <h2 className='text-2xl font-bold font-heading mb-4 font-heading'>Guest Information</h2>
               
               {user && (
                 <div className='space-y-3'>
