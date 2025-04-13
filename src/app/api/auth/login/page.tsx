@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { TextField } from '@mui/material';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -29,8 +30,8 @@ const LoginPage = () => {
 
   return (
     <form onSubmit={onSubmit} className='flex justify-center p-10'>
-      <div className='flex flex-col items-center p-7 w-120 bg-white rounded-xl shadow-[0_0_5px_0_rgba(0,0,0,0.3)]'>
-        <h1 className='text-3xl font-semibold text-blue-700 mb-1'>
+      <div className='flex flex-col items-center p-7 w-120 bg-bg-box rounded-xl shadow-[0_0_5px_0_rgba(0,0,0,0.3)]'>
+        <h1 className='text-3xl font-semibold text-white font-heading mb-1'>
           Welcome Back
         </h1>
         <p className='text-lg mb-10 text-gray-500'>
@@ -41,13 +42,13 @@ const LoginPage = () => {
           <TextField
             label='Email'
             name='email'
-            variant='outlined'
+            variant='filled'
             type='email'
             id='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            className='w-full p-3 border-2 font-heading bg-bg-textfill border-bg-border rounded-md text-lg focus:outline-none focus:ring-2'
           />
         </div>
 
@@ -55,22 +56,32 @@ const LoginPage = () => {
           <TextField
             label='Password'
             name='password'
-            variant='outlined'
+            variant='filled'
             type='password'
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            className='w-full p-3 border-2 bg-bg-textfill border-bg-border rounded-md text- focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-bg-placeholder'
           />
         </div>
 
-        <button
+        <Button
           type='submit'
-          className='w-full p-3 bg-blue-500 text-white text-lg font-semibold rounded-md hover:bg-blue-600'
+          variant="golden"
+          className='w-full p-3'
         >
           Log In
-        </button>
+        </Button>
+        <p className='mt-4 text-center text-white font-detail'>
+          Don't have an account?{' '}
+          <span
+            className='text-gold-gd1 underline cursor-pointer'
+            onClick={() => router.push('/api/auth/signup')}
+          >
+            Create an account
+          </span>
+        </p>
 
         {feedBack && (
           <p
