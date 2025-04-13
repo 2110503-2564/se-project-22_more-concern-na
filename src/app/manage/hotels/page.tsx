@@ -4,6 +4,7 @@ import Loader from '@/components/Loader';
 import { getHotels } from '@/lib/hotelService';
 import { useEffect, useState } from 'react';
 import { HotelResponse, IHotel } from '../../../../interface';
+import { useRouter } from 'next/navigation';
 
 export default function Hotels() {
   const [hotels, setHotels] = useState<HotelResponse>({
@@ -17,8 +18,14 @@ export default function Hotels() {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
+    const userRole = localStorage.getItem('userRole'); // Assuming role is stored in localStorage
+
+    if (userRole !== 'admin') {
+      router.push('/');
+    }
     const fetchHotels = async () => {
       setIsLoading(true);
       const responseData = await getHotels();
