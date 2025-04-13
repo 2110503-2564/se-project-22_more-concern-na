@@ -50,7 +50,8 @@ export const registerUser = async (data: RegisterForm | undefined) => {
     body: JSON.stringify({ ...data, role: 'user' }),
   });
   const json = await res.json();
-  if (res.status === 201 || (json && json.success === false)) {
+  console.log(res);
+  if (res.status === 200 || (json && json.success === false)) {
     return json;
   }
   return null;

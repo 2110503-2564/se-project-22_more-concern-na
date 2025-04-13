@@ -31,7 +31,7 @@ export default function EditProfilePage() {
     hover:bg-gradient-to-r hover:from-gold-gd2 hover:to-gold-gd1
     transition-colors duration-300
     flex justify-center items-center w-full h-full
-    rounded-lg
+    rounded-lg     
   `;
 
   const handleChangePicture = () => {

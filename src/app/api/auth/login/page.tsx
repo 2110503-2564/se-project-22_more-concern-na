@@ -70,6 +70,7 @@ const LoginPage = () => {
           type='submit'
           variant="golden"
           className='w-full p-3'
+          disabled={!email || !password}
         >
           Log In
         </Button>
