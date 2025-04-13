@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { HotelRoom, IHotel } from '../../../../../interface';
+import { useRouter } from 'next/navigation';
 
 export default function ManageHotelDetail({
   params,
@@ -35,6 +36,7 @@ export default function ManageHotelDetail({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { data: session } = useSession();
   const token = (session as any).user.token;
+  const router = useRouter();
 
   useEffect(() => {
     const fetchHotel = async () => {
@@ -197,6 +199,10 @@ export default function ManageHotelDetail({
 
   const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
 
+  const handleManageRoom = (room: HotelRoom) => {
+    router.push(`/manage/hotels/${hotel?._id}/${room._id}`);
+  }
+
   return (
     <main className='flex-grow bg-luxe-dark text-white'>
       <div className='relative h-80 md:h-96'>
@@ -252,7 +258,7 @@ export default function ManageHotelDetail({
                 key={index}
                 room={room}
                 type='manage'
-                onManageRoom={() => {}}
+                onManageRoom={() => {handleManageRoom(room)}}
               />
             ))}
           </div>
