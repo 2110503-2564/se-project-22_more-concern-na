@@ -5,6 +5,7 @@ import DateBookFill from '@/components/DateBookFill';
 import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { getCurrentUser } from '@/lib/authService';
 import { deleteBooking, getBooking, updateBooking } from '@/lib/bookingService';
 import { getHotel } from '@/lib/hotelService';
 import dayjs from 'dayjs';
@@ -92,7 +93,7 @@ export default function BookingDetailPage({
           }
 
           // Set user info from session
-          setUser((session as any)?.user?.data);
+          setUser(getCurrentUser);
         }
       } catch (err: any) {
         console.error('Error fetching booking details:', err);
@@ -207,25 +208,6 @@ export default function BookingDetailPage({
     });
   };
 
-  const buttonClass = `
-    relative bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black 
-    hover:text-[#161D30]
-    transition-all duration-300
-    before:absolute before:inset-0 before:p-0.5
-    before:bg-gradient-to-l before:from-gold-gd1 before:to-gold-gd2 
-    before:opacity-0 hover:before:opacity-100 before:transition-opacity
-    overflow-hidden
-    flex justify-center items-center cursor-pointer
-    rounded-lg
-  `;
-
-  const buttonInnerClass = `
-    relative z-10 bg-inherit px-4 py-2 
-    hover:bg-gradient-to-r hover:from-gold-gd2 hover:to-gold-gd1
-    transition-colors duration-300
-    flex justify-center items-center w-full h-full
-    rounded-lg
-  `;
 
   if (isLoading || status === 'loading') {
     return (
