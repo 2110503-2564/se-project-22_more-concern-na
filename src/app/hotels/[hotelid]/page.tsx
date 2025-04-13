@@ -292,7 +292,6 @@ export default function HotelDetail({
         endDate: checkOutDate.format('YYYY-MM-DD'),
         rooms: rooms,
       };
-      console.log('Booking Data:', bookingData);
 
       const response = await createHotelBooking(
         hotel._id,
@@ -360,8 +359,6 @@ export default function HotelDetail({
         checkOutDate.format('YYYY-MM-DD'),
         token,
       );
-
-      console.log('Availability Response:', response);
 
       setAvailabilityData(response);
       setIsAvailabilityChecking(false);
