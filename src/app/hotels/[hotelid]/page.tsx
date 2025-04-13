@@ -110,6 +110,7 @@ export default function HotelDetail({
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
 
   const { data: session } = useSession();
+  const token = (session as any)?.user?.token;
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -267,7 +268,7 @@ export default function HotelDetail({
     e.preventDefault();
     setIsConfirmOpen(false);
 
-    if (!hotel?._id || !checkInDate || !checkOutDate || !session?.user.token) {
+    if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
       toast.error('Booking Failed', {
         description: 'Missing required booking information or not logged in',
         style: {
@@ -296,7 +297,7 @@ export default function HotelDetail({
       const response = await createHotelBooking(
         hotel._id,
         bookingData,
-        session.user.token,
+        token,
       );
 
       if (response.success) {
@@ -353,15 +354,11 @@ export default function HotelDetail({
     try {
       const resolveParams = await params;
       const hotelId = resolveParams.hotelid;
-      console.log('Hotel ID:', hotelId);
-      console.log('Check-in Date:', checkInDate.format('YYYY-MM-DD'));
-      console.log('Check-out Date:', checkOutDate.format('YYYY-MM-DD'));
-      console.log('Session Token:', session?.user.token);
       const response = await checkAvailability(
         hotelId,
         checkInDate.format('YYYY-MM-DD'),
         checkOutDate.format('YYYY-MM-DD'),
-        session?.user.token,
+        token,
       );
 
       console.log('Availability Response:', response);

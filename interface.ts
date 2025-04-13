@@ -12,7 +12,7 @@ export interface RoomAvailability {
 }
 
 export interface SelectedRoom {
-    type: string;
+    roomType: string;
     count: number;
 }
 
