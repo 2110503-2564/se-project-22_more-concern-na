@@ -1,4 +1,4 @@
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, Check, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 
@@ -9,21 +9,11 @@ interface BookingCardProps {
   checkOutDate: Date;
   location: string;
   type: 'active' | 'upcoming' | 'past';
+  daysUntil?: number;
+  checkedIn?: boolean;
+  showCheckInOption?: boolean;
+  onCheckIn?: (id: string) => void;
 }
-
-// Function to get today's date with time set to midnight
-const getTodayDate = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
-};
-
-// Function to create a date for comparison (without time component)
-const createDateForComparison = (date: Date) => {
-  const newDate = new Date(date);
-  newDate.setHours(0, 0, 0, 0);
-  return newDate;
-};
 
 export const BookingCard = ({
   id,
@@ -32,6 +22,10 @@ export const BookingCard = ({
   checkOutDate,
   location,
   type,
+  daysUntil,
+  checkedIn = false,
+  showCheckInOption = false,
+  onCheckIn,
 }: BookingCardProps) => {
   // Format the dates for display in the format "Apr 9, 2025"
   const formatDate = (date: Date) => {
@@ -41,21 +35,6 @@ export const BookingCard = ({
       year: 'numeric',
     });
   };
-
-  // Calculate days until check-in for upcoming bookings
-  const getDaysUntil = () => {
-    if (type !== 'upcoming') return null;
-
-    const today = getTodayDate();
-    const checkIn = createDateForComparison(checkInDate);
-
-    const timeDiff = checkIn.getTime() - today.getTime();
-    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    return `In ${dayDiff} Days`;
-  };
-
-  const daysUntil = getDaysUntil();
 
   return (
     <div className='w-full bg-bg-box border border-bg-border bg-opacity-30 p-4 rounded-lg font-detail'>
@@ -83,17 +62,43 @@ export const BookingCard = ({
           </div>
         </div>
 
-        {type === 'upcoming' && (
-          <div className='text-white font-medium text-sm'>{daysUntil}</div>
+        {type === 'upcoming' && daysUntil !== undefined && (
+          <div className='text-white font-medium text-sm'>
+            In {daysUntil} {daysUntil === 1 ? 'Day' : 'Days'}
+          </div>
+        )}
+
+        {showCheckInOption && (
+          <div className='flex items-center'>
+            <input
+              type='checkbox'
+              id={`checkin-${id}`}
+              checked={checkedIn}
+              onChange={() => onCheckIn && onCheckIn(id)}
+              className='mr-2 h-4 w-4'
+            />
+            <label htmlFor={`checkin-${id}`} className='text-sm text-white'>
+              check-in
+            </label>
+          </div>
         )}
       </div>
 
-      <div className='mt-4'>
-        <Link href={`/bookings/${id}`} passHref>
-          <Button variant='bluely' className='px-6'>
-            View Details
-          </Button>
-        </Link>
+      <div className='mt-4 flex items-center justify-between'>
+        {checkedIn && (
+          <div className='flex items-center text-green-400'>
+            <Check className='h-4 w-4 mr-1' />
+            <span>Checked In</span>
+          </div>
+        )}
+
+        <div className={checkedIn ? 'ml-auto' : ''}>
+          <Link href={`/bookings/${id}`} passHref>
+            <Button variant='bluely' className='px-6'>
+              View Details
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

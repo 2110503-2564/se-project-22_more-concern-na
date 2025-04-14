@@ -1,79 +1,14 @@
 'use client';
 
 import { BookingCard } from '@/components/BookingCard';
+import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
+import { getBookings } from '@/lib/bookingService';
 import { ArrowLeft } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-// Mock booking data
-const mockBookings = [
-  {
-    id: 'book-001',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(), // Today
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 3)),
-    location: 'location',
-  },
-  {
-    id: 'book-002',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(), // Today
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 2)),
-    location: 'location',
-  },
-  {
-    id: 'book-003',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() + 10)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 15)),
-    location: 'location',
-  },
-  {
-    id: 'book-004',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() + 20)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 23)),
-    location: 'location',
-  },
-  {
-    id: 'book-005',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() + 30)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 35)),
-    location: 'location',
-  },
-  {
-    id: 'book-006',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() + 40)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() + 45)),
-    location: 'location',
-  },
-  // Past bookings
-  {
-    id: 'book-007',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() - 10)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() - 7)),
-    location: 'location',
-  },
-  {
-    id: 'book-008',
-    hotelName: 'Hotel Name',
-    checkInDate: new Date(new Date().setDate(new Date().getDate() - 20)),
-    checkOutDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-    location: 'location',
-  },
-];
-
-interface Booking {
-  id: string;
-  hotelName: string;
-  checkInDate: Date;
-  checkOutDate: Date;
-  location: string;
-}
+import { BookingData, BookingResponse } from '../../../interface';
 
 // Function to get today's date with time set to midnight
 const getTodayDate = () => {
@@ -91,48 +26,70 @@ const createDateForComparison = (date: Date) => {
 
 export default function BookingsPage() {
   const router = useRouter();
-  const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
-  const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+  const { data: session, status } = useSession();
+  const [bookingsData, setBookingsData] = useState<BookingResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get today's date
-    const today = getTodayDate();
+    // If not logged in, redirect to login page
+    if (status === 'unauthenticated') {
+      router.push('/api/auth/login');
+    }
+  }, [status, router]);
 
-    // Filter bookings into the three categories
-    const active = mockBookings.filter((booking) => {
-      const checkInDate = createDateForComparison(booking.checkInDate);
-      const checkOutDate = createDateForComparison(booking.checkOutDate);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (status !== 'authenticated' || !session) return;
+      
+      try {
+        setIsLoading(true);
+        // Get token from session
+        const token = (session as any)?.token;
+        
+        // Fetch bookings from backend
+        const response = await getBookings(undefined, token);
+        setBookingsData(response);
+      } catch (err: any) {
+        console.error('Error fetching bookings:', err);
+        setError(err.message || 'Failed to load bookings');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      // A booking is active if:
-      // 1. Check-in date is today, or
-      // 2. Today is between check-in and check-out dates
-      return (
-        checkInDate.getTime() === today.getTime() ||
-        (checkInDate <= today && checkOutDate >= today)
-      );
-    });
-
-    const upcoming = mockBookings.filter((booking) => {
-      const checkInDate = createDateForComparison(booking.checkInDate);
-      return checkInDate > today;
-    });
-
-    const past = mockBookings.filter((booking) => {
-      const checkInDate = createDateForComparison(booking.checkInDate);
-      const checkOutDate = createDateForComparison(booking.checkOutDate);
-
-      return checkOutDate < today && checkInDate < today;
-    });
-
-    setActiveBookings(active);
-    setUpcomingBookings(upcoming);
-    setPastBookings(past);
-  }, []);
+    if (session) {
+      fetchBookings();
+    }
+  }, [session, status]);
 
   const handleGoBack = () => {
-    router.back();
+    router.push('/profile');
   };
+
+  // Display loading state
+  if (isLoading || status === 'loading') {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
+
+  // Display error state
+  if (error) {
+    return (
+      <div className='container mx-auto px-4 py-6 text-white'>
+        <div className='text-center py-10'>
+          <h2 className='text-2xl font-semibold mb-4'>Error Loading Bookings</h2>
+          <p className='text-gray-400 mb-6'>{error}</p>
+          <Button variant='bluely' onClick={() => router.push('/')}>
+            Return to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='text-white font-detail'>
@@ -158,20 +115,20 @@ export default function BookingsPage() {
 
         {/* Active Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
-            Active Bookings : {activeBookings.length}
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
+            Active Bookings : {bookingsData?.active?.data?.length || 0}
           </h2>
 
-          {activeBookings.length > 0 ? (
+          {bookingsData?.active?.data && bookingsData.active.data.length > 0 ? (
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {activeBookings.map((booking) => (
+              {bookingsData.active.data.map((booking, index) => (
                 <BookingCard
-                  key={booking.id}
-                  id={booking.id}
+                  key={`active-${index}`}
+                  id={`booking-${index}`}
                   hotelName={booking.hotelName}
-                  checkInDate={new Date(booking.checkInDate)}
-                  checkOutDate={new Date(booking.checkOutDate)}
-                  location={booking.location}
+                  checkInDate={new Date(booking.startDate)}
+                  checkOutDate={new Date(booking.endDate)}
+                  location={booking.address}
                   type='active'
                 />
               ))}
@@ -183,44 +140,62 @@ export default function BookingsPage() {
 
         {/* Upcoming Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
-            Upcoming Bookings : {upcomingBookings.length}
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
+            Upcoming Bookings : {bookingsData?.upcoming?.data?.length || 0}
           </h2>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {upcomingBookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                id={booking.id}
-                hotelName={booking.hotelName}
-                checkInDate={new Date(booking.checkInDate)}
-                checkOutDate={new Date(booking.checkOutDate)}
-                location={booking.location}
-                type='upcoming'
-              />
-            ))}
-          </div>
+          {bookingsData?.upcoming?.data && bookingsData.upcoming.data.length > 0 ? (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              {bookingsData.upcoming.data.map((booking, index) => {
+                // Calculate days until check-in
+                const today = getTodayDate();
+                const checkInDate = createDateForComparison(new Date(booking.startDate));
+                const daysUntil = Math.ceil(
+                  (checkInDate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+                );
+                
+                return (
+                  <BookingCard
+                    key={`upcoming-${index}`}
+                    id={`booking-${index}`}
+                    hotelName={booking.hotelName}
+                    checkInDate={new Date(booking.startDate)}
+                    checkOutDate={new Date(booking.endDate)}
+                    location={booking.address}
+                    type='upcoming'
+                    daysUntil={daysUntil}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <p className='text-gray-400'>No upcoming bookings</p>
+          )}
         </section>
 
         {/* Past Bookings */}
         <section className='mb-12'>
-          <h2 className='text-2xl font-semibold mb-6'>
-            Past Bookings : {pastBookings.length}
+          <h2 className='text-2xl font-semibold mb-6 font-heading'>
+            Past Bookings : {bookingsData?.past?.data?.length || 0}
           </h2>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {pastBookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                id={booking.id}
-                hotelName={booking.hotelName}
-                checkInDate={new Date(booking.checkInDate)}
-                checkOutDate={new Date(booking.checkOutDate)}
-                location={booking.location}
-                type='past'
-              />
-            ))}
-          </div>
+          {bookingsData?.past?.data && bookingsData.past.data.length > 0 ? (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              {bookingsData.past.data.map((booking, index) => (
+                <BookingCard
+                  key={`past-${index}`}
+                  id={`booking-${index}`}
+                  hotelName={booking.hotelName}
+                  checkInDate={new Date(booking.startDate)}
+                  checkOutDate={new Date(booking.endDate)}
+                  location={booking.address}
+                  type='past'
+                />
+              ))}
+            </div>
+          ) : (
+            <p className='text-gray-400'>No past bookings</p>
+          )}
         </section>
       </div>
     </div>
