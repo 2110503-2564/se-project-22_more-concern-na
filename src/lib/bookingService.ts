@@ -52,7 +52,7 @@ export const getBookings = async (
 export const getBooking = async (
   id: string,
   token?: string,
-): Promise<BookingResponse> => {
+): Promise<PBooking> => {
   try {
     const response = await axios.get(apiPath(`/bookings/${id}`), {
       headers: {
