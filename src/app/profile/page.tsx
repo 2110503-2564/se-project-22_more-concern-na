@@ -1,18 +1,21 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { getCurrentUser } from '@/lib/authService';
-import { cn } from '@/lib/utils';
+import { getBookings } from '@/lib/bookingService';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Loader from '@/components/Loader';
 
 export default function ProfilePage() {
-  const [active, setActive] = useState(1);
-  const [upcoming, setUpcoming] = useState(4);
-  const [past, setPast] = useState(2);
+  const [active, setActive] = useState(0);
+  const [upcoming, setUpcoming] = useState(0);
+  const [past, setPast] = useState(0);
   const [userProfile, setUserProfile] = useState<any>(undefined);
   const { data: session } = useSession();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!session) {
@@ -21,32 +24,39 @@ export default function ProfilePage() {
     }
 
     const fetchUser = async () => {
-      const user = await getCurrentUser((session as any)?.user?.token);
+      const token = (session as any)?.user?.token;
+      const user = await getCurrentUser(token);
       console.log(user);
       setUserProfile(user);
+      setLoading(false);
+
+      try {
+        const allBookings = await getBookings({}, token);
+        const bookings = Array.isArray(allBookings)
+          ? allBookings
+          : (allBookings as any).data || [];
+
+        const activeCount = bookings.filter(
+          (booking: any) => booking.status === 'active',
+        ).length;
+
+        const upcomingCount = bookings.filter(
+          (booking: any) => booking.status === 'upcoming',
+        ).length;
+
+        const pastCount = bookings.filter(
+          (booking: any) => booking.status === 'past',
+        ).length;
+
+        setActive(activeCount);
+        setUpcoming(upcomingCount);
+        setPast(pastCount);
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error);
+      }
     };
     fetchUser();
   }, []);
-
-  const buttonClass = `
-  relative bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black 
-  hover:text-[#161D30]
-  transition-all duration-300
-  before:absolute before:inset-0 before:p-0.5
-  before:bg-gradient-to-l before:from-gold-gd1 before:to-gold-gd2 
-  before:opacity-0 hover:before:opacity-100 before:transition-opacity
-  overflow-hidden
-  flex justify-center items-center cursor-pointer
-  rounded-lg
-`;
-
-  const buttonInnerClass = `
-  relative z-10 bg-inherit px-4 py-2 
-  hover:bg-gradient-to-r hover:from-gold-gd2 hover:to-gold-gd1
-  transition-colors duration-300
-  flex justify-center items-center w-full h-full
-  rounded-lg
-`;
 
   const handleInventoryClick = () => {
     router.push('/redemption');
@@ -60,6 +70,14 @@ export default function ProfilePage() {
     router.push('/bookings');
   };
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <main className='flex flex-col items-center p-8 bg-base-gd min-h-screen text-white'>
       {/* Profile content */}
@@ -68,15 +86,13 @@ export default function ProfilePage() {
           <h1 className='text-4xl font-bold font-heading ml-15'>
             Your Profile
           </h1>
-          <div
-            className={cn(buttonClass, 'w-40')}
+          <Button
+            className='w-40'
             onClick={handleInventoryClick}
-            role='button'
-            tabIndex={0}
-            aria-label='Your Inventory'
+            variant='golden'
           >
-            <div className={cn(buttonInnerClass)}>Your Inventory</div>
-          </div>
+            Your Inventory
+          </Button>
         </div>
         {userProfile && (
           <div className='p-6 bg-[#161D30] border border-[#2a3050] shadow-md shadow-black/50 rounded'>
@@ -88,15 +104,13 @@ export default function ProfilePage() {
                   <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
                     picture
                   </div>
-                  <div
-                    className={cn(buttonClass, 'w-48')}
+                  <Button
+                    className='w-48'
                     onClick={handleEditProfileClick}
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Edit Profile'
+                    variant='golden'
                   >
-                    <div className={cn(buttonInnerClass)}>Edit Profile</div>
-                  </div>
+                    Edit Profile
+                  </Button>
                 </div>
 
                 {/* Right column - user info */}
@@ -135,17 +149,13 @@ export default function ProfilePage() {
                   </div>
 
                   <div className='flex justify-center'>
-                    <div
-                      className={cn(buttonClass, 'w-full h-10')}
+                    <Button
+                      className='w-full h-10'
                       onClick={handleManageBookingsClick}
-                      role='button'
-                      tabIndex={0}
-                      aria-label='Manage Bookings'
+                      variant='golden'
                     >
-                      <div className={cn(buttonInnerClass)}>
-                        Manage Bookings
-                      </div>
-                    </div>
+                      Manage Bookings
+                    </Button>
                   </div>
                 </div>
               </div>
