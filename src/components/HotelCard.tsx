@@ -3,14 +3,18 @@ import { MapPin, Phone, Star, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { IHotel } from '../../interface';
 import { Button } from './ui/button';
+import AlertConfirmation from './AlertConfirmation';
+import { useState } from 'react';
 
 interface hotelCardProps {
   hotel: IHotel;
   type?: 'view' | 'edit';
+  onDelete?: (hotelId: string) => void;
 }
 
-export default function HotelCard({ hotel, type }: hotelCardProps) {
+export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
   const router = useRouter();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
   const handleClick = () => {
     if (type === 'view') {
@@ -25,6 +29,14 @@ export default function HotelCard({ hotel, type }: hotelCardProps) {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (hotel._id && onDelete) {
+      await onDelete(hotel._id);
+    }
+    setIsDeleteDialogOpen(false);
   };
 
   const formatPhone = (phoneNumber: string) => {
@@ -94,6 +106,12 @@ export default function HotelCard({ hotel, type }: hotelCardProps) {
           </Button>
         </div>
       )}
+      <AlertConfirmation
+        onOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        type="delete"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
