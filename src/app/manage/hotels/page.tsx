@@ -4,7 +4,7 @@ import HotelCard from '@/components/HotelCard';
 import Loader from '@/components/Loader';
 import { getHotels, createHotel, deleteHotel } from '@/lib/hotelService';
 import { useRouter } from 'next/navigation';
-import { IHotel, HotelResponse, HotelRoom } from '../../../../interface';
+import { IHotel, HotelResponse, Rooms } from '../../../../interface';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,7 +56,7 @@ export default function ManageHotels() {
 
   // Add state for room management
   const [addRooms, setAddRooms] = useState<boolean>(false);
-  const [newRoom, setNewRoom] = useState<HotelRoom>({
+  const [newRoom, setNewRoom] = useState<Rooms>({
     roomType: '',
     picture: '',
     capacity: 1,

@@ -1,11 +1,11 @@
-import { HotelRoom } from '../../interface';
+import { Rooms } from '../../interface';
 import { Button } from './ui/button';
 
 interface RoomCardProps {
-  room: HotelRoom;
+  room: Rooms;
   type?: 'view' | 'manage';
-  onSelectRoom?: (room: HotelRoom) => void;
-  onManageRoom?: (room: HotelRoom) => void;
+  onSelectRoom?: (room: Rooms) => void;
+  onManageRoom?: (room: Rooms) => void;
   availability?: {
     checkedDates: boolean;
     availableCount: number | null;

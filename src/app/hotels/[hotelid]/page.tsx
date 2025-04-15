@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { HotelRoom, IHotel } from '../../../../interface';
+import { Rooms, IHotel } from '../../../../interface';
 
 import { createHotelBooking } from '@/lib/bookingService';
 import {
@@ -33,7 +33,7 @@ import {
 } from '@/lib/hotelService';
 import { useSession } from 'next-auth/react';
 import {
-  BookingRequest,
+  BookingsRequest,
   HotelAvailabilityResponse,
   HotelReviewsResponse,
 } from '../../../../interface';
@@ -44,7 +44,7 @@ export default function HotelDetail({
   params: Promise<{ hotelid: string }>;
 }) {
   const [selectedRooms, setSelectedRooms] = useState<
-    { type: string; count: number; room: HotelRoom }[]
+    { type: string; count: number; room: Rooms }[]
   >([]);
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
@@ -286,7 +286,7 @@ export default function HotelDetail({
         count: item.count,
       }));
 
-      const bookingData: Omit<BookingRequest, 'hotel'> = {
+      const bookingData: Omit<BookingsRequest, 'hotel'> = {
         price: calculateTotalPrice(),
         startDate: checkInDate.format('YYYY-MM-DD'),
         endDate: checkOutDate.format('YYYY-MM-DD'),
@@ -400,7 +400,7 @@ export default function HotelDetail({
     }
   };
 
-  const handleSelectRoom = (room: HotelRoom) => {
+  const handleSelectRoom = (room: Rooms) => {
     const existingRoomIndex = selectedRooms.findIndex(
       (item) => item.type === room.roomType,
     );
