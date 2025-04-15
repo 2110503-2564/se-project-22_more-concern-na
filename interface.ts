@@ -12,7 +12,7 @@ export interface RoomAvailability {
 }
 
 export interface SelectedRoom {
-    type: string;
+    roomType: string;
     count: number;
 }
 
@@ -61,8 +61,8 @@ export interface BookingRequest {
     hotel?: string;
     user?: string;
     price: number;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
     rooms: SelectedRoom[];
 }
 
@@ -155,8 +155,8 @@ export interface BookingsRequest {
     user: string;
     status?: string;
     price: number;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
     rooms: {
         roomType: string;
         count: number;
