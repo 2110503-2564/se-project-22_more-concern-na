@@ -1,18 +1,40 @@
 'use client';
 
+import { getCurrentUser } from '@/lib/authService';
 import { cn } from '@/lib/utils';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { updateUser } from '@/lib/authService';
+import { Button } from '@/components/ui/button';
+import Loader from '@/components/Loader';
+
 
 export default function EditProfilePage() {
+  const [userProfile, setUserProfile] = useState<any>(undefined);
   const [name, setName] = useState('');
   const [telephone, setTelephone] = useState('');
   const router = useRouter();
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setName('');
-    setTelephone('');
-  }, []);
+    if (!session) {
+      signIn();
+      return;
+    }
+
+    const fetchUser = async () => {
+      const token = (session as any)?.user?.token;
+      const user = await getCurrentUser(token);
+      setUserProfile(user);
+      setName(user?.data?.name || '');
+      setTelephone(user?.data?.tel || '');
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [session]);
 
   const buttonClass = `
     relative bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black 
@@ -39,16 +61,51 @@ export default function EditProfilePage() {
     console.log('Change picture');
   };
 
-  const handleSaveChanges = () => {
-    // Logic to save profile changes
-    console.log('Save changes', { name, telephone });
-    router.push('/profile');
+  const handleSaveChanges = async () => {
+    const token = (session as any)?.user?.token;
+  
+    if (!token) {
+      alert("Authentication required.");
+      signIn();
+      return;
+    }
+  
+    try {
+      const result = await updateUser({ name, tel: telephone }, token);
+  
+      if (!result) {
+        alert("Server error or invalid response.");
+        return;
+      }
+  
+      if (result.success) {
+        console.log("Profile updated:", result);
+        router.push("/profile");
+      } else {
+        console.error("Update failed:", result);
+        alert(result.msg || "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      alert("Something went wrong.");
+    }
+
   };
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
+
+  
 
   return (
     <main className='flex flex-col items-center p-8 bg-base-gd min-h-screen text-white'>
       <div className='w-full max-w-4xl'>
-        <div className='p-8 bg-[#161D30] border border-[#2a3050] shadow-md shadow-black/50 rounded'>
+        <div className='p-8 bg-bg-box border border-[#2a3050] shadow-md shadow-black/50 rounded'>
           <h1 className='text-4xl font-bold font-heading mb-2'>Edit Profile</h1>
           <p className='text-gray-400 mb-8 ml-3'>
             Make changes to your profile here. Click save when you're done.
@@ -60,15 +117,13 @@ export default function EditProfilePage() {
               <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-4'>
                 picture
               </div>
-              <div
-                className={cn(buttonClass, 'w-48')}
+              <Button
+                className='w-48'
                 onClick={handleChangePicture}
-                role='button'
-                tabIndex={0}
-                aria-label='Change Picture'
+                variant='golden'
               >
-                <div className={cn(buttonInnerClass)}>Change Picture</div>
-              </div>
+                Change Picture
+              </Button>
             </div>
 
             {/* Right column - form fields */}
@@ -80,7 +135,7 @@ export default function EditProfilePage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder='Name'
-                  className='bg-[#161D30] text-white px-4 py-2 rounded border border-[#2a3050] focus:border-[#D2A047] focus:outline-none w-64'
+                  className='bg-bg-placeholder text-black px-4 py-2 rounded border border-bg-border focus:border-[#D2A047] focus:outline-none w-64'
                 />
               </div>
 
@@ -91,7 +146,7 @@ export default function EditProfilePage() {
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
                   placeholder='Telephone'
-                  className='bg-[#161D30] text-white px-4 py-2 rounded border border-[#2a3050] focus:border-[#D2A047] focus:outline-none w-64'
+                  className='bg-bg-placeholder text-black px-4 py-2 rounded border border-bg-border focus:border-[#D2A047] focus:outline-none w-64'
                 />
               </div>
             </div>
@@ -99,15 +154,13 @@ export default function EditProfilePage() {
 
           {/* Save Changes button */}
           <div className='flex justify-end mt-8'>
-            <div
-              className={cn(buttonClass, 'w-40')}
+            <Button
+              className='w-40'
               onClick={handleSaveChanges}
-              role='button'
-              tabIndex={0}
-              aria-label='Save Changes'
+              variant='golden'
             >
-              <div className={cn(buttonInnerClass)}>Save Changes</div>
-            </div>
+              Save Changes
+            </Button>
           </div>
         </div>
       </div>
