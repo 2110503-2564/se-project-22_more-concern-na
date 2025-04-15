@@ -19,9 +19,22 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setName('');
-    setTelephone('');
-  }, []);
+    if (!session) {
+      signIn();
+      return;
+    }
+
+    const fetchUser = async () => {
+      const token = (session as any)?.user?.token;
+      const user = await getCurrentUser(token);
+      setUserProfile(user);
+      setName(user?.data?.name || '');
+      setTelephone(user?.data?.tel || '');
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [session]);
 
   const handleChangePicture = () => {
     // Logic to change picture
