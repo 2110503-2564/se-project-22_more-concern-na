@@ -1,18 +1,30 @@
 import axios from 'axios';
 import {
-  Booking,
-  BookingQuery,
-  BookingRequest,
+  IBooking,
+  BookingsRequest,
   BookingResponse,
-  CreateBookingResponse,
   GenericResponse,
+  PBooking,
 } from '../../interface';
 import { apiPath } from './shared';
 
 export const getBookings = async (
-  queryParams?: BookingQuery,
+  queryParams?: {
+    pastPage?: number;
+    pastPageSize?: number;
+    activePage?: number;
+    activePageSize?: number;
+    upcomingPage?: number;
+    upcomingPageSize?: number;
+  },
   token?: string,
-): Promise<BookingResponse> => {
+): Promise<{
+  success: boolean;
+  past?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
+  active?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
+  upcoming?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
+  msg?: string;
+}> => {
   try {
     const response = await axios.get(apiPath('/bookings'), {
       params: queryParams,
@@ -40,7 +52,7 @@ export const getBookings = async (
 export const getBooking = async (
   id: string,
   token?: string,
-): Promise<Booking> => {
+): Promise<BookingResponse> => {
   try {
     const response = await axios.get(apiPath(`/bookings/${id}`), {
       headers: {
@@ -52,7 +64,7 @@ export const getBooking = async (
       throw new Error(`Error: ${response.status}`);
     }
 
-    return await response.data.booking;
+    return await response.data;
   } catch (error: any) {
     console.error(`Error fetching booking with ID ${id}:`, error);
     if (error.response && error.response.data) {
@@ -65,9 +77,9 @@ export const getBooking = async (
 };
 
 export const createBooking = async (
-  bookingData: BookingRequest,
+  bookingData: BookingsRequest,
   token?: string,
-): Promise<CreateBookingResponse> => {
+): Promise<GenericResponse> => {
   try {
     const response = await axios.post(apiPath('/bookings'), bookingData, {
       headers: {
@@ -94,9 +106,9 @@ export const createBooking = async (
 
 export const createHotelBooking = async (
   hotelId: string,
-  bookingData: Omit<BookingRequest, 'hotel'>,
+  bookingData: Omit<BookingsRequest, 'hotel'>,
   token?: string,
-): Promise<CreateBookingResponse> => {
+): Promise<GenericResponse> => {
   try {
     const bookingWithHotel = {
       ...bookingData,
@@ -112,7 +124,7 @@ export const createHotelBooking = async (
 
 export const updateBooking = async (
   id: string,
-  bookingData: Partial<BookingRequest>,
+  bookingData: Partial<BookingsRequest>,
   token?: string,
 ): Promise<GenericResponse> => {
   try {
@@ -157,6 +169,60 @@ export const deleteBooking = async (
     return await response.data;
   } catch (error: any) {
     console.error(`Error deleting booking with ID ${id}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export const checkInBooking = async (
+  id: string,
+  token?: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.put(apiPath(`/bookings/${id}/checkIn`), {}, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error checking in booking with ID ${id}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export const completeBooking = async (
+  id: string,
+  token?: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.put(apiPath(`/bookings/${id}/completed`), {}, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error completing booking with ID ${id}:`, error);
     if (error.response && error.response.data) {
       throw new Error(
         error.response.data.msg || `Error: ${error.response.status}`,

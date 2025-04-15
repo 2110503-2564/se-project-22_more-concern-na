@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { GenericResponse, HotelRoom } from '../../interface';
+import { GenericResponse, Rooms } from '../../interface';
 import { apiPath } from './shared';
 
 export const addRoom = async (
   hotelId: string,
-  roomData: Omit<HotelRoom, '_id'>,
+  roomData: Omit<Rooms, '_id'>,
   token?: string,
 ): Promise<GenericResponse> => {
   try {
@@ -38,7 +38,7 @@ export const addRoom = async (
 export const updateRoom = async (
   hotelId: string,
   roomId: string,
-  roomData: Partial<HotelRoom>,
+  roomData: Partial<Rooms>,
   token?: string,
 ): Promise<GenericResponse> => {
   try {
@@ -103,7 +103,7 @@ export const deleteRoom = async (
   }
 };
 
-export const getRooms = async (hotelId: string): Promise<HotelRoom[]> => {
+export const getRooms = async (hotelId: string): Promise<Rooms[]> => {
   try {
     const response = await axios.get(apiPath(`/hotels/${hotelId}`));
 
@@ -121,7 +121,7 @@ export const getRooms = async (hotelId: string): Promise<HotelRoom[]> => {
 export const getRoom = async (
   hotelId: string,
   roomId: string,
-): Promise<HotelRoom | null> => {
+): Promise<Rooms | null> => {
   try {
     const rooms = await getRooms(hotelId);
     const room = rooms.find((room) => room._id === roomId);
