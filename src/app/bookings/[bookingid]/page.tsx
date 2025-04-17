@@ -120,7 +120,6 @@ export default function BookingDetailPage({
 
       const resolveParams = await params;
       const bookingId = resolveParams.bookingid;
-      console.log('Update data:', updateData);
       await updateBooking(bookingId, updateData, token);
 
       setBooking({
