@@ -147,7 +147,6 @@ export default function BookingDetailPage({
 
       toast.success('Booking cancelled successfully');
 
-      // Redirect to bookings page
       router.push('/bookings');
     } catch (err: any) {
       console.error('Error cancelling booking:', err);
@@ -198,16 +197,12 @@ export default function BookingDetailPage({
     });
   };
 
-  // Construct address from hotel data
   const formatAddress = (hotel: any) => {
     if (!hotel) return '';
     return `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province}, ${hotel.postalCode}`;
   };
 
-  // Calculate total price based on room selections
   const calculateTotalPrice = () => {
-    // This is a placeholder. In a real app, you would calculate based on room rates
-    // For now, let's just assume each room type has a fixed price
     const roomPrices: { [key: string]: number } = {
       'Standard Room': 100,
       'Family Suite': 200,
@@ -216,7 +211,7 @@ export default function BookingDetailPage({
     };
 
     return editedRooms.reduce((total, room) => {
-      const price = roomPrices[room.roomType] || 100; // Default price if not found
+      const price = roomPrices[room.roomType];
       return total + price * room.count;
     }, 0);
   };
