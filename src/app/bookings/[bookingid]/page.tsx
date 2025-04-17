@@ -5,11 +5,9 @@ import DateBookFill from '@/components/DateBookFill';
 import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { getCurrentUser } from '@/lib/authService';
 import { deleteBooking, getBooking, updateBooking } from '@/lib/bookingService';
-import { getHotel } from '@/lib/hotelService';
-import dayjs from 'dayjs';
-import { ArrowLeft, MapPin, Phone, Star } from 'lucide-react';
+import dayjs, { Dayjs } from 'dayjs';
+import { ArrowLeft, MapPin, Minus, Phone, Plus, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -27,23 +25,18 @@ export default function BookingDetailPage({
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const token = (session as any)?.token;
 
-  // For editing dates
   const [isEditing, setIsEditing] = useState(false);
-  const [newCheckInDate, setNewCheckInDate] = useState<dayjs.Dayjs | null>(
-    null,
-  );
-  const [newCheckOutDate, setNewCheckOutDate] = useState<dayjs.Dayjs | null>(
-    null,
-  );
+  const [newCheckInDate, setNewCheckInDate] = useState<Dayjs | null>(null);
+  const [newCheckOutDate, setNewCheckOutDate] = useState<Dayjs | null>(null);
+  const [editedRooms, setEditedRooms] = useState<any[]>([]);
 
-  // For confirmation dialog
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
-  // Status calculation
   const getBookingStatus = () => {
     if (!booking) return 'Loading';
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -66,23 +59,17 @@ export default function BookingDetailPage({
     const fetchBookingDetails = async () => {
       try {
         setIsLoading(true);
-        const token = (session as any)?.token;
 
-        // Fetch booking details from API
         const resolveParams = await params;
         const bookingId = resolveParams.bookingid;
         const bookingData = await getBooking(bookingId, token);
-        
-        console.log('Booking data:', bookingData);
-        setBooking(bookingData.data);
-        setHotel(bookingData.data.hotel);
-        setUser(bookingData.data.user);
 
-        // Initialize date states for editing after setting the booking data
-        if (bookingData.data) {
-          setNewCheckInDate(dayjs(bookingData.data.startDate));
-          setNewCheckOutDate(dayjs(bookingData.data.endDate));
-        }
+        console.log('Booking data:', bookingData);
+        setBooking(bookingData);
+        setHotel(bookingData.hotel);
+        setUser(bookingData.user);
+        setEditedRooms(bookingData.rooms ? [...bookingData.rooms] : []);
+
       } catch (err: any) {
         console.error('Error fetching booking details:', err);
         setError(err.message || 'Failed to load booking details');
@@ -94,14 +81,30 @@ export default function BookingDetailPage({
     if (status === 'authenticated') {
       fetchBookingDetails();
     }
-  }, [params, session, status]);
+  }, []);
 
   const handleBack = () => {
-    router.push('/bookings');
+    router.back();
   };
 
   const handleEditToggle = () => {
+    if (isEditing) {
+      setEditedRooms(booking.rooms ? [...booking.rooms] : []);
+    }
     setIsEditing(!isEditing);
+  };
+
+  const handleRoomCountChange = (roomIndex: number, increment: number) => {
+    const updatedRooms = [...editedRooms];
+    const newCount = updatedRooms[roomIndex].count + increment;
+
+    if (newCount <= 0) {
+      updatedRooms.splice(roomIndex, 1);
+    } else {
+      updatedRooms[roomIndex].count = newCount;
+    }
+
+    setEditedRooms(updatedRooms);
   };
 
   const handleSaveChanges = async () => {
@@ -112,24 +115,26 @@ export default function BookingDetailPage({
       const updateData = {
         startDate: newCheckInDate.format('YYYY-MM-DD'),
         endDate: newCheckOutDate.format('YYYY-MM-DD'),
+        rooms: editedRooms,
       };
 
       const resolveParams = await params;
       const bookingId = resolveParams.bookingid;
+      console.log('Update data:', updateData);
       await updateBooking(bookingId, updateData, token);
 
-      // Update local state
       setBooking({
         ...booking,
         startDate: newCheckInDate.format('YYYY-MM-DD'),
         endDate: newCheckOutDate.format('YYYY-MM-DD'),
+        rooms: [...editedRooms],
       });
 
       setIsEditing(false);
-      toast.success('Booking dates updated successfully!');
+      toast.success('Booking updated successfully!');
     } catch (err: any) {
       console.error('Error updating booking:', err);
-      toast.error('Failed to update booking dates');
+      toast.error('Failed to update booking');
     }
   };
 
@@ -153,12 +158,10 @@ export default function BookingDetailPage({
   const isCheckInDateDisabled = (date: dayjs.Dayjs) => {
     const today = dayjs();
 
-    // Can't select dates in the past
     if (date.isBefore(today, 'day')) {
       return true;
     }
 
-    // Can't edit check-in date for active or past bookings
     const status = getBookingStatus();
     if (status === 'Active' || status === 'Completed') {
       return true;
@@ -167,18 +170,17 @@ export default function BookingDetailPage({
     return false;
   };
 
-  const isCheckOutDateDisabled = (date: dayjs.Dayjs) => {
-    // Date must be after check-in
-    if (newCheckInDate && date.isBefore(newCheckInDate, 'day')) {
+  const isCheckOutDateDisabled = (date: Dayjs) => {
+    if (!newCheckInDate) return true;
+
+    if (date.isBefore(newCheckInDate, 'day')) {
       return true;
     }
 
-    // Max stay is 3 days
-    if (newCheckInDate && date.diff(newCheckInDate, 'day') > 3) {
+    if (date.diff(newCheckInDate, 'day') > 3) {
       return true;
     }
 
-    // Can't edit check-out date for past bookings
     const status = getBookingStatus();
     if (status === 'Completed') {
       return true;
@@ -200,6 +202,23 @@ export default function BookingDetailPage({
   const formatAddress = (hotel: any) => {
     if (!hotel) return '';
     return `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province}, ${hotel.postalCode}`;
+  };
+
+  // Calculate total price based on room selections
+  const calculateTotalPrice = () => {
+    // This is a placeholder. In a real app, you would calculate based on room rates
+    // For now, let's just assume each room type has a fixed price
+    const roomPrices: { [key: string]: number } = {
+      'Standard Room': 100,
+      'Family Suite': 200,
+      'Deluxe Room': 150,
+      'Executive Suite': 300,
+    };
+
+    return editedRooms.reduce((total, room) => {
+      const price = roomPrices[room.roomType] || 100; // Default price if not found
+      return total + price * room.count;
+    }, 0);
   };
 
   if (isLoading || status === 'loading') {
@@ -252,7 +271,9 @@ export default function BookingDetailPage({
 
                   <div className='flex items-center mb-2'>
                     <Phone className='h-4 w-4 mr-2' />
-                    <span className='text-gray-300'>{hotel.tel || 'Not available'}</span>
+                    <span className='text-gray-300'>
+                      {hotel.tel || 'Not available'}
+                    </span>
                   </div>
 
                   <div className='flex items-center'>
@@ -271,7 +292,7 @@ export default function BookingDetailPage({
             </div>
 
             <div className='bg-bg-box border border-bg-border rounded-md p-6 mb-6'>
-              <h2 className='text-2xl font-bold font-heading mb-4 font-heading'>
+              <h2 className='text-2xl font-bold mb-4 font-heading'>
                 Stay Details
               </h2>
 
@@ -294,10 +315,11 @@ export default function BookingDetailPage({
                   <div>
                     <span className='text-gray-400 block'>Duration</span>
                     <span className='text-lg font-medium'>
-                      {booking && dayjs(booking.endDate).diff(
-                        dayjs(booking.startDate),
-                        'day',
-                      )}{' '}
+                      {booking &&
+                        dayjs(booking.endDate).diff(
+                          dayjs(booking.startDate),
+                          'day',
+                        )}{' '}
                       nights
                     </span>
                   </div>
@@ -324,31 +346,69 @@ export default function BookingDetailPage({
               <div>
                 <h3 className='text-xl font-medium mb-3'>Rooms Booked</h3>
                 <div className='space-y-3'>
-                  {booking && booking.rooms &&
-                    booking.rooms.map((room: any, index: number) => (
-                      <div
-                        key={index}
-                        className='p-3 bg-gray-800/50 border border-bg-border rounded-md'
-                      >
-                        <div className='flex justify-between'>
-                          <span>{room.roomType}</span>
-                          <span>x{room.count}</span>
+                  {!isEditing
+                    ? // View mode - just show rooms
+                      booking &&
+                      booking.rooms &&
+                      booking.rooms.map((room: any, index: number) => (
+                        <div
+                          key={index}
+                          className='p-3 bg-gray-800/50 border border-bg-border rounded-md'
+                        >
+                          <div className='flex justify-between'>
+                            <span>{room.roomType}</span>
+                            <span>x{room.count}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    : // Edit mode - allow changing room count
+                      editedRooms.map((room: any, index: number) => (
+                        <div
+                          key={index}
+                          className='p-3 bg-gray-800/50 border border-bg-border rounded-md'
+                        >
+                          <div className='flex justify-between items-center'>
+                            <span>{room.roomType}</span>
+                            <div className='flex items-center gap-3'>
+                              <Button
+                                variant='outline'
+                                size='icon'
+                                className='h-6 w-6'
+                                onClick={() => handleRoomCountChange(index, -1)}
+                              >
+                                <Minus className='h-3 w-3' />
+                              </Button>
+                              <span className='w-6 text-center'>
+                                {room.count}
+                              </span>
+                              <Button
+                                variant='outline'
+                                size='icon'
+                                className='h-6 w-6'
+                                onClick={() => handleRoomCountChange(index, 1)}
+                              >
+                                <Plus className='h-3 w-3' />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                 </div>
 
                 <div className='flex justify-between mt-4 pt-3 border-t border-gray-700'>
                   <span className='font-bold'>Total Price</span>
                   <span className='font-bold text-amber-300'>
-                    ${booking?.price?.toLocaleString()}
+                    $
+                    {isEditing
+                      ? calculateTotalPrice().toLocaleString()
+                      : booking?.price?.toLocaleString()}
                   </span>
                 </div>
               </div>
             </div>
 
             <div className='bg-bg-box border border-bg-border rounded-md p-6'>
-              <h2 className='text-2xl font-bold font-heading mb-4 font-heading'>
+              <h2 className='text-2xl font-bold font-heading mb-4'>
                 Guest Information
               </h2>
 
@@ -410,16 +470,21 @@ export default function BookingDetailPage({
                     <Button
                       variant='golden'
                       onClick={handleSaveChanges}
-                      disabled={!newCheckInDate || !newCheckOutDate}
+                      disabled={
+                        !newCheckInDate ||
+                        !newCheckOutDate ||
+                        editedRooms.length === 0
+                      }
                     >
                       Save Changes
                     </Button>
 
                     <Button
-                      variant='outline'
+                      variant='secondary'
                       onClick={() => {
                         setNewCheckInDate(dayjs(booking.startDate));
                         setNewCheckOutDate(dayjs(booking.endDate));
+                        setEditedRooms(booking.rooms ? [...booking.rooms] : []);
                         setIsEditing(false);
                       }}
                     >

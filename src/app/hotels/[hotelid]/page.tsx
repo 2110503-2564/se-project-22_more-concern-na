@@ -37,6 +37,7 @@ import {
   HotelAvailabilityResponse,
   HotelReviewsResponse,
 } from '../../../../interface';
+import { useRouter } from 'next/navigation';
 
 export default function HotelDetail({
   params,
@@ -111,6 +112,7 @@ export default function HotelDetail({
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
+  const router = useRouter();
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -306,7 +308,7 @@ export default function HotelDetail({
           icon: <Check className='h-5 w-5 text-luxe-gold' />,
           action: {
             label: 'View Booking',
-            onClick: () => (window.location.href = response.redirectUrl),
+            onClick: () => (router.push(`/bookings`)),
           },
           style: {
             backgroundColor: '#06402b',
