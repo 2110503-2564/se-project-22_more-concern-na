@@ -53,7 +53,6 @@ export default function ManageBookingsPage() {
         
         const response = await getBookings(undefined, token);
         setBookingsData(response);
-        console.log('Bookings data:', response);
         
         // Combine all bookings for admin/manager view
         const combinedBookings = [
