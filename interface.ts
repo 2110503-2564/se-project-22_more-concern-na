@@ -20,7 +20,7 @@ export interface Pagination {
 
 //-----HotelSchema Interface-----
 export interface RoomAvailability {
-    type: string;
+    roomType: string;
     remainCount: number;
 }
 export interface Rooms {

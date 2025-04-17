@@ -361,6 +361,7 @@ export default function HotelDetail({
         checkOutDate.format('YYYY-MM-DD'),
         token,
       );
+      console.log('Availability response:', response);
 
       setAvailabilityData(response);
       setIsAvailabilityChecking(false);
@@ -602,7 +603,7 @@ export default function HotelDetail({
               const availabilityInfo =
                 isAvailabilityConfirmed && availabilityData?.rooms
                   ? availabilityData.rooms.find(
-                      (avail) => avail.type === room.roomType,
+                      (avail) => avail.roomType === room.roomType,
                     )
                   : null;
 
