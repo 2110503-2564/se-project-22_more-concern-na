@@ -64,7 +64,8 @@ export const getBooking = async (
       throw new Error(`Error: ${response.status}`);
     }
 
-    return await response.data;
+    const BookingData = response.data
+    return await BookingData.booking;
   } catch (error: any) {
     console.error(`Error fetching booking with ID ${id}:`, error);
     if (error.response && error.response.data) {
@@ -126,7 +127,7 @@ export const updateBooking = async (
   id: string,
   bookingData: Partial<BookingsRequest>,
   token?: string,
-): Promise<GenericResponse> => {
+): Promise<PBooking> => {
   try {
     const response = await axios.put(apiPath(`/bookings/${id}`), bookingData, {
       headers: {

@@ -35,8 +35,6 @@ export const BookingCard = ({
     });
   };
 
-  console.log("loc:" + location);
-
   return (
     <div className='w-full bg-bg-box border border-bg-border bg-opacity-30 p-4 rounded-lg font-detail'>
       <div className='flex justify-between items-start'>
