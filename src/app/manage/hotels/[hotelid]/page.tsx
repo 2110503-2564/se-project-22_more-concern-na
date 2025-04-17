@@ -19,7 +19,7 @@ import { MapPin, Phone, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { HotelRoom, IHotel } from '../../../../../interface';
+import { Rooms, IHotel } from '../../../../../interface';
 import { useRouter } from 'next/navigation';
 
 export default function ManageHotelDetail({
@@ -199,7 +199,7 @@ export default function ManageHotelDetail({
 
   const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
 
-  const handleManageRoom = (room: HotelRoom) => {
+  const handleManageRoom = (room: Rooms) => {
     router.push(`/manage/hotels/${hotel?._id}/${room._id}`);
   }
 

@@ -6,6 +6,7 @@ import { getBookings } from '@/lib/bookingService';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { IUser, PBooking } from '../../../interface';
 import Loader from '@/components/Loader';
 
 export default function ProfilePage() {
@@ -16,6 +17,7 @@ export default function ProfilePage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const token = (session as any)?.user?.token;
 
   useEffect(() => {
     if (!session) {
@@ -24,29 +26,16 @@ export default function ProfilePage() {
     }
 
     const fetchUser = async () => {
-      const token = (session as any)?.user?.token;
       const user = await getCurrentUser(token);
       console.log(user);
       setUserProfile(user);
       setLoading(false);
 
       try {
-        const allBookings = await getBookings({}, token);
-        const bookings = Array.isArray(allBookings)
-          ? allBookings
-          : (allBookings as any).data || [];
 
-        const activeCount = bookings.filter(
-          (booking: any) => booking.status === 'active',
-        ).length;
-
-        const upcomingCount = bookings.filter(
-          (booking: any) => booking.status === 'upcoming',
-        ).length;
-
-        const pastCount = bookings.filter(
-          (booking: any) => booking.status === 'past',
-        ).length;
+        const activeCount = user.bookings.active.count;
+        const upcomingCount = user.bookings.upcoming.count;
+        const pastCount = user.bookings.past.count;
 
         setActive(activeCount);
         setUpcoming(upcomingCount);
@@ -115,11 +104,11 @@ export default function ProfilePage() {
 
                 {/* Right column - user info */}
                 <div className='flex flex-col justify-center ml-6 font-details'>
-                  <p className='text-xl mb-6'>Name : {userProfile.data.name}</p>
+                  <p className='text-xl mb-6'>Name : {userProfile.name}</p>
                   <p className='text-xl mb-6'>
-                    Email : {userProfile.data.email}
+                    Email : {userProfile.email}
                   </p>
-                  <p className='text-xl mb-6'>Tel : {userProfile.data.tel} </p>
+                  <p className='text-xl mb-6'>Tel : {userProfile.tel} </p>
                 </div>
               </div>
 

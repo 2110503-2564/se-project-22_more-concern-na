@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { HotelRoom, IHotel } from '../../../../interface';
+import { Rooms, IHotel } from '../../../../interface';
 
 import { createHotelBooking } from '@/lib/bookingService';
 import {
@@ -33,10 +33,11 @@ import {
 } from '@/lib/hotelService';
 import { useSession } from 'next-auth/react';
 import {
-  BookingRequest,
+  BookingsRequest,
   HotelAvailabilityResponse,
   HotelReviewsResponse,
 } from '../../../../interface';
+import { useRouter } from 'next/navigation';
 
 export default function HotelDetail({
   params,
@@ -44,7 +45,7 @@ export default function HotelDetail({
   params: Promise<{ hotelid: string }>;
 }) {
   const [selectedRooms, setSelectedRooms] = useState<
-    { type: string; count: number; room: HotelRoom }[]
+    { type: string; count: number; room: Rooms }[]
   >([]);
   const [checkInDate, setCheckInDate] = useState<Dayjs | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(null);
@@ -111,6 +112,7 @@ export default function HotelDetail({
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
+  const router = useRouter();
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -273,7 +275,7 @@ export default function HotelDetail({
         description: 'Missing required booking information or not logged in',
         style: {
           backgroundColor: '#a52a2a',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -286,7 +288,7 @@ export default function HotelDetail({
         count: item.count,
       }));
 
-      const bookingData: Omit<BookingRequest, 'hotel'> = {
+      const bookingData: Omit<BookingsRequest, 'hotel'> = {
         price: calculateTotalPrice(),
         startDate: checkInDate.format('YYYY-MM-DD'),
         endDate: checkOutDate.format('YYYY-MM-DD'),
@@ -303,14 +305,14 @@ export default function HotelDetail({
         toast.success('Booking Confirmed!', {
           description: `Your stay at ${hotel.name} has been successfully booked.`,
           duration: 5000,
-          icon: <Check className='h-5 w-5 text-luxe-gold' />,
+          icon: <Check className='h-5 w-5' />,
           action: {
             label: 'View Booking',
-            onClick: () => (window.location.href = response.redirectUrl),
+            onClick: () => (router.push(`/bookings`)),
           },
           style: {
             backgroundColor: '#06402b',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -327,7 +329,7 @@ export default function HotelDetail({
           description: response.msg || 'Something went wrong',
           style: {
             backgroundColor: '#a52a2a',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -338,7 +340,7 @@ export default function HotelDetail({
         description: error.message || 'Something went wrong',
         style: {
           backgroundColor: '#a52a2a',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -367,10 +369,10 @@ export default function HotelDetail({
         setIsAvailabilityConfirmed(true);
         toast.info('Rooms Available!', {
           description: `We have rooms available for your selected dates.`,
-          icon: <Info className='h-5 w-5 text-luxe-gold' />,
+          icon: <Info className='h-5 w-5' />,
           style: {
             backgroundColor: '#2A2F3F',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -381,7 +383,7 @@ export default function HotelDetail({
           description: response.msg || 'No rooms available for selected dates',
           style: {
             backgroundColor: '#a52a2a',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -393,14 +395,14 @@ export default function HotelDetail({
         description: 'Failed to check room availability',
         style: {
           backgroundColor: '#a52a2a',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
     }
   };
 
-  const handleSelectRoom = (room: HotelRoom) => {
+  const handleSelectRoom = (room: Rooms) => {
     const existingRoomIndex = selectedRooms.findIndex(
       (item) => item.type === room.roomType,
     );
@@ -415,7 +417,7 @@ export default function HotelDetail({
           description: `Added 1 ${room.roomType} to your selection.`,
           style: {
             backgroundColor: '#2A2F3F',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -424,7 +426,7 @@ export default function HotelDetail({
           description: `You've selected all available ${room.roomType} rooms.`,
           style: {
             backgroundColor: '#a52a2a',
-            color: 'var(--color-bg-placeholder)',
+            color: 'white',
             border: '1px solid var(--color-bg-border)',
           },
         });
@@ -439,7 +441,7 @@ export default function HotelDetail({
         description: `Added 1 ${room.roomType} to your selection.`,
         style: {
           backgroundColor: '#2A2F3F',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -467,7 +469,7 @@ export default function HotelDetail({
         description: `Removed ${originalRoom.type} from your selection.`,
         style: {
           backgroundColor: '#2A2F3F',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -479,7 +481,7 @@ export default function HotelDetail({
       toast(`Updated ${roomType} quantity to ${updatedRoom.count}.`, {
         style: {
           backgroundColor: '#2A2F3F',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -496,7 +498,7 @@ export default function HotelDetail({
         description: `You've selected all available ${roomType} rooms.`,
         style: {
           backgroundColor: '#a52a2a',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -518,7 +520,7 @@ export default function HotelDetail({
       toast(`Updated ${roomType} quantity to ${updatedRoom.count}.`, {
         style: {
           backgroundColor: '#2A2F3F',
-          color: 'var(--color-bg-placeholder)',
+          color: 'white',
           border: '1px solid var(--color-bg-border)',
         },
       });
@@ -600,7 +602,7 @@ export default function HotelDetail({
               const availabilityInfo =
                 isAvailabilityConfirmed && availabilityData?.rooms
                   ? availabilityData.rooms.find(
-                      (avail) => avail.type === room.roomType,
+                      (avail) => avail.roomType === room.roomType,
                     )
                   : null;
 

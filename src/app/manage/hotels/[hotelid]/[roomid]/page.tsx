@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { getRoom, updateRoom, deleteRoom } from '@/lib/roomService';
-import { HotelRoom } from '@/../interface';
+import { Rooms } from '@/../interface';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/Loader';
@@ -14,7 +14,7 @@ export default function EditRoom({
 }: {
   params: Promise<{ hotelid: string; roomid: string }>;
 }) {
-  const [room, setRoom] = useState<HotelRoom | null>(null);
+  const [room, setRoom] = useState<Rooms | null>(null);
   const [roomType, setRoomType] = useState('');
   const [capacity, setCapacity] = useState<number>(1);
   const [price, setPrice] = useState<number>(0);
