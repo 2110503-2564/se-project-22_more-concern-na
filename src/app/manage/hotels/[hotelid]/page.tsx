@@ -264,6 +264,7 @@ export default function ManageHotelDetail({
           capacity: 1,
           maxCount: 1,
           price: 0,
+        });
         setIsCreateRoomOpen(false);
 
         toast.success('Room created successfully');
