@@ -49,17 +49,18 @@ export default function NavBar() {
   const isLoggedIn = session !== null;
   let role: 'admin' | 'hotelManager' | 'user' | null;
   role = session ? (session.user as any)?.data.role : null;
+  const hotelid = (session?.user as any).data.hotel
   return (
     <nav className='h-16 w-full flex items-center px-4'>
       {role === 'admin' ? (
-        <DashboardButton link='/admin/report'>
-          <Settings />
-          Manage
-        </DashboardButton>
-      ) : role === 'hotelManager' ? (
-        <DashboardButton link='/hotels'>
+        <DashboardButton link='/admin'>
           <Wrench />
           Dashboard
+        </DashboardButton>
+      ) : role === 'hotelManager' ? (
+        <DashboardButton link={`/manage/hotel/${hotelid}`}>
+          <Settings />
+          Manage
         </DashboardButton>
       ) : (
         <DashboardButton link='/hotels'>
