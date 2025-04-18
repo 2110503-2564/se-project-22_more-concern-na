@@ -2,6 +2,7 @@
 import Loader from '@/components/Loader';
 import Review, { ReviewType } from '@/components/Review';
 import RoomCard from '@/components/RoomCard';
+import RoomMangementDialog from '@/components/RoomMangementDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,13 +15,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { getHotel, getHotelReviews, updateHotel } from '@/lib/hotelService';
+import { addRoom } from '@/lib/roomService';
 import dayjs from 'dayjs';
 import { MapPin, Phone, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Rooms, IHotel } from '../../../../../interface';
-import { useRouter } from 'next/navigation';
+import { IHotel, Rooms } from '../../../../../interface';
 
 export default function ManageHotelDetail({
   params,
@@ -34,8 +36,18 @@ export default function ManageHotelDetail({
   const [editDescription, setEditDescription] = useState('');
   const [filteredreview, setfilteredReview] = useState<ReviewType[]>([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  // Add new state for room editing
+  const [isRoomEditOpen, setIsRoomEditOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Rooms | null>(null);
+  const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
+  const [newRoom, setNewRoom] = useState<Omit<Rooms, '_id'>>({
+    roomType: '',
+    capacity: 1,
+    maxCount: 1,
+    price: 0.0,
+  });
   const { data: session } = useSession();
-  const token = (session as any).user.token;
+  const token = (session as any)?.user?.token;
   const router = useRouter();
 
   useEffect(() => {
@@ -177,6 +189,97 @@ export default function ManageHotelDetail({
     }
   };
 
+  // Function to handle room management
+  const handleManageRoom = (room: Rooms) => {
+    setSelectedRoom(room);
+    setIsRoomEditOpen(true);
+  };
+
+  const handleRoomUpdated = async (updatedRoom: Rooms) => {
+    if (!hotel?._id || !token) return;
+
+    try {
+      const updatedRooms = hotel.rooms.map((room) =>
+        room._id === updatedRoom._id ? updatedRoom : room,
+      );
+
+      setHotel({
+        ...hotel,
+        rooms: updatedRooms,
+      });
+
+      toast.success('Room updated successfully');
+    } catch (error: any) {
+      toast.error('Update failed', {
+        description: error.message || 'Something went wrong',
+      });
+    }
+  };
+
+  const handleRoomDeleted = async (roomId: string) => {
+    if (!hotel?._id || !token) return;
+
+    try {
+      const updatedRooms = hotel.rooms.filter((room) => room._id !== roomId);
+
+      setHotel({
+        ...hotel,
+        rooms: updatedRooms,
+      });
+
+      toast.success('Room has been deleted');
+    } catch (error: any) {
+      toast.error('Delete failed', {
+        description: error.message || 'Something went wrong',
+      });
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    if (!hotel?._id || !token) return;
+
+    // Validate required fields
+    if (
+      !newRoom.roomType ||
+      newRoom.price <= 0 ||
+      newRoom.capacity < 1 ||
+      newRoom.maxCount < 1
+    ) {
+      toast.error('Please fill in all required fields with valid values');
+      return;
+    }
+
+    try {
+      // Use the addRoom function from roomService
+      const response = await addRoom(hotel._id, newRoom, token);
+
+      if (response.success) {
+        // Fetch the updated hotel to get the new room with its ID
+        const updatedHotelData = await getHotel(hotel._id);
+        setHotel(updatedHotelData);
+
+        // Reset the form and close the dialog
+        setNewRoom({
+          roomType: '',
+          capacity: 1,
+          maxCount: 1,
+          price: 0.00005,
+        });
+        setIsCreateRoomOpen(false);
+
+        toast.success('Room created successfully');
+      } else {
+        toast.error('Creation failed', {
+          description: response.msg || 'Something went wrong',
+        });
+      }
+    } catch (error: any) {
+      toast.error('Creation failed', {
+        description: error.message || 'Something went wrong',
+      });
+    }
+  };
+
   const originalAddress = hotel
     ? {
         name: hotel.name,
@@ -198,10 +301,6 @@ export default function ManageHotelDetail({
   }
 
   const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
-
-  const handleManageRoom = (room: Rooms) => {
-    router.push(`/manage/hotels/${hotel?._id}/${room._id}`);
-  }
 
   return (
     <main className='flex-grow bg-luxe-dark text-white'>
@@ -251,14 +350,23 @@ export default function ManageHotelDetail({
             </div>
           </div>
 
-          <h2 className='text-2xl font-bold mb-6 font-detail'>Our Rooms</h2>
+          <div className='flex justify-between items-center mb-6'>
+            <h2 className='text-2xl font-bold font-detail'>Our Rooms</h2>
+            <Button
+              variant='golden'
+              size='sm'
+              onClick={() => setIsCreateRoomOpen(true)}
+            >
+              Create Room
+            </Button>
+          </div>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             {hotel?.rooms?.map((room, index) => (
               <RoomCard
                 key={index}
                 room={room}
                 type='manage'
-                onManageRoom={() => {handleManageRoom(room)}}
+                onManageRoom={() => handleManageRoom(room)}
               />
             ))}
           </div>
@@ -409,6 +517,154 @@ export default function ManageHotelDetail({
           </div>
         </div>
       </div>
+
+      {/* Room Edit Dialog */}
+      {selectedRoom && hotel?._id && (
+        <RoomMangementDialog
+          isOpen={isRoomEditOpen}
+          onOpenChange={setIsRoomEditOpen}
+          hotelId={hotel._id}
+          room={selectedRoom}
+          token={token}
+          onRoomUpdated={handleRoomUpdated}
+          onRoomDeleted={handleRoomDeleted}
+        />
+      )}
+      {hotel?._id && (
+        <AlertDialog open={isCreateRoomOpen} onOpenChange={setIsCreateRoomOpen}>
+          <AlertDialogContent className='bg-bg-box border-bg-border text-white max-w-md max-h-[90vh] overflow-y-auto'>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='text-white font-heading text-2xl'>
+                Create New Room
+              </AlertDialogTitle>
+              <AlertDialogDescription className='text-gray-300 font-detail'>
+                <div className='space-y-4 py-2'>
+                  <div className='mb-4'>
+                    <label
+                      htmlFor='roomType'
+                      className='block text-sm font-detail mb-1'
+                    >
+                      Room Type
+                    </label>
+                    <input
+                      id='roomType'
+                      type='text'
+                      placeholder='Enter room type'
+                      value={newRoom.roomType}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, roomType: e.target.value })
+                      }
+                      className='w-full p-2 rounded-md bg-gray-300 text-black'
+                    />
+                  </div>
+
+                  <div className='grid grid-cols-2 gap-4 mb-4'>
+                    <div>
+                      <label
+                        htmlFor='roomPrice'
+                        className='block text-sm font-detail mb-1'
+                      >
+                        Price per Night (₿)
+                      </label>
+                      <input
+                        id='roomPrice'
+                        type='number'
+                        min='0'
+                        step='0.00001'
+                        placeholder='1000'
+                        value={newRoom.price}
+                        onChange={(e) =>
+                          setNewRoom({
+                            ...newRoom,
+                            price: parseFloat(e.target.value),
+                          })
+                        }
+                        className='w-full p-2 rounded-md bg-gray-300 text-black'
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor='roomCapacity'
+                        className='block text-sm font-detail mb-1'
+                      >
+                        Capacity
+                      </label>
+                      <input
+                        id='roomCapacity'
+                        type='number'
+                        min='1'
+                        placeholder='2'
+                        value={newRoom.capacity}
+                        onChange={(e) =>
+                          setNewRoom({
+                            ...newRoom,
+                            capacity: parseInt(e.target.value),
+                          })
+                        }
+                        className='w-full p-2 rounded-md bg-gray-300 text-black'
+                      />
+                    </div>
+                  </div>
+
+                  <div className='mb-4'>
+                    <label
+                      htmlFor='maxCount'
+                      className='block text-sm font-detail mb-1'
+                    >
+                      Max Count
+                    </label>
+                    <input
+                      id='maxCount'
+                      type='number'
+                      min='1'
+                      placeholder='1'
+                      value={newRoom.maxCount}
+                      onChange={(e) =>
+                        setNewRoom({
+                          ...newRoom,
+                          maxCount: parseInt(e.target.value),
+                        })
+                      }
+                      className='w-full p-2 rounded-md bg-gray-300 text-black'
+                    />
+                  </div>
+
+                  <div className='mb-4'>
+                    <label
+                      htmlFor='roomPicture'
+                      className='block text-sm font-detail mb-1'
+                    >
+                      Picture URL (Optional)
+                    </label>
+                    <input
+                      id='roomPicture'
+                      type='text'
+                      placeholder='https://example.com/room-image.jpg'
+                      value={newRoom.picture || ''}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, picture: e.target.value })
+                      }
+                      className='w-full p-2 rounded-md bg-gray-300 text-black'
+                    />
+                  </div>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className='gap-2'>
+              <AlertDialogCancel className='border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700'>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className='bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
+                onClick={handleCreateRoom}
+              >
+                Create Room
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </main>
   );
 }
