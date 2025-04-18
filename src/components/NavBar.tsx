@@ -5,6 +5,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 function UserBar() {
   const { data: session } = useSession();
@@ -20,7 +21,7 @@ function UserBar() {
         </div>
         <span>{session && (session.user as any)?.data.name}</span>
       </Link>
-      <button onClick={() => signOut()} className='hover:text-gold-gd1'>
+      <button onClick={() => signOut()} className='hover:text-gold-gd1 cursor-pointer'>
         <LogOut />
       </button>
     </div>
@@ -45,21 +46,24 @@ function DashboardButton({
 }
 
 export default function NavBar() {
+  const router = useRouter();
   const { data: session } = useSession();
   const isLoggedIn = session !== null;
   let role: 'admin' | 'hotelManager' | 'user' | null;
   role = session ? (session.user as any)?.data.role : null;
+  let hotelid: string | null;
+  hotelid = session ? (session.user as any)?.data.hotel : null;
   return (
     <nav className='h-16 w-full flex items-center px-4'>
       {role === 'admin' ? (
-        <DashboardButton link='/admin/report'>
-          <Settings />
-          Manage
-        </DashboardButton>
-      ) : role === 'hotelManager' ? (
-        <DashboardButton link='/hotels'>
+        <DashboardButton link='/admin'>
           <Wrench />
           Dashboard
+        </DashboardButton>
+      ) : role === 'hotelManager' ? (
+        <DashboardButton link={`/manage/hotels/${hotelid}`}>
+          <Settings />
+          Manage
         </DashboardButton>
       ) : (
         <DashboardButton link='/hotels'>
@@ -67,7 +71,7 @@ export default function NavBar() {
           View Hotels
         </DashboardButton>
       )}
-      <div className='h-full flex items-center justify-center grow'>
+      <div className='h-full flex items-center justify-center grow cursor-pointer' onClick={()=>router.push('/')}>
         <Image src={'/mcn-text.png'} alt='MCN Logo' width={150} height={0} />
       </div>
       {isLoggedIn ? (

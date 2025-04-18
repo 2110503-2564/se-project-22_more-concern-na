@@ -1,6 +1,7 @@
 'use client';
 
 import StatCard from '@/components/StatCard';
+import { getUsers } from '@/lib/authService';
 import { getBookings } from '@/lib/bookingService';
 import { getHotels } from '@/lib/hotelService';
 import {
@@ -12,69 +13,57 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { BookingResponse, HotelResponse } from '../../../interface';
-// We need to import these services to get reported reviews and user counts
-// import { getReportedReviews } from '@/lib/reviewService';
-// import { getUsers } from '@/lib/userService';
+import Loader from '@/components/Loader';
 
 export default function DashboardPage() {
   const router = useRouter();
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hotelCount, setHotelCount] = useState<number>(0);
   const [bookingCount, setBookingCount] = useState<number>(0);
   const [reportedReviewsCount, setReportedReviewsCount] = useState<number>(0);
   const [usersCount, setUsersCount] = useState<number>(0);
   const { data: session } = useSession();
+  const token = (session as any)?.user?.token;
 
   const fetchDashboardData = async () => {
     try {
-      const token = (session as any)?.user?.token;
-
+      setIsLoading(true);
       // Fetch hotel data
       try {
-        const hotelData: HotelResponse = await getHotels();
-        if (hotelData.total > 0) {
-          setHotelCount(hotelData.total);
-        } else {
-          setHotelCount(0);
-        }
+        const hotelData = await getHotels();
+        setHotelCount(hotelData.total || 0);
       } catch (error) {
         console.error('Error fetching hotels:', error);
         setHotelCount(0);
       }
 
-      // Fetch booking data with authentication
+      // Fetch booking, reported reviews, and users data
       if (token) {
         try {
           const bookingData = await getBookings(undefined, token);
-
-          if (bookingData.total > 0){
-            setBookingCount(bookingData.total);
-          }else {
-            setBookingCount(0);
-          }
+          setBookingCount(bookingData.total || 0);
         } catch (bookingError) {
           console.error('Error fetching bookings:', bookingError);
           setBookingCount(0);
         }
 
-        // Fetch reported reviews count
-        try {
-          const reportedReviews = await getReportedReviews(token);
-          setReportedReviewsCount(reportedReviews.count || 0);
-        } catch (reportError) {
-          console.error('Error fetching reported reviews:', reportError);
-          setReportedReviewsCount(0);
-        }
+        // waiting for report intregration produce
+        // try {
+        //   const reportedReviews = await getReportedReviews(token);
+        //   setReportedReviewsCount(reportedReviews.count || 0);
+        // } catch (reportError) {
+        //   console.error('Error fetching reported reviews:', reportError);
+        //   setReportedReviewsCount(0);
+        // }
 
-        // Fetch users count
         try {
           const usersData = await getUsers(token);
-          setUsersCount(usersData.count || 0);
+          setUsersCount(usersData.total || 0);
         } catch (usersError) {
           console.error('Error fetching users:', usersError);
           setUsersCount(0);
         }
+        setIsLoading(false);
       } else {
         console.warn(
           'No authentication token found. Authenticated data will not be loaded.',
@@ -86,13 +75,8 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (!session) {
-      router.push('/login');
-      return;
-    }
-
     fetchDashboardData();
-  }, [session, router]);
+  }, [session]);
 
   const handleManageHotels = () => {
     router.push('/manage/hotels');
@@ -107,8 +91,16 @@ export default function DashboardPage() {
   };
 
   const handleManageUserRedemptionPoints = () => {
-    router.push('/redemption');
+    router.push('/admin/redemption');
   };
+
+  if(isLoading){
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className='container mx-auto px-60 py-8'>

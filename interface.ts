@@ -48,7 +48,7 @@ export interface IHotel {
 }
 
 export interface HotelResponse extends GenericResponse, Pagination {
-    count: number;
+    total: number;
     data: IHotel[]
 }
 export interface HotelAvailabilityResponse extends GenericResponse {
@@ -73,6 +73,11 @@ export interface IUser {
     point: number;
     inventory: UserRedeemable[];
     createdAt: string;
+}
+
+export interface UserResponse extends GenericResponse {
+    total: number;
+    data: IUser[];
 }
 
 export interface LoginRequest {
@@ -234,7 +239,7 @@ export interface PBooking {
     createdAt: string;
 }
 export interface BookingResponse extends GenericResponse{
-    count: number;
+    total: number;
     bookings?:PBooking[];
     booking?:PBooking;
 }
