@@ -130,13 +130,11 @@ export default function ManageHotels() {
   };
 
   const addRoomToHotel = () => {
-    // Validate room data
     if (!newRoom.roomType) {
       toast.error("Validation Error: Room type is required");
       return;
     }
     
-    // Create a new room with a temporary _id
     const roomWithId = {
       ...newRoom,
       _id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -147,7 +145,6 @@ export default function ManageHotels() {
       rooms: [...prev.rooms, roomWithId],
     }));
     
-    // Reset room form for the next room
     setNewRoom({
       roomType: '',
       picture: '',
@@ -169,54 +166,40 @@ export default function ManageHotels() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // FIX 1: Add validation for required fields
     if (!newHotel.name || !newHotel.buildingNumber || !newHotel.tel) {
       toast.error("Please fill in all required fields");
       return;
     }
     
     try {
-      // FIX 2: Properly clone the hotel object to avoid reference issues
       const hotelToSend = JSON.parse(JSON.stringify(newHotel));
       
-      // FIX 3: Ensure rooms array is properly formatted - remove temporary IDs
       hotelToSend.rooms = hotelToSend.rooms.map(({ _id, ...room }: any) => room);
       
-      console.log("Hotel to send:", hotelToSend);
-      
-      // FIX 4: Add loading state during API call
       setIsLoading(true);
       await createHotel(hotelToSend, token);
       
-      // FIX 5: Make sure dialog is closed before refreshing data
       setDialogOpen(false);
       resetForm();
       
-      // Refresh the hotels list
       const responseData = await getHotels();
       setHotels(responseData);
       
-      // Show success toast
       toast.success(`Hotel has been created successfully`);
       
     } catch (error: any) {
       console.error("Error creating hotel:", error);
       toast.error(error.message || 'Failed to create hotel');
     } finally {
-      // FIX 6: Ensure loading state is reset
       setIsLoading(false);
     }
   };
 
-  // Add the delete hotel function
   const handleDeleteHotel = async (hotelId: string) => {
     try {
-      setIsLoading(true); // FIX 7: Add loading state for delete operation
       
-      // Call the deleteHotel function from hotelService
       await deleteHotel(hotelId, token);
       
-      // Filter out the deleted hotel from the hotels list
       setHotels(prev => ({
         ...prev,
         data: prev.data.filter(hotel => hotel._id !== hotelId),
@@ -227,8 +210,6 @@ export default function ManageHotels() {
     } catch (error: any) {
       console.error("Error deleting hotel:", error);
       toast.error(error.message || 'Failed to delete hotel');
-    } finally {
-      setIsLoading(false); // FIX 8: Reset loading state after delete operation
     }
   };
 
@@ -262,7 +243,6 @@ export default function ManageHotels() {
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            {/* FIX 9: Ensure form is properly attached to submit handler */}
             <form onSubmit={handleFormSubmit}>
               <AlertDialogHeader>
                 <AlertDialogTitle>Add New Hotel</AlertDialogTitle>
@@ -413,7 +393,6 @@ export default function ManageHotels() {
                     
                     <div className="space-y-2">
                       <Label htmlFor="roomPicture">Room Picture URL</Label>
-                      {/* FIX 10: Changed id to avoid conflict with hotel picture */}
                       <Input
                         id="roomPicture"
                         name="picture"
@@ -509,7 +488,6 @@ export default function ManageHotels() {
               
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={resetForm}>Cancel</AlertDialogCancel>
-                {/* FIX 11: Updated button type to ensure form submission works */}
                 <AlertDialogAction type="submit">Add Hotel</AlertDialogAction>
               </AlertDialogFooter>
             </form>
