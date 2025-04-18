@@ -263,8 +263,7 @@ export default function ManageHotelDetail({
           roomType: '',
           capacity: 1,
           maxCount: 1,
-          price: 0.00005,
-        });
+          price: 0,
         setIsCreateRoomOpen(false);
 
         toast.success('Room created successfully');
