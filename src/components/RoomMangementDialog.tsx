@@ -27,7 +27,7 @@ interface RoomEditDialogProps {
   onRoomDeleted?: (roomId: string) => void;
 }
 
-export default function RoomEditDialog({
+export default function RoomMangementDialog({
   isOpen,
   onOpenChange,
   hotelId,
