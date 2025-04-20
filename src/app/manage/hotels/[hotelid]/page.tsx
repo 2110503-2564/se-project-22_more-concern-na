@@ -20,10 +20,8 @@ import { addRoom } from '@/lib/roomService';
 import { Calendar, MapPin, Phone, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { IHotel, Rooms } from '../../../../../interface';
 import { IHotel, Rooms } from '../../../../../interface';
 
 export default function ManageHotelDetail({
@@ -37,16 +35,7 @@ export default function ManageHotelDetail({
   const [editAddress, setEditAddress] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  // Add new state for room editing
-  const [isRoomEditOpen, setIsRoomEditOpen] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState<Rooms | null>(null);
-  const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
-  const [newRoom, setNewRoom] = useState<Omit<Rooms, '_id'>>({
-    roomType: '',
-    capacity: 1,
-    maxCount: 1,
-    price: 0.0,
-  });
+
   // Add new state for room editing
   const [isRoomEditOpen, setIsRoomEditOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Rooms | null>(null);
@@ -249,97 +238,6 @@ export default function ManageHotelDetail({
     }
   };
 
-  // Function to handle room management
-  const handleManageRoom = (room: Rooms) => {
-    setSelectedRoom(room);
-    setIsRoomEditOpen(true);
-  };
-
-  const handleRoomUpdated = async (updatedRoom: Rooms) => {
-    if (!hotel?._id || !token) return;
-
-    try {
-      const updatedRooms = hotel.rooms.map((room) =>
-        room._id === updatedRoom._id ? updatedRoom : room,
-      );
-
-      setHotel({
-        ...hotel,
-        rooms: updatedRooms,
-      });
-
-      toast.success('Room updated successfully');
-    } catch (error: any) {
-      toast.error('Update failed', {
-        description: error.message || 'Something went wrong',
-      });
-    }
-  };
-
-  const handleRoomDeleted = async (roomId: string) => {
-    if (!hotel?._id || !token) return;
-
-    try {
-      const updatedRooms = hotel.rooms.filter((room) => room._id !== roomId);
-
-      setHotel({
-        ...hotel,
-        rooms: updatedRooms,
-      });
-
-      toast.success('Room has been deleted');
-    } catch (error: any) {
-      toast.error('Delete failed', {
-        description: error.message || 'Something went wrong',
-      });
-    }
-  };
-
-  const handleCreateRoom = async () => {
-    if (!hotel?._id || !token) return;
-
-    // Validate required fields
-    if (
-      !newRoom.roomType ||
-      newRoom.price <= 0 ||
-      newRoom.capacity < 1 ||
-      newRoom.maxCount < 1
-    ) {
-      toast.error('Please fill in all required fields with valid values');
-      return;
-    }
-
-    try {
-      // Use the addRoom function from roomService
-      const response = await addRoom(hotel._id, newRoom, token);
-
-      if (response.success) {
-        // Fetch the updated hotel to get the new room with its ID
-        const updatedHotelData = await getHotel(hotel._id);
-        setHotel(updatedHotelData);
-
-        // Reset the form and close the dialog
-        setNewRoom({
-          roomType: '',
-          capacity: 1,
-          maxCount: 1,
-          price: 0,
-        });
-        setIsCreateRoomOpen(false);
-
-        toast.success('Room created successfully');
-      } else {
-        toast.error('Creation failed', {
-          description: response.msg || 'Something went wrong',
-        });
-      }
-    } catch (error: any) {
-      toast.error('Creation failed', {
-        description: error.message || 'Something went wrong',
-      });
-    }
-  };
-
   const originalAddress = hotel
     ? {
         name: hotel.name,
@@ -436,7 +334,6 @@ export default function ManageHotelDetail({
                 key={index}
                 room={room}
                 type='manage'
-                onManageRoom={() => handleManageRoom(room)}
                 onManageRoom={() => handleManageRoom(room)}
               />
             ))}
@@ -888,4 +785,3 @@ export default function ManageHotelDetail({
     </main>
   );
 }
-

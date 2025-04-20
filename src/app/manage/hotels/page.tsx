@@ -136,7 +136,7 @@ export default function ManageHotels() {
       toast.error('Validation Error: Room type is required');
       return;
     }
-    
+
     const roomWithId = {
       ...newRoom,
       _id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -146,7 +146,7 @@ export default function ManageHotels() {
       ...prev,
       rooms: [...prev.rooms, roomWithId],
     }));
-    
+
     setNewRoom({
       roomType: '',
       picture: '',
@@ -167,7 +167,7 @@ export default function ManageHotels() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newHotel.name || !newHotel.buildingNumber || !newHotel.tel) {
       toast.error('Please fill in all required fields');
       return;
@@ -175,18 +175,20 @@ export default function ManageHotels() {
 
     try {
       const hotelToSend = JSON.parse(JSON.stringify(newHotel));
-      
-      hotelToSend.rooms = hotelToSend.rooms.map(({ _id, ...room }: any) => room);
-      
+
+      hotelToSend.rooms = hotelToSend.rooms.map(
+        ({ _id, ...room }: any) => room,
+      );
+
       setIsLoading(true);
       await createHotel(hotelToSend, token);
-      
+
       setDialogOpen(false);
       resetForm();
-      
+
       const responseData = await getHotels();
       setHotels(responseData);
-      
+
       toast.success(`Hotel has been created successfully`);
     } catch (error: any) {
       console.error('Error creating hotel:', error);
@@ -198,10 +200,9 @@ export default function ManageHotels() {
 
   const handleDeleteHotel = async (hotelId: string) => {
     try {
-      
       await deleteHotel(hotelId, token);
-      
-      setHotels(prev => ({
+
+      setHotels((prev) => ({
         ...prev,
         data: prev.data.filter((hotel) => hotel._id !== hotelId),
         count: prev.count - 1,
@@ -243,7 +244,7 @@ export default function ManageHotels() {
               Add Hotel
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <AlertDialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
             <form onSubmit={handleFormSubmit}>
               <AlertDialogHeader>
                 <AlertDialogTitle>Add New Hotel</AlertDialogTitle>
@@ -391,9 +392,9 @@ export default function ManageHotels() {
                         placeholder='Deluxe, Standard, etc.'
                       />
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="roomPicture">Room Picture URL</Label>
+
+                    <div className='space-y-2'>
+                      <Label htmlFor='roomPicture'>Room Picture URL</Label>
                       <Input
                         id='roomPicture'
                         name='picture'
@@ -491,8 +492,10 @@ export default function ManageHotels() {
               )}
 
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={resetForm}>Cancel</AlertDialogCancel>
-                <AlertDialogAction type="submit">Add Hotel</AlertDialogAction>
+                <AlertDialogCancel onClick={resetForm}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction type='submit'>Add Hotel</AlertDialogAction>
               </AlertDialogFooter>
             </form>
           </AlertDialogContent>

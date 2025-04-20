@@ -62,12 +62,13 @@ export const getAllReports = async (
 
 export const ignoreReport = async (
   reportId: string,
+  isIgnore: boolean,
   token?: string,
 ): Promise<GenericResponse> => {
   try {
     const response = await axios.put(
       apiPath(`/reports/${reportId}`),
-      { isIgnore: true },
+      { isIgnore: isIgnore },
       {
         headers: {
           'Content-Type': 'application/json',

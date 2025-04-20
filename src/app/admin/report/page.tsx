@@ -6,13 +6,11 @@ import { getAllReports, ignoreReport } from '@/lib/reportService';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { AllReportResponse } from '../../../../interface';
 import { toast } from 'sonner';
-import AlertConfirmation from '@/components/AlertConfirmation';
+import { AllReportResponse } from '../../../../interface';
 
 export default function ManageReportedReviewsPage() {
   const [reportData, setReportData] = useState<AllReportResponse | undefined>();
-  const [isIgnoreDialogShown, setIsIgnoreDialogShown] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -23,12 +21,14 @@ export default function ManageReportedReviewsPage() {
     fetchReportedReviews();
   }, []);
 
-  const handleIgnore = async (reportId: string) => {
-    isIgnoreDialogShown && setIsIgnoreDialogShown(false);
-    const res = await ignoreReport(reportId, (session as any)?.user?.token);
-    if (res.success) {
-      toast.success('Report is ignored');
-    }
+  const handleIgnore = async (ignore: boolean, reportId: string) => {
+    const res = await ignoreReport(
+      reportId,
+      ignore,
+      (session as any)?.user?.token,
+    );
+    if (res.success)
+      toast.success(`Report ${ignore ? 'ignored' : 'unignored'}`);
   };
   return (
     <div className='bg-bg-box min-h-screen px-6 py-8 text-[--color-foreground]'>
@@ -59,7 +59,15 @@ export default function ManageReportedReviewsPage() {
               </h3>
 
               {hotelBlock.report.map((report) => (
-                <Review key={report._id} review={report.review} isReported handleIgnore={() => setIsIgnoreDialogShown(true)}/>
+                <Review
+                  key={report._id}
+                  review={report.review}
+                  isReported
+                  handleIgnoreFromReport={(ignore) =>
+                    handleIgnore(ignore, report._id)
+                  }
+                  ignore={report.isIgnore}
+                />
               ))}
             </div>
           ))}
@@ -69,12 +77,6 @@ export default function ManageReportedReviewsPage() {
           )}
         </div>
       ))}
-      <AlertConfirmation 
-        onOpen={isIgnoreDialogShown}
-        type='edit'
-        onOpenChange={setIsIgnoreDialogShown}
-        onConfirm={() => console.log('Confirmed')}
-      />
     </div>
   );
 }

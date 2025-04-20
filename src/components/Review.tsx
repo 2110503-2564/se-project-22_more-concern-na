@@ -2,7 +2,7 @@
 
 import { Rating } from '@mui/material';
 import dayjs from 'dayjs';
-import { EyeClosed, Reply, Trash } from 'lucide-react';
+import { Eye, EyeClosed, Reply, Trash } from 'lucide-react';
 import { useState } from 'react';
 import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
@@ -23,17 +23,20 @@ import AlertConfirmation from './AlertConfirmation';
 interface ReviewProps {
   review: IReview;
   handleDeleteFromList?: (reviewId: string) => void;
-  handleIgnore?: () => void;
+  handleIgnoreFromReport?: (ignore: boolean) => void;
   isReported?: boolean;
+  ignore?: boolean;
 }
 
 export default function Review({
   review,
   handleDeleteFromList,
-  handleIgnore,
+  handleIgnoreFromReport,
   isReported,
+  ignore,
 }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isIgnored, setIsIgnored] = useState(ignore);
   const [text, setText] = useState(review.text);
   const [title, setTitle] = useState(review.title);
   const [rating, setRating] = useState(review.rating);
@@ -44,6 +47,7 @@ export default function Review({
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isIgnoreDialogOpen, setIsIgnoreDialogOpen] = useState(false);
   const { data: session } = useSession();
 
   const isHotelManager = session
@@ -99,20 +103,41 @@ export default function Review({
   };
 
   const handleReport = async (reportReason: string) => {
-    const res = await addReport({review: review._id, reportReason, token: (session as any)?.user?.token});
+    const res = await addReport({
+      review: review._id,
+      reportReason,
+      token: (session as any)?.user?.token,
+    });
     if (res.success) toast.success('Report submitted successfully');
+  };
+
+  const handleIgnore = () => {
+    setIsIgnored(!isIgnored);
+    handleIgnoreFromReport && handleIgnoreFromReport(true);
+    setIsIgnoreDialogOpen(false);
   };
 
   return (
     <div>
-      <div className='relative bg-[#434A5B] text-white font-detail rounded-sm px-6 pt-6 mb-4 shadow'>
+      <div
+        className={`relative bg-[#434A5B] text-white font-detail rounded-sm px-6 pt-6 mb-4 shadow ${isIgnored ? 'opacity-50' : ''}`}
+      >
         <div className='absolute top-2 right-6'>
           {isReported ? (
             <div className='flex items-center gap-2'>
-              <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'/>
-              <EyeClosed className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' onClick={handleIgnore && (() => handleIgnore())}/>
+              <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' />
+              {isIgnored ? (
+                <EyeClosed
+                  className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
+                  onClick={() => setIsIgnoreDialogOpen(true)}
+                />
+              ) : (
+                <Eye
+                  className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
+                  onClick={() => setIsIgnoreDialogOpen(true)}
+                />
+              )}
             </div>
-            
           ) : (
             (isReviewOwner || isHotelManager) && (
               <ReviewDropDown
@@ -267,6 +292,12 @@ export default function Review({
         onOpenChange={setIsReplyDialogOpen}
         type='create'
         onConfirm={handleReplySubmit}
+      />
+      <AlertConfirmation
+        onOpen={isIgnoreDialogOpen}
+        type='edit'
+        onOpenChange={setIsIgnoreDialogOpen}
+        onConfirm={handleIgnore}
       />
     </div>
   );

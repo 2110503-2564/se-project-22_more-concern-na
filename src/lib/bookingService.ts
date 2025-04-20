@@ -15,9 +15,30 @@ export const getBookings = async (
 ): Promise<{
   success: boolean;
   total?: number;
-  past?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
-  active?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
-  upcoming?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
+  past?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
+  active?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
+  upcoming?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
   msg?: string;
 }> => {
   try {

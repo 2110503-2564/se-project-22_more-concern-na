@@ -4,8 +4,8 @@ import { Hotel, LogOut, Settings, Wrench } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
 
 function UserBar() {
   const { data: session } = useSession();
@@ -21,7 +21,10 @@ function UserBar() {
         </div>
         <span>{session && (session.user as any)?.data.name}</span>
       </Link>
-      <button onClick={() => signOut()} className='hover:text-gold-gd1 cursor-pointer'>
+      <button
+        onClick={() => signOut()}
+        className='hover:text-gold-gd1 cursor-pointer'
+      >
         <LogOut />
       </button>
     </div>
@@ -71,7 +74,10 @@ export default function NavBar() {
           View Hotels
         </DashboardButton>
       )}
-      <div className='h-full flex items-center justify-center grow cursor-pointer' onClick={()=>router.push('/')}>
+      <div
+        className='h-full flex items-center justify-center grow cursor-pointer'
+        onClick={() => router.push('/')}
+      >
         <Image src={'/mcn-text.png'} alt='MCN Logo' width={150} height={0} />
       </div>
       {isLoggedIn ? (
