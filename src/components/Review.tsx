@@ -8,6 +8,7 @@ import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
+import { addReport } from '@/lib/reportService';
 import {
   addReply,
   deleteReply,
@@ -15,6 +16,7 @@ import {
   updateReview,
 } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
 
@@ -27,7 +29,7 @@ interface ReviewProps {
 export default function Review({
   review,
   handleDeleteFromList,
-  isReported = false,
+  isReported,
 }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(review.text);
@@ -94,7 +96,14 @@ export default function Review({
     await deleteReply(review._id, (session as any)?.user?.token);
   };
 
-  const handleReport = (reason: string) => {};
+  const handleReport = async (reason: string) => {
+    const res = await addReport(
+      review._id,
+      reason,
+      (session as any)?.user?.token,
+    );
+    if (res.success) toast.success('Report submitted successfully');
+  };
 
   return (
     <div>

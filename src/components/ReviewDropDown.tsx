@@ -1,3 +1,4 @@
+import { reportReasonE2I, reportReasonExternal } from '@/lib/utils';
 import { Flag, PencilLine, Trash } from 'lucide-react';
 import {
   DropdownMenu,
@@ -23,16 +24,6 @@ export default function ReviewDropDown({
   onDelete,
   onReport,
 }: ReviewDropDownProps) {
-  const reportReasons = [
-    'Child Exploitation',
-    'Bullying/Harassment',
-    'Self-Harm/Suicide Content',
-    'Violence/Graphic Content',
-    'NSFW/Adult Content',
-    'Spam/Unwanted Content',
-    'Scam/Fraudulent Activity',
-  ];
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>...</DropdownMenuTrigger>
@@ -59,11 +50,11 @@ export default function ReviewDropDown({
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent className='w-56'>
-                {reportReasons.map((reason) => (
+                {reportReasonExternal.map((reason) => (
                   <DropdownMenuItem
                     key={reason}
                     className='cursor-pointer'
-                    onClick={() => onReport(reason)}
+                    onClick={() => onReport(reportReasonE2I(reason))}
                   >
                     {reason}
                   </DropdownMenuItem>
