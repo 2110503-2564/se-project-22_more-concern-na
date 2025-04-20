@@ -57,7 +57,7 @@ export default function ManageBookingsPage() {
         setIsLoading(true);
 
         const response = await getBookings(undefined, token);
-        setBookingsData(response);
+        setBookingsData(response as BookingResponse | null);
         
         // Combine all bookings for admin/manager view
         const combinedBookings = [
@@ -172,15 +172,20 @@ export default function ManageBookingsPage() {
               const bookingType = getBookingType(booking);
               const daysUntil =
                 bookingType === 'upcoming' ? getDaysUntil(booking) : undefined;
+                const bkSt = booking.hotel?.street || 'Street not found';
+                const bkDis = booking.hotel?.district || 'District not found';
+                const bkPro = booking.hotel?.province || 'Province not found';
+                const bkPos = booking.hotel?.postalCode || 'Postal code not found';
+              const location = `${bkSt}, ${bkDis}, ${bkPro} ${bkPos}`;
 
               return (
                 <BookingCard
                   key={booking._id}
                   id={booking._id}
-                  hotelName={booking.hotel.name}
+                  hotelName={booking?.hotel?.name}
                   checkInDate={new Date(booking.startDate)}
                   checkOutDate={new Date(booking.endDate)}
-                  location={`${booking.hotel.street}, ${booking.hotel.district}, ${booking.hotel.province} ${booking.hotel.postalCode}`}
+                  location={location}
                   type={bookingType}
                   daysUntil={daysUntil}
                   checkedIn={booking.status === 'checkedIn'}

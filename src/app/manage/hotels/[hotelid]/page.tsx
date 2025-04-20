@@ -317,16 +317,6 @@ export default function ManageHotelDetail({
               Create Room
             </Button>
           </div>
-          <div className='flex justify-between items-center mb-6'>
-            <h2 className='text-2xl font-bold font-detail'>Our Rooms</h2>
-            <Button
-              variant='golden'
-              size='sm'
-              onClick={() => setIsCreateRoomOpen(true)}
-            >
-              Create Room
-            </Button>
-          </div>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             {hotel?.rooms?.map((room, index) => (
               <RoomCard
@@ -479,160 +469,12 @@ export default function ManageHotelDetail({
                 count={10}
                 countLabel='Total bookings in hotel'
                 buttonText='Manage Bookings'
-                onButtonClick={() => {}}
+                onButtonClick={() => {router.push('/manage/bookings');}}
               />
             </div>
           )}
         </div>
       </div>
-
-      {/* Room Edit Dialog */}
-      {selectedRoom && hotel?._id && (
-        <RoomMangementDialog
-          isOpen={isRoomEditOpen}
-          onOpenChange={setIsRoomEditOpen}
-          hotelId={hotel._id}
-          room={selectedRoom}
-          token={token}
-          onRoomUpdated={handleRoomUpdated}
-          onRoomDeleted={handleRoomDeleted}
-        />
-      )}
-      {hotel?._id && (
-        <AlertDialog open={isCreateRoomOpen} onOpenChange={setIsCreateRoomOpen}>
-          <AlertDialogContent className='bg-bg-box border-bg-border text-white max-w-md max-h-[90vh] overflow-y-auto'>
-            <AlertDialogHeader>
-              <AlertDialogTitle className='text-white font-heading text-2xl'>
-                Create New Room
-              </AlertDialogTitle>
-              <AlertDialogDescription className='text-gray-300 font-detail'>
-                <div className='space-y-4 py-2'>
-                  <div className='mb-4'>
-                    <label
-                      htmlFor='roomType'
-                      className='block text-sm font-detail mb-1'
-                    >
-                      Room Type
-                    </label>
-                    <input
-                      id='roomType'
-                      type='text'
-                      placeholder='Enter room type'
-                      value={newRoom.roomType}
-                      onChange={(e) =>
-                        setNewRoom({ ...newRoom, roomType: e.target.value })
-                      }
-                      className='w-full p-2 rounded-md bg-gray-300 text-black'
-                    />
-                  </div>
-
-                  <div className='grid grid-cols-2 gap-4 mb-4'>
-                    <div>
-                      <label
-                        htmlFor='roomPrice'
-                        className='block text-sm font-detail mb-1'
-                      >
-                        Price per Night (₿)
-                      </label>
-                      <input
-                        id='roomPrice'
-                        type='number'
-                        min='0'
-                        step='0.00001'
-                        placeholder='1000'
-                        value={newRoom.price}
-                        onChange={(e) =>
-                          setNewRoom({
-                            ...newRoom,
-                            price: parseFloat(e.target.value),
-                          })
-                        }
-                        className='w-full p-2 rounded-md bg-gray-300 text-black'
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor='roomCapacity'
-                        className='block text-sm font-detail mb-1'
-                      >
-                        Capacity
-                      </label>
-                      <input
-                        id='roomCapacity'
-                        type='number'
-                        min='1'
-                        placeholder='2'
-                        value={newRoom.capacity}
-                        onChange={(e) =>
-                          setNewRoom({
-                            ...newRoom,
-                            capacity: parseInt(e.target.value),
-                          })
-                        }
-                        className='w-full p-2 rounded-md bg-gray-300 text-black'
-                      />
-                    </div>
-                  </div>
-
-                  <div className='mb-4'>
-                    <label
-                      htmlFor='maxCount'
-                      className='block text-sm font-detail mb-1'
-                    >
-                      Max Count
-                    </label>
-                    <input
-                      id='maxCount'
-                      type='number'
-                      min='1'
-                      placeholder='1'
-                      value={newRoom.maxCount}
-                      onChange={(e) =>
-                        setNewRoom({
-                          ...newRoom,
-                          maxCount: parseInt(e.target.value),
-                        })
-                      }
-                      className='w-full p-2 rounded-md bg-gray-300 text-black'
-                    />
-                  </div>
-
-                  <div className='mb-4'>
-                    <label
-                      htmlFor='roomPicture'
-                      className='block text-sm font-detail mb-1'
-                    >
-                      Picture URL (Optional)
-                    </label>
-                    <input
-                      id='roomPicture'
-                      type='text'
-                      placeholder='https://example.com/room-image.jpg'
-                      value={newRoom.picture || ''}
-                      onChange={(e) =>
-                        setNewRoom({ ...newRoom, picture: e.target.value })
-                      }
-                      className='w-full p-2 rounded-md bg-gray-300 text-black'
-                    />
-                  </div>
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className='gap-2'>
-              <AlertDialogCancel className='border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700'>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                className='bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
-                onClick={handleCreateRoom}
-              >
-                Create Room
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
 
       {/* Room Edit Dialog */}
       {selectedRoom && hotel?._id && (

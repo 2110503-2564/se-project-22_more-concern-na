@@ -1,13 +1,13 @@
-import { Calendar, Check, MapPin } from 'lucide-react';
+import { Calendar, Check, MapPin, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 
 interface BookingCardProps {
   id: string;
-  hotelName: string;
+  hotelName?: string | null;
   checkInDate: Date;
   checkOutDate: Date;
-  location: string;
+  location?: string | null;
   type: 'active' | 'upcoming' | 'past';
   daysUntil?: number;
   checkedIn?: boolean;
@@ -35,13 +35,26 @@ export const BookingCard = ({
     });
   };
 
+  const isHotelMissing = !hotelName;
+  const isLocationMissing = !location;
+
   return (
     <div className='w-full bg-bg-box border border-bg-border bg-opacity-30 p-4 rounded-lg font-detail'>
       <div className='flex justify-between items-start'>
         <div>
-          <h3 className='text-xl font-semibold font-heading text-white'>
-            {hotelName}
-          </h3>
+          {/* Hotel Name Section */}
+          {isHotelMissing ? (
+            <div className='flex items-center'>
+              <AlertCircle className='h-5 w-5 mr-2 text-amber-400' />
+              <h3 className='text-xl font-semibold font-heading text-amber-400'>
+                Hotel Information Missing
+              </h3>
+            </div>
+          ) : (
+            <h3 className='text-xl font-semibold font-heading text-white'>
+              {hotelName}
+            </h3>
+          )}
 
           <div className='mt-3 text-gray-300 space-y-2'>
             <div className='flex items-center'>
@@ -54,11 +67,23 @@ export const BookingCard = ({
               <span>check-out: {formatDate(checkOutDate)}</span>
             </div>
 
+            {/* Location Section */}
             <div className='flex items-center'>
               <MapPin className='h-4 w-4 mr-2' />
-              <span>{location}</span>
+              {isLocationMissing ? (
+                <span className='text-amber-400'>Location information unavailable</span>
+              ) : (
+                <span>{location}</span>
+              )}
             </div>
           </div>
+          
+          {/* Warning Message when hotel or location is missing */}
+          {(isHotelMissing || isLocationMissing) && (
+            <div className='mt-2 text-xs text-amber-400 bg-amber-900 bg-opacity-30 p-2 rounded border border-amber-700'>
+              Some booking information is missing. Please contact support for assistance.
+            </div>
+          )}
         </div>
 
         {type === 'upcoming' && daysUntil !== undefined && (
