@@ -1,6 +1,7 @@
 'use client';
 
 import { BookingCard } from '@/components/BookingCard';
+import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { getBookings } from '@/lib/bookingService';
 import dayjs from 'dayjs';
@@ -9,7 +10,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PBooking } from '../../../interface';
-import Loader from '@/components/Loader';
 
 // Get today's date with dayjs, set to start of day
 const getTodayDate = () => {
@@ -58,7 +58,7 @@ export default function BookingsPage() {
     router.back();
   };
 
-  if(isLoading){
+  if (isLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
         <Loader />

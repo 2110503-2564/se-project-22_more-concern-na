@@ -68,12 +68,12 @@ const SignUpPage = () => {
             name='name'
             variant='outlined'
             type='text'
-            id='name'     
+            id='name'
             value={userInput.name}
             onChange={handleChange}
             required
             fullWidth
-            style={{borderColor: 'yellow', borderWidth: 1}}
+            style={{ borderColor: 'yellow', borderWidth: 1 }}
             className='p-3 border-blue-300 rounded-md text-lg bg-bg-textfill'
           />
         </div>
@@ -113,7 +113,7 @@ const SignUpPage = () => {
             value={userInput.password}
             onChange={handleChange}
             required
-            sx={{caretColor: 'white'}}
+            sx={{ caretColor: 'white' }}
             className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
           />
         </div>
@@ -127,11 +127,13 @@ const SignUpPage = () => {
             value={confirmPassword || ''}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            error={confirmPassword !== '' && confirmPassword !== userInput.password}
+            error={
+              confirmPassword !== '' && confirmPassword !== userInput.password
+            }
             helperText={
               confirmPassword !== '' && confirmPassword !== userInput.password
-          ? 'Passwords do not match'
-          : ''
+                ? 'Passwords do not match'
+                : ''
             }
             className='w-full p-3 border-2 border-blue-300 text-amber-50 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
           />
@@ -140,7 +142,14 @@ const SignUpPage = () => {
           variant={'golden'}
           type='submit'
           className='w-full'
-          disabled ={!userInput.email || !userInput.password || !userInput.name || !userInput.tel || !confirmPassword || confirmPassword !== userInput.password}
+          disabled={
+            !userInput.email ||
+            !userInput.password ||
+            !userInput.name ||
+            !userInput.tel ||
+            !confirmPassword ||
+            confirmPassword !== userInput.password
+          }
         >
           Sign Up
         </Button>

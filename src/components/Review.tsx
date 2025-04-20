@@ -1,161 +1,106 @@
+'use client';
+
 import { Rating } from '@mui/material';
 import dayjs from 'dayjs';
-import { Reply, Trash } from 'lucide-react';
+import { EyeClosed, Reply, Trash } from 'lucide-react';
 import { useState } from 'react';
-import HotelReply, { HotelReplyType } from './HotelReply';
+import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
+import { addReport } from '@/lib/reportService';
+import {
+  addReply,
+  deleteReply,
+  deleteReview,
+  updateReview,
+} from '@/lib/reviewService';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
 
-export interface ReviewType {
-  id: number;
-  username: string;
-  avatarUrl?: string;
-  date: string;
-  rating: number;
-  title: string;
-  comment: string;
-  reply?: HotelReplyType;
-}
-
 interface ReviewProps {
-  review: ReviewType;
+  review: IReview;
+  handleDeleteFromList?: (reviewId: string) => void;
+  handleIgnore?: () => void;
   isReported?: boolean;
-  onDeleteReview?: (reviewId: number) => void;
-  onUpdateReview?: (updatedReview: ReviewType) => void;
-  onDeleteReply?: (reviewId: number, replyId: number) => void;
 }
 
 export default function Review({
   review,
-  onDeleteReview,
-  onUpdateReview,
-  onDeleteReply,
-  isReported = false,
+  handleDeleteFromList,
+  handleIgnore,
+  isReported,
 }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedComment, setEditedComment] = useState(review.comment);
-  const [editedTitle, setEditedTitle] = useState(review.title);
-  const [editedRating, setEditedRating] = useState(review.rating);
+  const [text, setText] = useState(review.text);
+  const [title, setTitle] = useState(review.title);
+  const [rating, setRating] = useState(review.rating);
 
-  const [showReplyForm, setShowReplyForm] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
+  const [showReplyCreateForm, setShowReplyCreateForm] = useState(false);
+  const [replyContent, setReplyContent] = useState(review.reply?.text);
 
+  const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { data: session } = useSession();
 
-  const isHotelManager = true;
+  const isHotelManager = session
+    ? (session.user as any)?.data.role === 'hotelManager' &&
+      (session.user as any)?.data.hotel === review.booking?.hotel
+    : false;
+  const isReviewOwner = session
+    ? (session.user as any)?.data.email === review.booking?.user.email
+    : false;
 
-  const handleEdit = async (reviewId: number) => {
+  // --- reply form --- //
+  const handleReplySubmit = async () => {
+    setShowReplyCreateForm(false);
+    await addReply(
+      review._id,
+      { text: replyContent || '' },
+      (session as any)?.user?.token,
+    );
+  };
+
+  // --- editing --- //
+
+  const handleOpenEdit = () => {
     setIsEditing(true);
   };
 
   const handleSaveEdit = async () => {
-    try {
-      // TODO: call backend to update the review
-      // await fetch(`/api/reviews/${review.id}`, {
-      //   method: 'PUT',
-      //   body: JSON.stringify({ comment: editedComment }),
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-
-      // For now, just close out the editing state:
-      review.title = editedTitle;
-      review.rating = editedRating;
-      review.comment = editedComment;
-      setIsEditing(false);
-
-      if (onUpdateReview) {
-        onUpdateReview(review);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleCancel = () => {
-    setEditedTitle(review.title);
-    setEditedRating(review.rating);
-    setEditedComment(review.comment);
     setIsEditing(false);
+    await updateReview(
+      review._id,
+      { title, text, rating },
+      (session as any)?.user?.token,
+    );
   };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setText(review.text);
+    setTitle(review.title);
+    setRating(review.rating);
+  };
+
+  // --- deleting --- //
 
   const handleDelete = async () => {
-    setIsDeleteDialogOpen(true);
+    handleDeleteFromList && handleDeleteFromList(review._id);
+    await deleteReview(review._id, (session as any)?.user?.token);
   };
 
-  const confirmDeleteReview = async () => {
-    setIsDeleteDialogOpen(false);
-    try {
-      // TODO: call backend to delete the review
-      // await fetch(`/api/reviews/${review.id}`, {
-      //   method: 'DELETE',
-      // });
-      // Then remove it from UI or tell parent to refresh
-      if (onDeleteReview) {
-        onDeleteReview(review.id);
-      } else {
-        alert('Review deleted! (placeholder)');
-      }
-    } catch (err) {
-      console.error(err);
-      // handle error
-    }
+  const handleDeleteReply = async () => {
+    setReplyContent(undefined);
+    await deleteReply(review._id, (session as any)?.user?.token);
   };
 
-  const handleReport = async (reviewId: number, reason: string) => {
-    try {
-      // TODO: call backend to report the review
-      // await fetch(`/api/reviews/report/${review.id}`, {
-      //   method: 'POST',
-      //   body: JSON.stringify({ reason }),
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-      alert(`Reported review for "${reason}" (placeholder)`);
-    } catch (err) {
-      console.error(err);
-      // handle error
-    }
-  };
-
-  const handleOpenReplyForm = () => {
-    setShowReplyForm(true);
-  };
-
-  const handleCancelReply = () => {
-    setShowReplyForm(false);
-    setReplyContent('');
-  };
-
-  const handleSubmitReply = async () => {
-    // Example new reply object (IDs, hotelName, date, etc. can vary):
-    const newReply: HotelReplyType = {
-      id: Math.floor(Math.random() * 100000), // placeholder
-      hotelName: 'Hotel Sunshine Luxury Resort', // or from real data
-      date: dayjs().format('YYYY-MM-DD'),
-      avatarUrl: '/hotel-logo.png',
-      comment: replyContent,
-    };
-
-    try {
-      // TODO: call backend e.g.:
-      // await fetch(`/api/replies`, {
-      //   method: 'POST',
-      //   body: JSON.stringify({ reviewId: review.id, comment: replyContent }),
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-
-      // Add the reply to the review
-      review.reply = newReply;
-      if (onUpdateReview) onUpdateReview(review);
-
-      // reset the form
-      setReplyContent('');
-      setShowReplyForm(false);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit reply.');
-    }
+  const handleReport = async (reportReason: string) => {
+    const res = await addReport({review: review._id, reportReason, token: (session as any)?.user?.token});
+    if (res.success) toast.success('Report submitted successfully');
   };
 
   return (
@@ -163,31 +108,36 @@ export default function Review({
       <div className='relative bg-[#434A5B] text-white font-detail rounded-sm px-6 pt-6 mb-4 shadow'>
         <div className='absolute top-2 right-6'>
           {isReported ? (
-            <Trash
-              onClick={handleDelete}
-              className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
-            />
+            <div className='flex items-center gap-2'>
+              <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'/>
+              <EyeClosed className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' onClick={handleIgnore && (() => handleIgnore())}/>
+            </div>
+            
           ) : (
-            <ReviewDropDown
-              reviewId={review.id}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onReport={handleReport}
-            />
+            (isReviewOwner || isHotelManager) && (
+              <ReviewDropDown
+                reviewId={review._id}
+                onEdit={isReviewOwner ? handleOpenEdit : undefined}
+                onDelete={
+                  isReviewOwner ? () => setIsDeleteDialogOpen(true) : undefined
+                }
+                onReport={isHotelManager ? handleReport : undefined}
+              />
+            )
           )}
         </div>
         <div className='flex items-center'>
           <img
-            src={review.avatarUrl || '/default-avatar.png'}
-            alt={`${review.username}'s avatar`}
+            src={review.booking?.user.picture || '/default-avatar.png'}
+            alt={`${review.booking?.user.name}'s avatar`}
             className='w-[50px] h-[50px] rounded-full mr-3'
           />
           <div>
             <h3 className='text-xl font-heading font-semibold'>
-              {review.username}
+              {review.booking?.user.name}
             </h3>
             <p className='text-sm text-gray-400'>
-              Stayed {dayjs(review.date).format('MMMM YYYY')}
+              Stayed {dayjs(review.booking?.startDate).format('MMMM YYYY')}
             </p>
           </div>
         </div>
@@ -200,21 +150,19 @@ export default function Review({
               </label>
               <input
                 className='w-fit p-2 text-black bg-gray-100 rounded'
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
             <div className='flex items-center mb-2'>
               <span className='mr-3'>Rating:</span>
               <Rating
-                value={editedRating}
-                onChange={(_, newValue) => setEditedRating(newValue || 0)}
+                value={rating}
+                onChange={(_, newValue) => setRating(newValue || 0)}
                 precision={1}
               />
-              <span className='ml-2 text-sm text-gray-300'>
-                {editedRating} / 5
-              </span>
+              <span className='ml-2 text-sm text-gray-300'>{rating} / 5</span>
             </div>
 
             <div className='mb-2'>
@@ -223,16 +171,19 @@ export default function Review({
               </label>
               <textarea
                 className='w-full p-2 text-black bg-gray-100 rounded'
-                value={editedComment}
-                onChange={(e) => setEditedComment(e.target.value)}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
               />
             </div>
 
             <div className='flex space-x-3 pb-5'>
-              <Button variant='default' onClick={handleSaveEdit}>
+              <Button
+                variant='default'
+                onClick={() => setIsEditDialogOpen(true)}
+              >
                 Save Changes
               </Button>
-              <Button variant='secondary' onClick={handleCancel}>
+              <Button variant='secondary' onClick={handleCancelEdit}>
                 Cancel
               </Button>
             </div>
@@ -241,33 +192,29 @@ export default function Review({
           // Normal display
           <>
             <div className='mt-2 flex items-center'>
-              <h4 className='text-xl font-medium font-heading mr-3'>
-                {review.title}
-              </h4>
-              <Rating
-                value={review.rating}
-                readOnly
-                precision={1}
-                size='small'
-              />
+              <h4 className='text-xl font-medium font-heading mr-3'>{title}</h4>
+              <Rating value={rating} readOnly precision={1} size='small' />
             </div>
-            <p className='mt-2 pb-6 text-base'>"{review.comment}"</p>
+            <p className='mt-2 pb-6 text-base'>"{text}"</p>
           </>
         )}
 
-        {isHotelManager && !review.reply && !isReported && (
-          <div className='flex justify-end'>
-            <Button
-              variant='link'
-              className='text-white'
-              onClick={handleOpenReplyForm}
-            >
-              <Reply /> Reply
-            </Button>
-          </div>
-        )}
+        {isHotelManager &&
+          !showReplyCreateForm &&
+          !replyContent &&
+          !isReported && (
+            <div className='flex justify-end'>
+              <Button
+                variant='link'
+                className='text-white'
+                onClick={() => setShowReplyCreateForm(true)}
+              >
+                <Reply /> Reply
+              </Button>
+            </div>
+          )}
       </div>
-      {showReplyForm && !review.reply && (
+      {showReplyCreateForm && (
         <div className='ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mb-4'>
           <h4 className='text-lg font-semibold text-[#FFD400] mb-2'>
             Write a Reply
@@ -280,28 +227,46 @@ export default function Review({
             onChange={(e) => setReplyContent(e.target.value)}
           />
           <div className='flex gap-2 mt-3'>
-            <Button variant='default' onClick={handleSubmitReply}>
+            <Button
+              variant='default'
+              onClick={() => setIsReplyDialogOpen(true)}
+            >
               Submit Reply
             </Button>
-            <Button variant='secondary' onClick={handleCancelReply}>
+            <Button
+              variant='secondary'
+              onClick={() => setShowReplyCreateForm(false)}
+            >
               Cancel
             </Button>
           </div>
         </div>
       )}
-      {review.reply && !isReported && (
+      {replyContent && !isReported && (
         <HotelReply
-          reply={review.reply}
-          onDeleteReply={(replyId) => {
-            onDeleteReply?.(review.id, replyId);
-          }}
+          isHotelManager={isHotelManager}
+          text={replyContent}
+          parentId={review._id}
+          parentHandleDeleteReply={handleDeleteReply}
         />
       )}
+      <AlertConfirmation
+        onOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        type='edit'
+        onConfirm={handleSaveEdit}
+      />
       <AlertConfirmation
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         type='delete'
-        onConfirm={confirmDeleteReview}
+        onConfirm={handleDelete}
+      />
+      <AlertConfirmation
+        onOpen={isReplyDialogOpen}
+        onOpenChange={setIsReplyDialogOpen}
+        type='create'
+        onConfirm={handleReplySubmit}
       />
     </div>
   );

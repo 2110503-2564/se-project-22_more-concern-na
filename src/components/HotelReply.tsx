@@ -1,89 +1,60 @@
-import { useState } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
 import ReplyDropDown from './ReplyDropDown';
 
+import { updateReply } from '@/lib/reviewService';
+import { useSession } from 'next-auth/react';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
 
-export interface HotelReplyType {
-  id: number;
-  hotelName: string;
-  avatarUrl?: string;
-  date: string;
-  comment: string;
-}
-
 interface HotelReplyProps {
-  reply: HotelReplyType;
-  onDeleteReply?: (replyId: number) => void;
-  onUpdateReply?: (updatedReply: HotelReplyType) => void;
+  parentId?: string;
+  text?: string;
+  parentHandleDeleteReply: () => void;
+  isHotelManager?: boolean;
 }
 
 export default function HotelReply({
-  reply,
-  onDeleteReply,
-  onUpdateReply,
+  parentId,
+  text,
+  parentHandleDeleteReply,
+  isHotelManager,
 }: HotelReplyProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedReply, setEditedReply] = useState(reply.comment);
-
+  const [editedReply, setEditedReply] = useState(text || '');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleEditReply = (replyId: number) => {
-    setIsEditing(true);
-  };
+  useEffect(() => {
+    setEditedReply(text || '');
+  }, [text]);
+  const { data: session } = useSession();
 
-  const handleDeleteReply = () => {
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDeleteReply = async () => {
-    setIsDeleteDialogOpen(false);
-    try {
-      // TODO: call backend to delete the reply
-      // await fetch(`/api/hotel-reply/${replyId}`, {
-      //   method: 'DELETE',
-      // });
-      if (onDeleteReply) {
-        onDeleteReply(reply.id);
-      } else {
-        alert('Reply deleted! (placeholder)');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSaveEditedReply = async () => {
-    try {
-      // TODO: call backend to update the reply
-      // await fetch(`/api/hotel-reply/${reply.id}`, {
-      //   method: 'PUT',
-      //   body: JSON.stringify({ comment: editedReply }),
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-      reply.comment = editedReply;
-      setIsEditing(false);
-
-      if (onUpdateReply) {
-        onUpdateReply(reply);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleEdit = async () => {
+    setIsEditing(false);
+    await updateReply(
+      parentId || '',
+      { text: editedReply },
+      (session as any)?.user?.token,
+    );
   };
 
   return (
     <div className='relative ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mt-4 mb-8'>
-      <div className='absolute text-white top-2 right-6'>
-        <ReplyDropDown
-          replyId={reply.id}
-          onEditReply={handleEditReply}
-          onDeleteReply={handleDeleteReply}
-        />
-      </div>
+      {isHotelManager && (
+        <div className='absolute text-white top-2 right-6'>
+          <ReplyDropDown
+            onEditReply={() => setIsEditing(true)}
+            onDeleteReply={() => setIsDeleteDialogOpen(true)}
+          />
+        </div>
+      )}
 
       <div className='flex items-center mb-3'>
-        <p className='text-xl text-[#FFD400]'>{reply.hotelName} Response</p>
+        <p className='text-sm text-[#FFD400] font-heading'>
+          Response from Hotel Manager
+        </p>
       </div>
 
       {isEditing ? (
@@ -94,13 +65,12 @@ export default function HotelReply({
             onChange={(e) => setEditedReply(e.target.value)}
           />
           <div className='flex gap-2 mt-2'>
-            <Button variant='default' onClick={handleSaveEditedReply}>
+            <Button variant='default' onClick={() => setIsEditDialogOpen(true)}>
               Save Change
             </Button>
             <Button
               variant='secondary'
               onClick={() => {
-                setEditedReply(reply.comment);
                 setIsEditing(false);
               }}
             >
@@ -109,13 +79,20 @@ export default function HotelReply({
           </div>
         </div>
       ) : (
-        <p className='font-normal text-sm text-[#d7d7d7]'>{reply.comment}</p>
+        <p className='font-detail text-[#d7d7d7] text-lg'>{editedReply}</p>
       )}
+      <AlertConfirmation
+        onOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        type='edit'
+        onConfirm={handleEdit}
+      />
+
       <AlertConfirmation
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         type='delete'
-        onConfirm={confirmDeleteReply}
+        onConfirm={parentHandleDeleteReply}
       />
     </div>
   );

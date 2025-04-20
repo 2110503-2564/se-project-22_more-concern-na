@@ -68,7 +68,7 @@ const LoginPage = () => {
 
         <Button
           type='submit'
-          variant="golden"
+          variant='golden'
           className='w-full p-3'
           disabled={!email || !password}
         >

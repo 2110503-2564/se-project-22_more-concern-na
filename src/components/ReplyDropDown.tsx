@@ -7,13 +7,11 @@ import {
 } from './ui/dropdown-menu';
 
 interface ReplyDropDownProps {
-  replyId: number;
-  onEditReply: (replyId: number) => void;
-  onDeleteReply: (replyId: number) => void;
+  onEditReply?: () => void;
+  onDeleteReply?: () => void;
 }
 
 export default function ReplyDropDown({
-  replyId,
   onEditReply,
   onDeleteReply,
 }: ReplyDropDownProps) {
@@ -21,17 +19,11 @@ export default function ReplyDropDown({
     <DropdownMenu>
       <DropdownMenuTrigger>...</DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='start'>
-        <DropdownMenuItem
-          className='cursor-pointer'
-          onClick={() => onEditReply(replyId)}
-        >
+        <DropdownMenuItem className='cursor-pointer' onClick={onEditReply}>
           <PencilLine color='#00a0f0' />
           <span className='ml-2'>Edit</span>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className='cursor-pointer'
-          onClick={() => onDeleteReply(replyId)}
-        >
+        <DropdownMenuItem className='cursor-pointer' onClick={onDeleteReply}>
           <Trash color='red' />
           <span className='ml-2'>Delete</span>
         </DropdownMenuItem>

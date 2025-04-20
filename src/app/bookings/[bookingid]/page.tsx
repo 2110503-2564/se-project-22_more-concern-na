@@ -3,6 +3,7 @@
 import AlertConfirmation from '@/components/AlertConfirmation';
 import DateBookFill from '@/components/DateBookFill';
 import Loader from '@/components/Loader';
+import ReviewCreationForm from '@/components/ReviewCreationForm';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { deleteBooking, getBooking, updateBooking } from '@/lib/bookingService';
@@ -32,6 +33,7 @@ export default function BookingDetailPage({
   const [newCheckOutDate, setNewCheckOutDate] = useState<Dayjs | null>(null);
   const [editedRooms, setEditedRooms] = useState<any[]>([]);
 
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const getBookingStatus = () => {
@@ -69,7 +71,6 @@ export default function BookingDetailPage({
         setHotel(bookingData.hotel);
         setUser(bookingData.user);
         setEditedRooms(bookingData.rooms ? [...bookingData.rooms] : []);
-
       } catch (err: any) {
         console.error('Error fetching booking details:', err);
         setError(err.message || 'Failed to load booking details');
@@ -213,6 +214,10 @@ export default function BookingDetailPage({
       const price = roomPrices[room.roomType];
       return total + price * room.count;
     }, 0);
+  };
+
+  const handleReviewFormClose = () => {
+    setIsReviewDialogOpen(false);
   };
 
   if (isLoading || status === 'loading') {
@@ -507,7 +512,11 @@ export default function BookingDetailPage({
                   </Button>
 
                   {isPastBooking && (
-                    <Button variant='golden' className='w-full'>
+                    <Button
+                      variant='golden'
+                      className='w-full'
+                      onClick={() => setIsReviewDialogOpen(true)}
+                    >
                       Write Review
                     </Button>
                   )}
@@ -524,6 +533,12 @@ export default function BookingDetailPage({
         type='delete'
         onConfirm={handleCancelBooking}
       />
+      {isReviewDialogOpen && (
+        <ReviewCreationForm
+          bookingId={booking?._id}
+          onClose={handleReviewFormClose}
+        />
+      )}
     </div>
   );
 }

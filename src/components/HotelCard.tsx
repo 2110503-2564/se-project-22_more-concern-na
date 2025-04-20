@@ -1,10 +1,10 @@
 'use client';
 import { MapPin, Phone, Star, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { IHotel } from '../../interface';
-import { Button } from './ui/button';
-import AlertConfirmation from './AlertConfirmation';
 import { useState } from 'react';
+import { IHotel } from '../../interface';
+import AlertConfirmation from './AlertConfirmation';
+import { Button } from './ui/button';
 
 interface hotelCardProps {
   hotel: IHotel;
@@ -109,7 +109,7 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
       <AlertConfirmation
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        type="delete"
+        type='delete'
         onConfirm={confirmDelete}
       />
     </div>
