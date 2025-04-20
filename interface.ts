@@ -95,13 +95,19 @@ export interface AuthResponse extends GenericResponse{
 //-------ReviewSchema Interface------
 export interface IReview {
     _id: string;
-    booking?: string;
+    booking?: IBooking;
     rating?: number;
-    reply?: string;
+    reply?: IReply;
     title?: string;
     text?: string;
     createdAt: string;
-  }
+}
+
+export interface IReply {
+    _id: string;
+    title: string;
+    text: string;
+}
 
 //-------ReportSchema Interface------
 export interface IReport {
@@ -131,7 +137,7 @@ export interface BookingType {
 }
 export interface IBooking {
     _id: string;
-    user: string;
+    user: IUser;
     hotel: string;
     status: string;
     price: number;
@@ -155,20 +161,9 @@ export interface ReviewPagination {
     next?: number;
 }
 
-export interface Review {
-    userName: string;
-    picture: string;
-    stayMonth: string;
-    stayRoom: string;
-    title: string;
-    rating: number;
-    text?: string;
-    replyText?: string;
-}
-
 export interface ReviewResponseSection {
     pagination: ReviewPagination;
-    data: Review[];
+    data: IReview[];
 }
 
 export interface HotelReviewsResponse extends GenericResponse {

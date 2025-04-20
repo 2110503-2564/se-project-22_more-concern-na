@@ -2,20 +2,27 @@
 import { BookingCard } from '@/components/BookingCard';
 import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
-import { getBookings, checkInBooking } from '@/lib/bookingService';
 import { getCurrentUser } from '@/lib/authService';
+import { checkInBooking, getBookings } from '@/lib/bookingService';
+import dayjs from 'dayjs';
 import { ArrowLeft } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { PBooking, BookingResponse, UserRole, IUser } from '../../../../interface';
-import dayjs from 'dayjs';
+import {
+  BookingResponse,
+  IUser,
+  PBooking,
+  UserRole,
+} from '../../../../interface';
 
 export default function ManageBookingsPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [bookingsData, setBookingsData] = useState<BookingResponse | null>(null);
+  const [bookingsData, setBookingsData] = useState<BookingResponse | null>(
+    null,
+  );
   const [allBookings, setAllBookings] = useState<PBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +36,6 @@ export default function ManageBookingsPage() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      
       try {
         const userResponse = await getCurrentUser(token);
         if (userResponse && userResponse.success) {
@@ -47,24 +53,23 @@ export default function ManageBookingsPage() {
 
   useEffect(() => {
     const fetchAllBookings = async () => {
-      
       try {
         setIsLoading(true);
-        
+
         const response = await getBookings(undefined, token);
         setBookingsData(response);
         console.log('Bookings data:', response);
-        
+
         // Combine all bookings for admin/manager view
         const combinedBookings = [
           ...(response.active?.data || []),
           ...(response.upcoming?.data || []),
-          ...(response.past?.data || [])
-        ].map(booking => ({
+          ...(response.past?.data || []),
+        ].map((booking) => ({
           ...booking,
-          checkedIn: booking.status === 'checkedIn'
+          checkedIn: booking.status === 'checkedIn',
         }));
-        
+
         setAllBookings(combinedBookings);
       } catch (err: any) {
         console.error('Error fetching bookings:', err);
@@ -87,16 +92,15 @@ export default function ManageBookingsPage() {
     try {
       const response = await checkInBooking(bookingId, token);
       console.log('Check-in response:', response);
-      setAllBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking._id === bookingId 
-            ? { ...booking, status: 'checkedIn' } 
-            : booking
-        )
+      setAllBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking._id === bookingId
+            ? { ...booking, status: 'checkedIn' }
+            : booking,
+        ),
       );
-      
+
       toast.success('Guest checked in successfully');
-      
     } catch (err: any) {
       console.error('Error checking in guest:', err);
       toast.error('Failed to check in guest');
@@ -107,8 +111,12 @@ export default function ManageBookingsPage() {
     const today = dayjs().startOf('day');
     const checkInDate = dayjs(booking.startDate).startOf('day');
     const checkOutDate = dayjs(booking.endDate).startOf('day');
-    
-    if (today.isSame(checkInDate) || (today.isAfter(checkInDate) && today.isBefore(checkOutDate) || today.isSame(checkOutDate))) {
+
+    if (
+      today.isSame(checkInDate) ||
+      (today.isAfter(checkInDate) && today.isBefore(checkOutDate)) ||
+      today.isSame(checkOutDate)
+    ) {
       return 'active';
     } else if (today.isBefore(checkInDate)) {
       return 'upcoming';
@@ -120,11 +128,11 @@ export default function ManageBookingsPage() {
   const getDaysUntil = (booking: PBooking) => {
     const today = dayjs().startOf('day');
     const checkInDate = dayjs(booking.startDate).startOf('day');
-    
+
     if (checkInDate.isAfter(today)) {
       return checkInDate.diff(today, 'day');
     }
-    
+
     return undefined;
   };
 
@@ -135,7 +143,7 @@ export default function ManageBookingsPage() {
       </div>
     );
   }
-  
+
   return (
     <div className='text-white font-detail'>
       {/* Main Content */}
@@ -163,8 +171,9 @@ export default function ManageBookingsPage() {
           {allBookings.length > 0 ? (
             allBookings.map((booking) => {
               const bookingType = getBookingType(booking);
-              const daysUntil = bookingType === 'upcoming' ? getDaysUntil(booking) : undefined;
-              
+              const daysUntil =
+                bookingType === 'upcoming' ? getDaysUntil(booking) : undefined;
+
               return (
                 <BookingCard
                   key={booking._id}
@@ -176,7 +185,11 @@ export default function ManageBookingsPage() {
                   type={bookingType}
                   daysUntil={daysUntil}
                   checkedIn={booking.status === 'checkedIn'}
-                  showCheckInOption={isHotelManager && bookingType === 'active' && booking.status !== 'checkedIn'}
+                  showCheckInOption={
+                    isHotelManager &&
+                    bookingType === 'active' &&
+                    booking.status !== 'checkedIn'
+                  }
                   onCheckIn={handleCheckIn}
                 />
               );

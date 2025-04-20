@@ -1,11 +1,5 @@
 import axios from 'axios';
-import {
-  IBooking,
-  BookingsRequest,
-  BookingResponse,
-  GenericResponse,
-  PBooking,
-} from '../../interface';
+import { BookingsRequest, GenericResponse, PBooking } from '../../interface';
 import { apiPath } from './shared';
 
 export const getBookings = async (
@@ -20,9 +14,30 @@ export const getBookings = async (
   token?: string,
 ): Promise<{
   success: boolean;
-  past?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
-  active?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
-  upcoming?: { pagination?: { count?: number; prev?: { page: number; limit: number }; next?: { page: number; limit: number } }; data?: PBooking[] };
+  past?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
+  active?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
+  upcoming?: {
+    pagination?: {
+      count?: number;
+      prev?: { page: number; limit: number };
+      next?: { page: number; limit: number };
+    };
+    data?: PBooking[];
+  };
   msg?: string;
 }> => {
   try {
@@ -64,7 +79,7 @@ export const getBooking = async (
       throw new Error(`Error: ${response.status}`);
     }
 
-    const BookingData = response.data
+    const BookingData = response.data;
     return await BookingData.booking;
   } catch (error: any) {
     console.error(`Error fetching booking with ID ${id}:`, error);
@@ -184,11 +199,15 @@ export const checkInBooking = async (
   token?: string,
 ): Promise<GenericResponse> => {
   try {
-    const response = await axios.put(apiPath(`/bookings/${id}/checkIn`), {}, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : undefined,
+    const response = await axios.put(
+      apiPath(`/bookings/${id}/checkIn`),
+      {},
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
       },
-    });
+    );
 
     if (response.status !== 200) {
       throw new Error(`Error: ${response.status}`);
@@ -211,11 +230,15 @@ export const completeBooking = async (
   token?: string,
 ): Promise<GenericResponse> => {
   try {
-    const response = await axios.put(apiPath(`/bookings/${id}/completed`), {}, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : undefined,
+    const response = await axios.put(
+      apiPath(`/bookings/${id}/completed`),
+      {},
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
       },
-    });
+    );
 
     if (response.status !== 200) {
       throw new Error(`Error: ${response.status}`);

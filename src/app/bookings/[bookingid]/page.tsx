@@ -69,7 +69,6 @@ export default function BookingDetailPage({
         setHotel(bookingData.hotel);
         setUser(bookingData.user);
         setEditedRooms(bookingData.rooms ? [...bookingData.rooms] : []);
-
       } catch (err: any) {
         console.error('Error fetching booking details:', err);
         setError(err.message || 'Failed to load booking details');

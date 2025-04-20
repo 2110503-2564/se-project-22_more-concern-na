@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { getRoom, updateRoom, deleteRoom } from '@/lib/roomService';
 import { Rooms } from '@/../interface';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import Loader from '@/components/Loader';
+import { Button } from '@/components/ui/button';
+import { deleteRoom, getRoom, updateRoom } from '@/lib/roomService';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function EditRoom({
   params,
@@ -91,65 +91,61 @@ export default function EditRoom({
   }
 
   return (
-    <div className="min-h-screen bg-base-gd text-white px-4 py-12 flex flex-col items-center font-detail)]">
-      <div className="w-full max-w-md">
+    <div className='min-h-screen bg-base-gd text-white px-4 py-12 flex flex-col items-center font-detail)]'>
+      <div className='w-full max-w-md'>
         <a
-          href="#"
+          href='#'
           onClick={() => router.back()}
-          className="text-x1 text-white mb-6 inline-block hover:underline font-detail"
+          className='text-x1 text-white mb-6 inline-block hover:underline font-detail'
         >
           ← Back to Manage Bookings
         </a>
-        <div className="bg-box p-8 rounded-md border border-bg-border shadow">
-          <h2 className="text-2xl text-center mb-6 font-heading">
-            Edit Room
-          </h2>
+        <div className='bg-box p-8 rounded-md border border-bg-border shadow'>
+          <h2 className='text-2xl text-center mb-6 font-heading'>Edit Room</h2>
 
-          <div className="mb-4">
-            <label className="block text-x1 mb-1 font-detail">Room Type</label>
+          <div className='mb-4'>
+            <label className='block text-x1 mb-1 font-detail'>Room Type</label>
             <input
               placeholder='roomType'
-              type="text"
+              type='text'
               value={roomType}
               onChange={(e) => setRoomType(e.target.value)}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-black"
+              className='w-full px-3 py-2 rounded-md bg-gray-200 text-black'
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-x1 mb-1 font-detail">Max Guest</label>
+          <div className='mb-4'>
+            <label className='block text-x1 mb-1 font-detail'>Max Guest</label>
             <input
               placeholder='Capacity'
-              type="number"
+              type='number'
               value={capacity}
               onChange={(e) => setCapacity(parseInt(e.target.value))}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-black"
+              className='w-full px-3 py-2 rounded-md bg-gray-200 text-black'
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-x1 mb-1 font-detail">Baht per night</label>
+          <div className='mb-6'>
+            <label className='block text-x1 mb-1 font-detail'>
+              Baht per night
+            </label>
             <input
               placeholder='Price'
-              type="number"
+              type='number'
               value={price}
               onChange={(e) => setPrice(parseFloat(e.target.value))}
-              className="w-full px-3 py-2 rounded-md bg-gray-200 text-black"
+              className='w-full px-3 py-2 rounded-md bg-gray-200 text-black'
             />
           </div>
 
-          <Button
-            onClick={handleSave}
-            variant="golden"
-            className="w-full"
-          >
+          <Button onClick={handleSave} variant='golden' className='w-full'>
             Save Changes
           </Button>
         </div>
 
         <Button
           onClick={handleDelete}
-          className="w-full py-2 rounded-md mt-6 bg-[#991B1B] hover:bg-[#B91C1C] text-white font-detail"
+          className='w-full py-2 rounded-md mt-6 bg-[#991B1B] hover:bg-[#B91C1C] text-white font-detail'
         >
           Delete Room
         </Button>
