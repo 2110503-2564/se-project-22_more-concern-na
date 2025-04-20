@@ -58,7 +58,7 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
       {/* Fixed height image container */}
       <div className='w-full h-44 relative overflow-hidden bg-gray-600'>
         <img
-          src={hotel.picture || '/defaultHotel.png'}
+          src={hotel.picture || '/img/hotel.png'}
           alt={hotel.name}
           className='w-full h-full object-cover rounded-t-lg'
         />
