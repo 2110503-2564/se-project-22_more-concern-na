@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { ReviewResponseSection } from '../../interface';
 import Review from './Review';
+import { Button } from './ui/button';
 
 export default function ReviewList({
   title,
@@ -48,28 +49,61 @@ export default function ReviewList({
         hotelId ?? '',
         {
           selfPage: isSelf ? page : 0,
-          selfPageSize: isSelf ? 5 : 0,
+          selfPageSize: isSelf ? 3 : 0,
           otherPage: isSelf ? 0 : page,
-          otherPageSize: isSelf ? 0 : 5,
+          otherPageSize: isSelf ? 0 : 3,
         },
         (session as any)?.user?.token,
       );
       setReviewData(isSelf ? res.self : res.other);
     };
     fetchReviews();
-  }, [page]);
+  }, [page, hotelId, isSelf, session]);
+
+  const handlePrevPage = () => {
+    if (reviewData?.pagination.prev) {
+      setPage((prevPage) => prevPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (reviewData?.pagination.next) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
 
   return (
     <section>
       <h2>{title}</h2>
       {reviewData && reviewData.data.length > 0 ? (
-        reviewData.data.map((review) => (
-          <Review
-            key={review._id}
-            review={review}
-            handleDeleteFromList={handleDeleteFromList}
-          />
-        ))
+        <>
+          {reviewData.data.map((review) => (
+            <Review
+              key={review._id}
+              review={review}
+              handleDeleteFromList={handleDeleteFromList}
+            />
+          ))}
+          <div className='flex justify-center gap-4 mt-4'>
+            <Button
+              onClick={handlePrevPage}
+              disabled={!reviewData.pagination.prev}
+              variant='golden'
+              size='sm'
+            >
+              Previous
+            </Button>
+            <span className='self-center font-detail'>Page {page}</span>
+            <Button
+              onClick={handleNextPage}
+              disabled={!reviewData.pagination.next}
+              variant='golden'
+              size='sm'
+            >
+              Next
+            </Button>
+          </div>
+        </>
       ) : (
         <p>No reviews available.</p>
       )}
