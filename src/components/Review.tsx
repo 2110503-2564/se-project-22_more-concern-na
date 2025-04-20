@@ -2,7 +2,7 @@
 
 import { Rating } from '@mui/material';
 import dayjs from 'dayjs';
-import { Reply, Trash } from 'lucide-react';
+import { EyeClosed, Reply, Trash } from 'lucide-react';
 import { useState } from 'react';
 import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
@@ -22,13 +22,15 @@ import AlertConfirmation from './AlertConfirmation';
 
 interface ReviewProps {
   review: IReview;
-  handleDeleteFromList: (reviewId: string) => void;
+  handleDeleteFromList?: (reviewId: string) => void;
+  handleIgnore?: () => void;
   isReported?: boolean;
 }
 
 export default function Review({
   review,
   handleDeleteFromList,
+  handleIgnore,
   isReported,
 }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -87,7 +89,7 @@ export default function Review({
   // --- deleting --- //
 
   const handleDelete = async () => {
-    handleDeleteFromList(review._id);
+    handleDeleteFromList && handleDeleteFromList(review._id);
     await deleteReview(review._id, (session as any)?.user?.token);
   };
 
@@ -96,12 +98,8 @@ export default function Review({
     await deleteReply(review._id, (session as any)?.user?.token);
   };
 
-  const handleReport = async (reason: string) => {
-    const res = await addReport(
-      review._id,
-      reason,
-      (session as any)?.user?.token,
-    );
+  const handleReport = async (reportReason: string) => {
+    const res = await addReport({review: review._id, reportReason, token: (session as any)?.user?.token});
     if (res.success) toast.success('Report submitted successfully');
   };
 
@@ -110,7 +108,11 @@ export default function Review({
       <div className='relative bg-[#434A5B] text-white font-detail rounded-sm px-6 pt-6 mb-4 shadow'>
         <div className='absolute top-2 right-6'>
           {isReported ? (
-            <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' />
+            <div className='flex items-center gap-2'>
+              <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'/>
+              <EyeClosed className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' onClick={handleIgnore && (() => handleIgnore())}/>
+            </div>
+            
           ) : (
             (isReviewOwner || isHotelManager) && (
               <ReviewDropDown
