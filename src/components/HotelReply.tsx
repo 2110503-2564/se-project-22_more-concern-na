@@ -1,28 +1,56 @@
+'use client';
+
 import { useState } from 'react';
 import ReplyDropDown from './ReplyDropDown';
 
+import { updateReply } from '@/lib/reviewService';
+import { useSession } from 'next-auth/react';
 import { IReply } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
 
 interface HotelReplyProps {
   reply: IReply;
+  parentId?: string;
+  isHotelManager?: boolean;
 }
 
-export default function HotelReply({ reply }: HotelReplyProps) {
+export default function HotelReply({
+  reply,
+  parentId,
+  isHotelManager,
+}: HotelReplyProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedReply, setEditedReply] = useState(reply.text);
-
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const { data: session } = useSession();
+
+  const handleEdit = async () => {
+    setIsEditing(false);
+    await updateReply(
+      parentId || '',
+      { text: editedReply },
+      (session as any)?.user?.token,
+    );
+  };
 
   return (
     <div className='relative ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mt-4 mb-8'>
-      <div className='absolute text-white top-2 right-6'>
-        <ReplyDropDown replyId={reply._id} />
-      </div>
+      {isHotelManager && (
+        <div className='absolute text-white top-2 right-6'>
+          <ReplyDropDown
+            replyId={reply._id}
+            onEditReply={() => setIsEditing(true)}
+          />
+        </div>
+      )}
 
       <div className='flex items-center mb-3'>
-        <p className='text-xl text-[#FFD400]'>{} Response</p>
+        <p className='text-sm text-[#FFD400] font-heading'>
+          Response from Hotel Manager
+        </p>
       </div>
 
       {isEditing ? (
@@ -33,7 +61,9 @@ export default function HotelReply({ reply }: HotelReplyProps) {
             onChange={(e) => setEditedReply(e.target.value)}
           />
           <div className='flex gap-2 mt-2'>
-            <Button variant='default'>Save Change</Button>
+            <Button variant='default' onClick={() => setIsEditDialogOpen(true)}>
+              Save Change
+            </Button>
             <Button
               variant='secondary'
               onClick={() => {
@@ -45,8 +75,15 @@ export default function HotelReply({ reply }: HotelReplyProps) {
           </div>
         </div>
       ) : (
-        <p className='font-normal text-sm text-[#d7d7d7]'>{}</p>
+        <p className='font-detail text-[#d7d7d7] text-lg'>{editedReply}</p>
       )}
+      <AlertConfirmation
+        onOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        type='edit'
+        onConfirm={handleEdit}
+      />
+
       <AlertConfirmation
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

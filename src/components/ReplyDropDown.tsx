@@ -8,8 +8,8 @@ import {
 
 interface ReplyDropDownProps {
   replyId: string;
-  onEditReply?: (replyId: string) => void;
-  onDeleteReply?: (replyId: string) => void;
+  onEditReply?: () => void;
+  onDeleteReply?: () => void;
 }
 
 export default function ReplyDropDown({
@@ -21,11 +21,11 @@ export default function ReplyDropDown({
     <DropdownMenu>
       <DropdownMenuTrigger>...</DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='start'>
-        <DropdownMenuItem className='cursor-pointer'>
+        <DropdownMenuItem className='cursor-pointer' onClick={onEditReply}>
           <PencilLine color='#00a0f0' />
           <span className='ml-2'>Edit</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className='cursor-pointer'>
+        <DropdownMenuItem className='cursor-pointer' onClick={onDeleteReply}>
           <Trash color='red' />
           <span className='ml-2'>Delete</span>
         </DropdownMenuItem>

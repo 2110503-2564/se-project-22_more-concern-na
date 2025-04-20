@@ -193,7 +193,13 @@ export default function Review({
           </div>
         </div>
       )}
-      {review.reply && !isReported && <HotelReply reply={review.reply} />}
+      {review.reply && !isReported && (
+        <HotelReply
+          reply={review.reply}
+          isHotelManager={isHotelManager}
+          parentId={review._id}
+        />
+      )}
       <AlertConfirmation
         onOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
