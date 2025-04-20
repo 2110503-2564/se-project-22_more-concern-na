@@ -1,36 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReplyDropDown from './ReplyDropDown';
 
 import { updateReply } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
-import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
 
 interface HotelReplyProps {
-  review: IReview;
+  parentId?: string;
+  text?: string;
   parentHandleDeleteReply: () => void;
   isHotelManager?: boolean;
 }
 
 export default function HotelReply({
-  review,
+  parentId,
+  text,
   parentHandleDeleteReply,
   isHotelManager,
 }: HotelReplyProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedReply, setEditedReply] = useState(review.reply?.text || '');
+  const [editedReply, setEditedReply] = useState(text || '');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  useEffect(() => {
+    setEditedReply(text || '');
+  }, [text]);
   const { data: session } = useSession();
 
   const handleEdit = async () => {
     setIsEditing(false);
     await updateReply(
-      review._id || '',
+      parentId || '',
       { text: editedReply },
       (session as any)?.user?.token,
     );
@@ -41,7 +45,6 @@ export default function HotelReply({
       {isHotelManager && (
         <div className='absolute text-white top-2 right-6'>
           <ReplyDropDown
-            replyId={review.reply?._id || ''}
             onEditReply={() => setIsEditing(true)}
             onDeleteReply={() => setIsDeleteDialogOpen(true)}
           />

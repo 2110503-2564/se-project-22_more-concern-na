@@ -103,6 +103,41 @@ export const deleteReview = async (
   }
 };
 
+export const addReply = async (
+  reviewId: string,
+  replyData: {
+    text: string;
+  },
+  token?: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.post(
+      apiPath(`/reviews/${reviewId}/respond`),
+      replyData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error('Error adding reply:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
 export const updateReply = async (
   reviewId: string,
   replyData: {

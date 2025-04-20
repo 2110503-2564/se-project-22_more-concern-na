@@ -8,7 +8,12 @@ import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
-import { deleteReply, deleteReview, updateReview } from '@/lib/reviewService';
+import {
+  addReply,
+  deleteReply,
+  deleteReview,
+  updateReview,
+} from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
 import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
@@ -29,10 +34,10 @@ export default function Review({
   const [title, setTitle] = useState(review.title);
   const [rating, setRating] = useState(review.rating);
 
-  const [hasReply, setHasReply] = useState(review.reply || false);
-  const [showReplyForm, setShowReplyForm] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
+  const [showReplyCreateForm, setShowReplyCreateForm] = useState(false);
+  const [replyContent, setReplyContent] = useState(review.reply?.text);
 
+  const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data: session } = useSession();
@@ -44,6 +49,16 @@ export default function Review({
   const isReviewOwner = session
     ? (session.user as any)?.data.email === review.booking?.user.email
     : false;
+
+  // --- reply form --- //
+  const handleReplySubmit = async () => {
+    setShowReplyCreateForm(false);
+    await addReply(
+      review._id,
+      { text: replyContent || '' },
+      (session as any)?.user?.token,
+    );
+  };
 
   // --- editing --- //
 
@@ -75,7 +90,7 @@ export default function Review({
   };
 
   const handleDeleteReply = async () => {
-    setHasReply(false);
+    setReplyContent(undefined);
     await deleteReply(review._id, (session as any)?.user?.token);
   };
 
@@ -173,15 +188,22 @@ export default function Review({
           </>
         )}
 
-        {isHotelManager && !review.reply && !isReported && (
-          <div className='flex justify-end'>
-            <Button variant='link' className='text-white'>
-              <Reply /> Reply
-            </Button>
-          </div>
-        )}
+        {isHotelManager &&
+          !showReplyCreateForm &&
+          !replyContent &&
+          !isReported && (
+            <div className='flex justify-end'>
+              <Button
+                variant='link'
+                className='text-white'
+                onClick={() => setShowReplyCreateForm(true)}
+              >
+                <Reply /> Reply
+              </Button>
+            </div>
+          )}
       </div>
-      {showReplyForm && !review.reply && (
+      {showReplyCreateForm && (
         <div className='ml-12 border-l-4 border-yellow-500 bg-[#303646] rounded-sm px-4 pt-3 pb-6 mb-4'>
           <h4 className='text-lg font-semibold text-[#FFD400] mb-2'>
             Write a Reply
@@ -194,15 +216,26 @@ export default function Review({
             onChange={(e) => setReplyContent(e.target.value)}
           />
           <div className='flex gap-2 mt-3'>
-            <Button variant='default'>Submit Reply</Button>
-            <Button variant='secondary'>Cancel</Button>
+            <Button
+              variant='default'
+              onClick={() => setIsReplyDialogOpen(true)}
+            >
+              Submit Reply
+            </Button>
+            <Button
+              variant='secondary'
+              onClick={() => setShowReplyCreateForm(false)}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       )}
-      {review.reply && !isReported && hasReply && (
+      {replyContent && !isReported && (
         <HotelReply
           isHotelManager={isHotelManager}
-          review={review}
+          text={replyContent}
+          parentId={review._id}
           parentHandleDeleteReply={handleDeleteReply}
         />
       )}
@@ -217,6 +250,12 @@ export default function Review({
         onOpenChange={setIsDeleteDialogOpen}
         type='delete'
         onConfirm={handleDelete}
+      />
+      <AlertConfirmation
+        onOpen={isReplyDialogOpen}
+        onOpenChange={setIsReplyDialogOpen}
+        type='create'
+        onConfirm={handleReplySubmit}
       />
     </div>
   );

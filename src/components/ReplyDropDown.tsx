@@ -7,13 +7,11 @@ import {
 } from './ui/dropdown-menu';
 
 interface ReplyDropDownProps {
-  replyId: string;
   onEditReply?: () => void;
   onDeleteReply?: () => void;
 }
 
 export default function ReplyDropDown({
-  replyId,
   onEditReply,
   onDeleteReply,
 }: ReplyDropDownProps) {
