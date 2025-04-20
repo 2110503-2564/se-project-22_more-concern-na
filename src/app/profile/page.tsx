@@ -1,13 +1,11 @@
 'use client';
 
+import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { getCurrentUser } from '@/lib/authService';
-import { getBookings } from '@/lib/bookingService';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { IUser, PBooking } from '../../../interface';
-import Loader from '@/components/Loader';
 
 export default function ProfilePage() {
   const [active, setActive] = useState(0);
@@ -32,7 +30,6 @@ export default function ProfilePage() {
       setLoading(false);
 
       try {
-
         const activeCount = user.bookings.active.count;
         const upcomingCount = user.bookings.upcoming.count;
         const pastCount = user.bookings.past.count;
@@ -90,9 +87,7 @@ export default function ProfilePage() {
               <div className='flex flex-wrap mr-8'>
                 {/* Left column - picture and button */}
                 <div className='flex flex-col items-center'>
-                  <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
-                    picture
-                  </div>
+                  <img src='/defaultUser.jpg' alt='user picture' className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'/>
                   <Button
                     className='w-48'
                     onClick={handleEditProfileClick}
@@ -105,9 +100,7 @@ export default function ProfilePage() {
                 {/* Right column - user info */}
                 <div className='flex flex-col justify-center ml-6 font-details'>
                   <p className='text-xl mb-6'>Name : {userProfile.name}</p>
-                  <p className='text-xl mb-6'>
-                    Email : {userProfile.email}
-                  </p>
+                  <p className='text-xl mb-6'>Email : {userProfile.email}</p>
                   <p className='text-xl mb-6'>Tel : {userProfile.tel} </p>
                 </div>
               </div>

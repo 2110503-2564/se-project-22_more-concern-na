@@ -1,7 +1,6 @@
 'use client';
 import CouponDropDown from '@/components/CouponDropDown';
 import DateBookFill from '@/components/DateBookFill';
-import Review, { ReviewType } from '@/components/Review';
 import RoomCard from '@/components/RoomCard';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -23,21 +22,17 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { Rooms, IHotel } from '../../../../interface';
+import { IHotel, Rooms } from '../../../../interface';
 
+import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
-import {
-  checkAvailability,
-  getHotel,
-  getHotelReviews,
-} from '@/lib/hotelService';
+import { checkAvailability, getHotel } from '@/lib/hotelService';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
   HotelAvailabilityResponse,
-  HotelReviewsResponse,
 } from '../../../../interface';
-import { useRouter } from 'next/navigation';
 
 export default function HotelDetail({
   params,
@@ -54,57 +49,6 @@ export default function HotelDetail({
   const [loading, setLoading] = useState(true);
   const [availabilityData, setAvailabilityData] =
     useState<HotelAvailabilityResponse | null>(null);
-  const [reviewsData, setReviewsData] = useState<HotelReviewsResponse | null>(
-    null,
-  );
-  const [filteredreview, setfilteredReview] = useState<ReviewType[]>([
-    {
-      id: 1,
-      username: 'John Doe',
-      avatarUrl: '/john-avatar.png',
-      date: '2023-04-10',
-      rating: 4,
-      title: 'Great stay!',
-      comment:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
-      reply: {
-        id: 101,
-        hotelName: 'hotel.name',
-        avatarUrl: '/hotel-logo.png',
-        date: '2023-04-11',
-        comment:
-          "Thank you for your kind review! We're delighted that you enjoyed your stay with us and appreciate your feedback. We hope to welcome you back soon for another wonderful experience.",
-      },
-    },
-    {
-      id: 2,
-      username: 'Jane Smith',
-      avatarUrl: '/jane-avatar.png',
-      date: '2023-03-22',
-      rating: 5,
-      title: 'Excellent!',
-      comment:
-        'Beautiful hotel with stunning views. The staff was incredibly attentive and the amenities were top-notch. Will definitely be coming back soon!',
-    },
-    {
-      id: 3,
-      username: 'Michael Johnson',
-      avatarUrl: '/michael-avatar.png',
-      date: '2023-02-15',
-      rating: 3,
-      title: 'Decent stay but room for improvement',
-      comment:
-        "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
-      reply: {
-        id: 102,
-        hotelName: 'hotel.name',
-        avatarUrl: '/hotel-logo.png',
-        date: '2023-02-16',
-        comment:
-          "We apologize for the inconvenience you experienced during your stay. We take your feedback seriously and are working to improve our check-in process and response times. We hope you'll give us another chance to provide you with a better experience.",
-      },
-    },
-  ]);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
@@ -134,100 +78,10 @@ export default function HotelDetail({
     fetchHotel();
   }, [params]);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const resolveParams = await params;
-        const hotelId = resolveParams.hotelid;
-        const response = await getHotelReviews(hotelId, {
-          selfPage: 1,
-          selfPageSize: 5,
-          otherPage: 1,
-          otherPageSize: 5,
-        });
-        setReviewsData(response);
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-
-    if (hotel?._id) {
-      fetchReviews();
-    }
-  }, [hotel?._id, params]);
-
-  // MOCK REVIEW DATA
-  const reviews: ReviewType[] = [
-    {
-      id: 1,
-      username: 'John Doe',
-      avatarUrl: '/john-avatar.png',
-      date: '2023-04-10',
-      rating: 4,
-      title: 'Great stay!',
-      comment:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid doloremque laborum dolorum soluta nisi culpa nesciunt in ea accusantium, omnis optio veritatis, fugiat saepe nam similique itaque maxime repellat labore?',
-      reply: {
-        id: 101,
-        hotelName: hotel?.name || '',
-        avatarUrl: '/hotel-logo.png',
-        date: '2023-04-11',
-        comment:
-          "Thank you for your kind review! We're delighted that you enjoyed your stay with us and appreciate your feedback. We hope to welcome you back soon for another wonderful experience.",
-      },
-    },
-    {
-      id: 2,
-      username: 'Jane Smith',
-      avatarUrl: '/jane-avatar.png',
-      date: '2023-03-22',
-      rating: 5,
-      title: 'Excellent!',
-      comment:
-        'Beautiful hotel with stunning views. The staff was incredibly attentive and the amenities were top-notch. Will definitely be coming back soon!',
-    },
-    {
-      id: 3,
-      username: 'Michael Johnson',
-      avatarUrl: '/michael-avatar.png',
-      date: '2023-02-15',
-      rating: 3,
-      title: 'Decent stay but room for improvement',
-      comment:
-        "The location was great and the room was clean, but the service could be better. We had to wait a long time for check-in and there were some issues with our room that weren't resolved promptly.",
-      reply: {
-        id: 102,
-        hotelName: hotel?.name || '',
-        avatarUrl: '/hotel-logo.png',
-        date: '2023-02-16',
-        comment:
-          "We apologize for the inconvenience you experienced during your stay. We take your feedback seriously and are working to improve our check-in process and response times. We hope you'll give us another chance to provide you with a better experience.",
-      },
-    },
-  ];
-
   const averageRating =
     hotel?.ratingCount && hotel.ratingCount > 0
       ? (hotel.ratingSum / hotel.ratingCount).toFixed(1)
       : '0.0';
-
-  const handleDeleteReview = (reviewId: number) => {
-    setfilteredReview((prevReviews) =>
-      prevReviews.filter((r) => r.id !== reviewId),
-    );
-  };
-
-  const handleDeleteReply = async (reviewId: number, replyId: number) => {
-    setfilteredReview((prevReviews) =>
-      prevReviews.map((review) => {
-        if (review.id === reviewId && review.reply?.id === replyId) {
-          return { ...review, reply: undefined };
-        } else {
-          return review;
-        }
-      }),
-    );
-  };
 
   const isCheckInDateDisabled = (date: Dayjs) => {
     return date.isBefore(dayjs(), 'day');
@@ -295,11 +149,7 @@ export default function HotelDetail({
         rooms: rooms,
       };
 
-      const response = await createHotelBooking(
-        hotel._id,
-        bookingData,
-        token,
-      );
+      const response = await createHotelBooking(hotel._id, bookingData, token);
 
       if (response.success) {
         toast.success('Booking Confirmed!', {
@@ -308,7 +158,7 @@ export default function HotelDetail({
           icon: <Check className='h-5 w-5' />,
           action: {
             label: 'View Booking',
-            onClick: () => (router.push(`/bookings`)),
+            onClick: () => router.push(`/bookings`),
           },
           style: {
             backgroundColor: '#06402b',
@@ -635,34 +485,8 @@ export default function HotelDetail({
           </div>
 
           <section className='mt-10'>
-            <h2 className='text-2xl font-bold mb-6 font-detail'>
-              Guest Reviews
-            </h2>
-            <div className='space-y-6'>
-              {filteredreview.map((review) => (
-                <Review
-                  key={review.id}
-                  review={review}
-                  onDeleteReview={handleDeleteReview}
-                  onDeleteReply={handleDeleteReply}
-                />
-              ))}
-            </div>
-            <div className='flex justify-center mt-6'>
-              <div className='flex items-center space-x-2'>
-                <button className='text-luxe-gold hover:text-amber-400'>
-                  <div className='w-6 h-6 flex items-center justify-center border border-luxe-gold rounded-full transform rotate-180'>
-                    ›
-                  </div>
-                </button>
-                <span className='text-black text-sm'>1/4</span>
-                <button className='text-luxe-gold hover:text-amber-400'>
-                  <div className='w-6 h-6 flex items-center justify-center border border-luxe-gold rounded-full'>
-                    ›
-                  </div>
-                </button>
-              </div>
-            </div>
+            <ReviewList title='Your Reviews' isSelf hotelId={hotel?._id} />
+            <ReviewList title='Other Reviews' hotelId={hotel?._id} />
           </section>
         </div>
 

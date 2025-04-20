@@ -23,7 +23,7 @@ export default function RoomCard({
     <div className='w-[70%] bg-gradient-to-r font-detail from-gold-gd1 to-gold-gd2 rounded-lg shadow overflow-hidden'>
       <div className='relative h-44 bg-gray-600'>
         <img
-          src={room.picture || '/img/hotel.jpg'}
+          src={room.picture || '/defaultRoom.png'}
           alt={room.roomType}
           className='w-full h-full object-cover'
         />

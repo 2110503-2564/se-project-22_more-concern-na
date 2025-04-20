@@ -1,14 +1,11 @@
 'use client';
 
-import { getCurrentUser } from '@/lib/authService';
-import { cn } from '@/lib/utils';
-import { signIn, useSession } from 'next-auth/react';
+import Loader from '@/components/Loader';
+import { Button } from '@/components/ui/button';
+import { getCurrentUser, updateUser } from '@/lib/authService';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { updateUser } from '@/lib/authService';
-import { Button } from '@/components/ui/button';
-import Loader from '@/components/Loader';
-
 
 export default function EditProfilePage() {
   const [userProfile, setUserProfile] = useState<any>(undefined);
@@ -17,13 +14,9 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
+  const token = (session as any)?.user?.token;
 
   useEffect(() => {
-    if (!session) {
-      signIn();
-      return;
-    }
-
     const fetchUser = async () => {
       const token = (session as any)?.user?.token;
       const user = await getCurrentUser(token);
@@ -37,39 +30,24 @@ export default function EditProfilePage() {
   }, [session]);
 
   const handleChangePicture = () => {
-    // Logic to change picture
     console.log('Change picture');
   };
 
   const handleSaveChanges = async () => {
-    const token = (session as any)?.user?.token;
-  
-    if (!token) {
-      alert("Authentication required.");
-      signIn();
-      return;
-    }
-  
     try {
       const result = await updateUser({ name, tel: telephone }, token);
-  
-      if (!result) {
-        alert("Server error or invalid response.");
-        return;
-      }
-  
+
       if (result.success) {
-        console.log("Profile updated:", result);
-        router.push("/profile");
+        console.log('Profile updated:', result);
+        router.push('/profile');
       } else {
-        console.error("Update failed:", result);
-        alert(result.msg || "Failed to update profile.");
+        console.error('Update failed:', result);
+        alert(result.msg || 'Failed to update profile.');
       }
     } catch (error) {
-      console.error("Unexpected error:", error);
-      alert("Something went wrong.");
+      console.error('Unexpected error:', error);
+      alert('Something went wrong.');
     }
-
   };
 
   if (loading) {
@@ -79,8 +57,6 @@ export default function EditProfilePage() {
       </div>
     );
   }
-
-  
 
   return (
     <main className='flex flex-col items-center p-8 bg-base-gd min-h-screen text-white'>

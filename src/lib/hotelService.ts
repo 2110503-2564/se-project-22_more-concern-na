@@ -144,7 +144,7 @@ export const checkAvailability = async (
       },
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+      },
     });
 
     if (response.status !== 200) {
@@ -164,10 +164,14 @@ export const checkAvailability = async (
 export const getHotelReviews = async (
   hotelId: string,
   queryParams: HotelReviewsQuery,
+  token?: string,
 ): Promise<HotelReviewsResponse> => {
   try {
     const response = await axios.get(apiPath(`/hotels/${hotelId}/reviews`), {
       params: queryParams,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
     });
 
     if (response.status !== 200) {
