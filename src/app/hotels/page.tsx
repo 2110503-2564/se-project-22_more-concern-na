@@ -8,7 +8,7 @@ import { HotelResponse, IHotel } from '../../../interface';
 export default function Hotels() {
   const [hotels, setHotels] = useState<HotelResponse>({
     success: false,
-    count: 0,
+    total: 0,
     data: [],
     pagination: {
       next: { page: 0, limit: 0 },
