@@ -3,7 +3,7 @@
 import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { getCurrentUser, updateUser } from '@/lib/authService';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -17,7 +17,6 @@ export default function EditProfilePage() {
   const token = (session as any)?.user?.token;
 
   useEffect(() => {
-
     const fetchUser = async () => {
       const token = (session as any)?.user?.token;
       const user = await getCurrentUser(token);
@@ -35,10 +34,9 @@ export default function EditProfilePage() {
   };
 
   const handleSaveChanges = async () => {
-  
     try {
       const result = await updateUser({ name, tel: telephone }, token);
-  
+
       if (result.success) {
         console.log('Profile updated:', result);
         router.push('/profile');

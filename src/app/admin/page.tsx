@@ -1,5 +1,6 @@
 'use client';
 
+import Loader from '@/components/Loader';
 import StatCard from '@/components/StatCard';
 import { getUsers } from '@/lib/authService';
 import { getBookings } from '@/lib/bookingService';
@@ -13,7 +14,6 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Loader from '@/components/Loader';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -94,7 +94,7 @@ export default function DashboardPage() {
     router.push('/admin/redemption');
   };
 
-  if(isLoading){
+  if (isLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
         <Loader />

@@ -1,7 +1,4 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Rooms } from '../../interface';
-import { updateRoom, deleteRoom } from '@/lib/roomService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,11 +8,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { deleteRoom, updateRoom } from '@/lib/roomService';
 import { Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { Rooms } from '../../interface';
 
 interface RoomEditDialogProps {
   isOpen: boolean;
@@ -62,7 +61,7 @@ export default function RoomMangementDialog({
         capacity,
         price,
         maxCount,
-        picture
+        picture,
       };
 
       const res = await updateRoom(hotelId, room._id, updatedRoomData, token);
@@ -71,7 +70,7 @@ export default function RoomMangementDialog({
         toast.success('Room updated successfully');
         onRoomUpdated({
           ...room,
-          ...updatedRoomData
+          ...updatedRoomData,
         });
         onOpenChange(false);
       } else {
@@ -126,7 +125,10 @@ export default function RoomMangementDialog({
 
           <div className='space-y-4 py-4'>
             <div className='mb-4'>
-              <label htmlFor='roomType' className='block text-sm font-detail mb-1'>
+              <label
+                htmlFor='roomType'
+                className='block text-sm font-detail mb-1'
+              >
                 Room Type
               </label>
               <input
@@ -141,7 +143,10 @@ export default function RoomMangementDialog({
 
             <div className='grid grid-cols-2 gap-4'>
               <div>
-                <label htmlFor='capacity' className='block text-sm font-detail mb-1'>
+                <label
+                  htmlFor='capacity'
+                  className='block text-sm font-detail mb-1'
+                >
                   Capacity
                 </label>
                 <input
@@ -154,7 +159,10 @@ export default function RoomMangementDialog({
                 />
               </div>
               <div>
-                <label htmlFor='maxCount' className='block text-sm font-detail mb-1'>
+                <label
+                  htmlFor='maxCount'
+                  className='block text-sm font-detail mb-1'
+                >
                   Available Rooms
                 </label>
                 <input
@@ -183,7 +191,10 @@ export default function RoomMangementDialog({
             </div>
 
             <div>
-              <label htmlFor='picture' className='block text-sm font-detail mb-1'>
+              <label
+                htmlFor='picture'
+                className='block text-sm font-detail mb-1'
+              >
                 Picture URL
               </label>
               <input
@@ -220,8 +231,8 @@ export default function RoomMangementDialog({
           </div>
 
           <AlertDialogFooter className='flex justify-between'>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant='destructive'
               onClick={() => setIsDeleteDialogOpen(true)}
               className='bg-red-600 hover:bg-red-700 flex items-center gap-2'
             >
@@ -244,19 +255,25 @@ export default function RoomMangementDialog({
       </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent className='bg-bg-box border-bg-border text-white'>
           <AlertDialogHeader>
             <AlertDialogTitle className='text-white font-heading text-2xl'>
               Delete Room
             </AlertDialogTitle>
             <AlertDialogDescription className='text-gray-300 font-detail'>
-              Are you sure you want to delete this room? This action cannot be undone.
+              Are you sure you want to delete this room? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          
+
           <div className='my-4 p-4 bg-[#2A2F3F] rounded-md'>
-            <h3 className='font-medium text-red-400 mb-2'>Room to be deleted:</h3>
+            <h3 className='font-medium text-red-400 mb-2'>
+              Room to be deleted:
+            </h3>
             <div className='grid grid-cols-2 gap-4 text-sm'>
               <div>
                 <span className='text-gray-400'>Room Type:</span>
@@ -268,7 +285,8 @@ export default function RoomMangementDialog({
               </div>
             </div>
             <p className='text-xs text-gray-400 mt-4'>
-              Warning: Deleting this room will also remove all related bookings and availability data.
+              Warning: Deleting this room will also remove all related bookings
+              and availability data.
             </p>
           </div>
 
