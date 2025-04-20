@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { getHotel, getHotelReviews, updateHotel } from '@/lib/hotelService';
+import { getHotel, updateHotel } from '@/lib/hotelService';
 import { addRoom } from '@/lib/roomService';
 import { Calendar, MapPin, Phone, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -67,27 +67,6 @@ export default function ManageHotelDetail({
     };
     fetchHotel();
   }, [params]);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const resolveParams = await params;
-        const hotelId = resolveParams.hotelid;
-        const response = await getHotelReviews(hotelId, {
-          selfPage: 1,
-          selfPageSize: 5,
-          otherPage: 1,
-          otherPageSize: 5,
-        });
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-
-    if (hotel?._id) {
-      fetchReviews();
-    }
-  }, [hotel?._id, params]);
 
   const formatPhone = (phoneNumber: string) => {
     return `${phoneNumber.substring(0, 3)}-${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
@@ -340,7 +319,7 @@ export default function ManageHotelDetail({
           </div>
 
           <section className='mt-10'>
-            <ReviewList title='customer' />
+            <ReviewList title='Customer Reviews' hotelId={hotel?._id} />
           </section>
         </div>
 

@@ -67,6 +67,17 @@ export default function ManageReportedReviewsPage() {
                     handleIgnore(ignore, report._id)
                   }
                   ignore={report.isIgnore}
+                  handleDeleteFromList={(reviewId) =>
+                    setReportData((prev) => {
+                      if (!prev) return prev;
+                      const newReportData = { ...prev };
+                      newReportData.reports[i].data[j].report =
+                        newReportData.reports[i].data[j].report.filter(
+                          (r) => r.review._id !== reviewId,
+                        );
+                      return newReportData;
+                    })
+                  }
                 />
               ))}
             </div>

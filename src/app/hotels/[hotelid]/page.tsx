@@ -22,15 +22,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { IHotel, ReviewResponseSection, Rooms } from '../../../../interface';
+import { IHotel, Rooms } from '../../../../interface';
 
 import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
-import {
-  checkAvailability,
-  getHotel,
-  getHotelReviews,
-} from '@/lib/hotelService';
+import { checkAvailability, getHotel } from '@/lib/hotelService';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
@@ -53,14 +49,6 @@ export default function HotelDetail({
   const [loading, setLoading] = useState(true);
   const [availabilityData, setAvailabilityData] =
     useState<HotelAvailabilityResponse | null>(null);
-  const [selfReview, setSelfReview] = useState<
-    ReviewResponseSection | undefined
-  >();
-  const [selfReviewPage, setSelfReviewPage] = useState<number>(1);
-  const [otherReview, setOtherReview] = useState<
-    ReviewResponseSection | undefined
-  >();
-  const [otherReviewPage, setOtherReviewPage] = useState<number>(1);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
@@ -89,29 +77,6 @@ export default function HotelDetail({
     };
     fetchHotel();
   }, [params]);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const resolveParams = await params;
-        const hotelId = resolveParams.hotelid;
-        const response = await getHotelReviews(hotelId, {
-          selfPage: 1,
-          selfPageSize: 5,
-          otherPage: 1,
-          otherPageSize: 5,
-        });
-        setSelfReview(response.self);
-        setOtherReview(response.other);
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-
-    if (hotel?._id) {
-      fetchReviews();
-    }
-  }, [hotel?._id, params]);
 
   const averageRating =
     hotel?.ratingCount && hotel.ratingCount > 0

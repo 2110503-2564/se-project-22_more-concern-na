@@ -125,7 +125,10 @@ export default function Review({
         <div className='absolute top-2 right-6'>
           {isReported ? (
             <div className='flex items-center gap-2'>
-              <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' />
+              <Trash
+                className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
+                onClick={() => setIsDeleteDialogOpen(true)}
+              />
               {isIgnored ? (
                 <EyeClosed
                   className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1'
