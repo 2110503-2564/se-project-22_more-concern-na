@@ -8,6 +8,7 @@ import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
+import { updateReview } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
 import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
@@ -26,6 +27,7 @@ export default function Review({ review, isReported = false }: ReviewProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyContent, setReplyContent] = useState('');
 
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data: session } = useSession();
 
@@ -37,9 +39,29 @@ export default function Review({ review, isReported = false }: ReviewProps) {
     ? (session.user as any)?.data.email === review.booking?.user.email
     : false;
 
-  const handleEdit = () => {};
+  // --- editing --- //
 
-  const handleSaveEdit = () => {};
+  const handleOpenEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    setIsEditing(false);
+    await updateReview(
+      review._id,
+      { title, text, rating },
+      (session as any)?.user?.token,
+    );
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setText(review.text);
+    setTitle(review.title);
+    setRating(review.rating);
+  };
+
+  // --- deleting --- //
 
   const handleDelete = () => {};
 
@@ -52,12 +74,14 @@ export default function Review({ review, isReported = false }: ReviewProps) {
           {isReported ? (
             <Trash className='text-[#a52a2a] bg-white hover:bg-[#a52a2a] hover:text-white rounded-full p-1' />
           ) : (
-            <ReviewDropDown
-              reviewId={review._id}
-              onEdit={isReviewOwner ? handleEdit : undefined}
-              onDelete={isReviewOwner ? handleDelete : undefined}
-              onReport={isHotelManager ? handleReport : undefined}
-            />
+            (isReviewOwner || isHotelManager) && (
+              <ReviewDropDown
+                reviewId={review._id}
+                onEdit={isReviewOwner ? handleOpenEdit : undefined}
+                onDelete={isReviewOwner ? handleDelete : undefined}
+                onReport={isHotelManager ? handleReport : undefined}
+              />
+            )
           )}
         </div>
         <div className='flex items-center'>
@@ -111,27 +135,25 @@ export default function Review({ review, isReported = false }: ReviewProps) {
             </div>
 
             <div className='flex space-x-3 pb-5'>
-              <Button variant='default' onClick={handleSaveEdit}>
+              <Button
+                variant='default'
+                onClick={() => setIsEditDialogOpen(true)}
+              >
                 Save Changes
               </Button>
-              <Button variant='secondary'>Cancel</Button>
+              <Button variant='secondary' onClick={handleCancelEdit}>
+                Cancel
+              </Button>
             </div>
           </div>
         ) : (
           // Normal display
           <>
             <div className='mt-2 flex items-center'>
-              <h4 className='text-xl font-medium font-heading mr-3'>
-                {review.title}
-              </h4>
-              <Rating
-                value={review.rating}
-                readOnly
-                precision={1}
-                size='small'
-              />
+              <h4 className='text-xl font-medium font-heading mr-3'>{title}</h4>
+              <Rating value={rating} readOnly precision={1} size='small' />
             </div>
-            <p className='mt-2 pb-6 text-base'>"{review.text}"</p>
+            <p className='mt-2 pb-6 text-base'>"{text}"</p>
           </>
         )}
 
@@ -162,6 +184,12 @@ export default function Review({ review, isReported = false }: ReviewProps) {
         </div>
       )}
       {review.reply && !isReported && <HotelReply reply={review.reply} />}
+      <AlertConfirmation
+        onOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        type='edit'
+        onConfirm={handleSaveEdit}
+      />
       <AlertConfirmation
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

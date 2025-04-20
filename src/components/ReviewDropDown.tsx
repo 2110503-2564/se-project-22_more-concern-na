@@ -38,13 +38,13 @@ export default function ReviewDropDown({
       <DropdownMenuTrigger>...</DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='start'>
         {onEdit && (
-          <DropdownMenuItem className='cursor-pointer'>
+          <DropdownMenuItem className='cursor-pointer' onClick={onEdit}>
             <PencilLine color='#00a0f0' />
             <span className='ml-2'>Edit</span>
           </DropdownMenuItem>
         )}
         {onDelete && (
-          <DropdownMenuItem className='cursor-pointer'>
+          <DropdownMenuItem className='cursor-pointer' onClick={onDelete}>
             <Trash color='red' />
             <span className='ml-2'>Delete</span>
           </DropdownMenuItem>

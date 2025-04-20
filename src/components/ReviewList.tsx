@@ -34,7 +34,6 @@ export default function ReviewList({
         (session as any)?.user?.token,
       );
       setReviewData(isSelf ? res.self : res.other);
-      console.log(res);
     };
     fetchReviews();
   }, [page]);

@@ -1,0 +1,39 @@
+import axios from 'axios';
+import { apiPath } from './shared';
+
+export const updateReview = async (
+  reviewId: string,
+  reviewData: {
+    title?: string;
+    text?: string;
+    rating?: number;
+  },
+  token?: string,
+) => {
+  try {
+    const response = await axios.put(
+      apiPath(`/reviews/${reviewId}`),
+      reviewData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error('Error updating review:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
