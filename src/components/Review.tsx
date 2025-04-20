@@ -15,10 +15,11 @@ import AlertConfirmation from './AlertConfirmation';
 
 interface ReviewProps {
   review: IReview;
+  handleDeleteFromList: (reviewId: string) => void;
   isReported?: boolean;
 }
 
-export default function Review({ review, isReported = false }: ReviewProps) {
+export default function Review({ review, handleDeleteFromList ,isReported = false }: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(review.text);
   const [title, setTitle] = useState(review.title);
@@ -63,7 +64,9 @@ export default function Review({ review, isReported = false }: ReviewProps) {
 
   // --- deleting --- //
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+      handleDeleteFromList(review._id);
+  };
 
   const handleReport = (reason: string) => {};
 
@@ -78,7 +81,7 @@ export default function Review({ review, isReported = false }: ReviewProps) {
               <ReviewDropDown
                 reviewId={review._id}
                 onEdit={isReviewOwner ? handleOpenEdit : undefined}
-                onDelete={isReviewOwner ? handleDelete : undefined}
+                onDelete={isReviewOwner ? (() => setIsDeleteDialogOpen(true)) : undefined}
                 onReport={isHotelManager ? handleReport : undefined}
               />
             )
@@ -194,7 +197,7 @@ export default function Review({ review, isReported = false }: ReviewProps) {
         onOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         type='delete'
-        onConfirm={() => console.log('Confirmed delete')}
+        onConfirm={handleDelete}
       />
     </div>
   );
