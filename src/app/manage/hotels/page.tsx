@@ -29,7 +29,7 @@ import { HotelResponse, IHotel, Rooms } from '../../../../interface';
 export default function ManageHotels() {
   const [hotels, setHotels] = useState<HotelResponse>({
     success: false,
-    count: 0,
+    total: 0,
     data: [],
     pagination: {
       next: { page: 0, limit: 0 },
@@ -204,7 +204,7 @@ export default function ManageHotels() {
       setHotels(prev => ({
         ...prev,
         data: prev.data.filter((hotel) => hotel._id !== hotelId),
-        count: prev.count - 1,
+        count: prev.total - 1,
       }));
 
       toast.success('Hotel deleted successfully');
