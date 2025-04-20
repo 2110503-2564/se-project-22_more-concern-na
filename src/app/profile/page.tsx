@@ -87,9 +87,7 @@ export default function ProfilePage() {
               <div className='flex flex-wrap mr-8'>
                 {/* Left column - picture and button */}
                 <div className='flex flex-col items-center'>
-                  <div className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'>
-                    picture
-                  </div>
+                  <img src='/defaultUser.jpg' alt='user picture' className='w-48 h-64 bg-gray-200 text-gray-800 flex items-center justify-center border-4 border-[#D2A047] mb-7'/>
                   <Button
                     className='w-48'
                     onClick={handleEditProfileClick}

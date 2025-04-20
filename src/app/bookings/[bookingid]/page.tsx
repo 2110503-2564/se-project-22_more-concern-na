@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Rooms } from '../../../../interface';
 
 export default function BookingDetailPage({
   params,
@@ -79,9 +80,7 @@ export default function BookingDetailPage({
       }
     };
 
-    if (status === 'authenticated') {
-      fetchBookingDetails();
-    }
+    fetchBookingDetails();
   }, []);
 
   const handleBack = () => {
@@ -202,17 +201,26 @@ export default function BookingDetailPage({
     return `${hotel.buildingNumber} ${hotel.street}, ${hotel.district}, ${hotel.province}, ${hotel.postalCode}`;
   };
 
-  const calculateTotalPrice = () => {
-    const roomPrices: { [key: string]: number } = {
-      'Standard Room': 100,
-      'Family Suite': 200,
-      'Deluxe Room': 150,
-      'Executive Suite': 300,
-    };
+  const formatPhone = (phone:string) => {
+    if (!phone) return '';
+    return phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
 
+  const calculateTotalPrice = () => {
+    if (!hotel || !hotel.rooms) return 0;
+    
+    const roomPrices = hotel.rooms.reduce((prices:any, room:Rooms) => {
+      prices[room.roomType] = room.price;
+      return prices;
+    }, {});
+  
+    const nightsCount = newCheckOutDate 
+      ? newCheckOutDate.diff(newCheckInDate, 'day') 
+      : dayjs(booking.endDate).diff(dayjs(booking.startDate), 'day');
+  
     return editedRooms.reduce((total, room) => {
-      const price = roomPrices[room.roomType];
-      return total + price * room.count;
+      const price = roomPrices[room.roomType] || 0;
+      return total + (price * room.count * nightsCount);
     }, 0);
   };
 
@@ -271,7 +279,7 @@ export default function BookingDetailPage({
                   <div className='flex items-center mb-2'>
                     <Phone className='h-4 w-4 mr-2' />
                     <span className='text-gray-300'>
-                      {hotel.tel || 'Not available'}
+                      {formatPhone(hotel.tel) || 'Not available'}
                     </span>
                   </div>
 
@@ -425,7 +433,7 @@ export default function BookingDetailPage({
 
                   <div>
                     <span className='text-gray-400 block'>Phone</span>
-                    <span className='text-lg font-medium'>{user.tel}</span>
+                    <span className='text-lg font-medium'>{formatPhone(user.tel)}</span>
                   </div>
                 </div>
               )}
