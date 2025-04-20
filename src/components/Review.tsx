@@ -8,7 +8,7 @@ import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
-import { deleteReview, updateReview } from '@/lib/reviewService';
+import { deleteReply, deleteReview, updateReview } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
 import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
@@ -29,6 +29,7 @@ export default function Review({
   const [title, setTitle] = useState(review.title);
   const [rating, setRating] = useState(review.rating);
 
+  const [hasReply, setHasReply] = useState(review.reply || false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyContent, setReplyContent] = useState('');
 
@@ -71,6 +72,11 @@ export default function Review({
   const handleDelete = async () => {
     handleDeleteFromList(review._id);
     await deleteReview(review._id, (session as any)?.user?.token);
+  };
+
+  const handleDeleteReply = async () => {
+    setHasReply(false);
+    await deleteReply(review._id, (session as any)?.user?.token);
   };
 
   const handleReport = (reason: string) => {};
@@ -193,11 +199,11 @@ export default function Review({
           </div>
         </div>
       )}
-      {review.reply && !isReported && (
+      {review.reply && !isReported && hasReply && (
         <HotelReply
-          reply={review.reply}
           isHotelManager={isHotelManager}
-          parentId={review._id}
+          review={review}
+          parentHandleDeleteReply={handleDeleteReply}
         />
       )}
       <AlertConfirmation
