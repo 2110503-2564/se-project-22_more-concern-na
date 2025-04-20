@@ -19,7 +19,11 @@ interface ReviewProps {
   isReported?: boolean;
 }
 
-export default function Review({ review, handleDeleteFromList ,isReported = false }: ReviewProps) {
+export default function Review({
+  review,
+  handleDeleteFromList,
+  isReported = false,
+}: ReviewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(review.text);
   const [title, setTitle] = useState(review.title);
@@ -65,7 +69,7 @@ export default function Review({ review, handleDeleteFromList ,isReported = fals
   // --- deleting --- //
 
   const handleDelete = () => {
-      handleDeleteFromList(review._id);
+    handleDeleteFromList(review._id);
   };
 
   const handleReport = (reason: string) => {};
@@ -81,7 +85,9 @@ export default function Review({ review, handleDeleteFromList ,isReported = fals
               <ReviewDropDown
                 reviewId={review._id}
                 onEdit={isReviewOwner ? handleOpenEdit : undefined}
-                onDelete={isReviewOwner ? (() => setIsDeleteDialogOpen(true)) : undefined}
+                onDelete={
+                  isReviewOwner ? () => setIsDeleteDialogOpen(true) : undefined
+                }
                 onReport={isHotelManager ? handleReport : undefined}
               />
             )

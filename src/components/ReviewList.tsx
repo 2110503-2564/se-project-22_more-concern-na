@@ -34,8 +34,8 @@ export default function ReviewList({
               count: updatedData.length,
               prev: updatedData.length > 0 ? page - 1 : undefined,
               next: updatedData.length > 0 ? page + 1 : undefined,
-            }
-          }; 
+            },
+          };
         }
         return prev;
       });
@@ -64,7 +64,11 @@ export default function ReviewList({
       <h2>{title}</h2>
       {reviewData && reviewData.data.length > 0 ? (
         reviewData.data.map((review) => (
-          <Review key={review._id} review={review} handleDeleteFromList={handleDeleteFromList}/>
+          <Review
+            key={review._id}
+            review={review}
+            handleDeleteFromList={handleDeleteFromList}
+          />
         ))
       ) : (
         <p>No reviews available.</p>
