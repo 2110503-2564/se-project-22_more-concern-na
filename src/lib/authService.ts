@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiPath } from './shared';
-import { UserResponse } from '../../interface';
+import { AuthResponse, UserResponse } from '../../interface';
 
 export const loginUser = async (email: string, password: string) => {
   const jsonBody = JSON.stringify({ email, password });
@@ -77,18 +77,16 @@ export const registerUser = async (data: RegisterForm | undefined) => {
 export const updateUser = async (
   data: Partial<RegisterForm | undefined>,
   token?: string,
-) => {
-  const res = await fetch(apiPath('/auth/update'), {
-    method: 'PUT',
+): Promise<AuthResponse> => {
+  const res = await axios.put(apiPath('/users'), data, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (res.status === 201 || (json && json.success === false)) {
-    return json;
+  })
+  if (res.status !== 200) {
+    throw new Error(`Error: ${res.status}`);
   }
-  return null;
+  const userResponse = await res.data;
+  return userResponse;
 };
