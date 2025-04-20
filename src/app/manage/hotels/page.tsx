@@ -29,7 +29,7 @@ import { HotelResponse, IHotel, Rooms } from '../../../../interface';
 export default function ManageHotels() {
   const [hotels, setHotels] = useState<HotelResponse>({
     success: false,
-    count: 0,
+    total: 0,
     data: [],
     pagination: {
       next: { page: 0, limit: 0 },
@@ -205,7 +205,7 @@ export default function ManageHotels() {
       setHotels((prev) => ({
         ...prev,
         data: prev.data.filter((hotel) => hotel._id !== hotelId),
-        count: prev.count - 1,
+        count: prev.total - 1,
       }));
 
       toast.success('Hotel deleted successfully');
@@ -240,7 +240,7 @@ export default function ManageHotels() {
       <div className='fixed bottom-8 right-8 z-10'>
         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <AlertDialogTrigger asChild>
-            <Button size='lg' className='rounded-full shadow-lg'>
+            <Button size='lg' className='rounded-full shadow-lg font-detail text-sm font-medium bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'>
               Add Hotel
             </Button>
           </AlertDialogTrigger>

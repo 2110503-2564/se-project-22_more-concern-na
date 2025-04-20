@@ -52,12 +52,13 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
 
   return (
     <div
-      className='max-w-sm relative overflow-hidden bg-gradient-to-r from-gold-gd1 to-gold-gd2 rounded-lg text-cardfont-detail font-detail'
+      className='w-full max-w-sm h-96 relative overflow-hidden bg-gradient-to-r from-gold-gd1 to-gold-gd2 rounded-lg text-cardfont-detail font-detail cursor-pointer shadow-md'
       onClick={handleClick}
     >
-      <div className='rounded-t-lg h-44 bg-gray-600'>
+      {/* Fixed height image container */}
+      <div className='w-full h-44 relative overflow-hidden bg-gray-600'>
         <img
-          src={hotel.picture || '/defaultHotel.jpg'}
+          src={hotel.picture || '/defaultHotel.png'}
           alt={hotel.name}
           className='w-full h-full object-cover rounded-t-lg'
         />
@@ -66,32 +67,34 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
             variant='ghost'
             size='icon'
             onClick={handleDelete}
-            className='absolute top-2 right-2 bg-[#a52a2a] text-white hover:bg-white hover:text-[#a52a2a] rounded-full p-1'
+            className='absolute top-2 right-2 bg-[#a52a2a] text-white hover:bg-white hover:text-[#a52a2a] rounded-full p-1 z-10'
           >
             <X className='w-5 h-5' />
           </Button>
         )}
       </div>
-      <div className='p-4 h-56 relative'>
+      
+      {/* Fixed height content section */}
+      <div className='p-4 h-52 relative'>
         <div className='absolute top-2 right-2 px-2 py-1 rounded flex items-center'>
           <Star size={16} />
           <span className='ml-1 font-semibold'>{averageRating}</span>
+        </div>
+        <h2 className='text-xl font-semibold text-cardfont-cl mt-2 mb-2 line-clamp-1'>
+          {hotel.name}
+        </h2>
+        <div className='flex items-start mb-2'>
+          <MapPin className='w-4 h-4 mt-1 flex-shrink-0' />
+          <span className='ml-2 font-medium text-sm line-clamp-2'>{fullAddress}</span>
+        </div>
+        <div className='flex items-center'>
+          <Phone className='w-4 h-4 flex-shrink-0' />
+          <span className='ml-2 font-medium text-sm'>{formatPhone(hotel.tel)}</span>
         </div>
         <div className='absolute bottom-2 left-2 px-2 py-1'>
           <span className='text-sm font-medium'>
             {hotel.ratingCount} reviews
           </span>
-        </div>
-        <h2 className='text-2xl font-semibold text-cardfont-cl mt-4 mb-2'>
-          {hotel.name}
-        </h2>
-        <div className='flex items-center mb-2'>
-          <MapPin className='w-5 h-5' />
-          <span className='ml-2 font-medium'>{fullAddress}</span>
-        </div>
-        <div className='flex items-center'>
-          <Phone className='w-5 h-5' />
-          <span className='ml-2 font-medium'>{formatPhone(hotel.tel)}</span>
         </div>
       </div>
 
@@ -100,7 +103,7 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
           <Button
             variant='default'
             onClick={handleEdit}
-            className='bg-bg-btn ml-7 text-white text-sm px-8 py-2 rounded hover:bg-blue-700'
+            className='bg-bg-btn text-white text-sm px-4 py-1 rounded hover:bg-blue-700'
           >
             Edit
           </Button>
