@@ -8,7 +8,7 @@ import HotelReply from './HotelReply';
 import ReviewDropDown from './ReviewDropDown';
 import { Button } from './ui/button';
 
-import { updateReview } from '@/lib/reviewService';
+import { deleteReview, updateReview } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
 import { IReview } from '../../interface';
 import AlertConfirmation from './AlertConfirmation';
@@ -68,8 +68,9 @@ export default function Review({
 
   // --- deleting --- //
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     handleDeleteFromList(review._id);
+    await deleteReview(review._id, (session as any)?.user?.token);
   };
 
   const handleReport = (reason: string) => {};
