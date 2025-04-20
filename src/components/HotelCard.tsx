@@ -24,7 +24,7 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/manage/hotel/${hotel._id}`);
+    router.push(`/manage/hotels/${hotel._id}`);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -57,7 +57,7 @@ export default function HotelCard({ hotel, type, onDelete }: hotelCardProps) {
     >
       <div className='rounded-t-lg h-44 bg-gray-600'>
         <img
-          src={hotel.picture || '/img/hotel.jpg'}
+          src={hotel.picture || '/defaultHotel.jpg'}
           alt={hotel.name}
           className='w-full h-full object-cover rounded-t-lg'
         />

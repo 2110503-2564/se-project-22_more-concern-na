@@ -14,12 +14,9 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
+  const token = (session as any)?.user?.token;
 
   useEffect(() => {
-    if (!session) {
-      signIn();
-      return;
-    }
 
     const fetchUser = async () => {
       const token = (session as any)?.user?.token;
@@ -34,27 +31,14 @@ export default function EditProfilePage() {
   }, [session]);
 
   const handleChangePicture = () => {
-    // Logic to change picture
     console.log('Change picture');
   };
 
   const handleSaveChanges = async () => {
-    const token = (session as any)?.user?.token;
-
-    if (!token) {
-      alert('Authentication required.');
-      signIn();
-      return;
-    }
-
+  
     try {
       const result = await updateUser({ name, tel: telephone }, token);
-
-      if (!result) {
-        alert('Server error or invalid response.');
-        return;
-      }
-
+  
       if (result.success) {
         console.log('Profile updated:', result);
         router.push('/profile');
