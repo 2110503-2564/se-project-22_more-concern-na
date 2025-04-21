@@ -55,7 +55,7 @@ export default function BookingsPage() {
   }, []);
 
   const handleGoBack = () => {
-    router.back();
+    router.push('/profile')
   };
 
   if (isLoading) {
