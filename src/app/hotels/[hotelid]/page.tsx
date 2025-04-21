@@ -405,7 +405,8 @@ export default function HotelDetail({
       <div className='relative h-80 md:h-96'>
         <div
           className='absolute inset-0 bg-gray-600 bg-cover bg-center bg-no-repeat'
-          style={{ backgroundImage: `url(${hotel?.picture})` }}
+          // style={{ backgroundImage: `url(${hotel?.picture})` || `url(/defaultHotel.png)` }}
+          style={{backgroundImage: `url(/defaultHotel.png)`}}
         />
         <div className='absolute inset-0 bg-gradient-to-t from-base-gd via-transparent to-transparent'></div>
         <div className='absolute bottom-0 left-0 right-0 p-6 md:p-8'>
