@@ -5,6 +5,7 @@ import StatCard from '@/components/StatCard';
 import { getUsers } from '@/lib/authService';
 import { getBookings } from '@/lib/bookingService';
 import { getHotels } from '@/lib/hotelService';
+import { getAllReports } from '@/lib/reportService';
 import {
   Building2,
   Calendar,
@@ -48,13 +49,13 @@ export default function DashboardPage() {
         }
 
         // waiting for report intregration produce
-        // try {
-        //   const reportedReviews = await getReportedReviews(token);
-        //   setReportedReviewsCount(reportedReviews.count || 0);
-        // } catch (reportError) {
-        //   console.error('Error fetching reported reviews:', reportError);
-        //   setReportedReviewsCount(0);
-        // }
+        try {
+          const reportedReviews = await getAllReports(token);
+          setReportedReviewsCount(reportedReviews.count || 0);
+        } catch (reportError) {
+          console.error('Error fetching reported reviews:', reportError);
+          setReportedReviewsCount(0);
+        }
 
         try {
           const usersData = await getUsers(token);

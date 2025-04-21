@@ -34,7 +34,7 @@ export default function LandingPage() {
       <div className="relative h-[900px] bg-cover bg-center" style={{ backgroundImage: `url('/img/cityscape.png')` }}>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 flex flex-col items-center justify-end h-full px-4">
-          <div className="bg-[#0B1120] p-8 w-full max-w-3xl">
+          {/* <div className="bg-[#0B1120] p-8 w-full max-w-3xl">
             <h1 className="text-2xl md:text-3xl font-bold font-heading text-center mb-6">Find Your Hotel</h1>
             <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
               <Input 
@@ -51,7 +51,7 @@ export default function LandingPage() {
               />
               <Button size="lg" className="rounded-full shadow-lg" variant='golden'>SEARCH</Button>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="absolute bottom-0 left-0 w-full h-50 bg-gradient-to-t from-[#0E1623] to-transparent"></div>
       </div>

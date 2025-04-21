@@ -56,6 +56,7 @@ export interface HotelAvailabilityResponse extends GenericResponse {
 }
 
 export interface AllReportResponse extends GenericResponse {
+  count:number;
   reports: {
     reportReason: string;
     data: {
