@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ReviewResponseSection } from '../../interface';
 import Review from './Review';
 import { Button } from './ui/button';
+import Loader from './Loader';
 
 export default function ReviewList({
   title,
@@ -21,6 +22,7 @@ export default function ReviewList({
   );
   const [page, setPage] = useState(1);
   const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleDeleteFromList = (reviewId: string) => {
     if (reviewData) {
@@ -45,6 +47,7 @@ export default function ReviewList({
 
   useEffect(() => {
     const fetchReviews = async () => {
+      setIsLoading(true);
       const res = await getHotelReviews(
         hotelId ?? '',
         {
@@ -56,6 +59,7 @@ export default function ReviewList({
         (session as any)?.user?.token,
       );
       setReviewData(isSelf ? res.self : res.other);
+      setIsLoading(false);
     };
     fetchReviews();
   }, [page, hotelId, isSelf, session]);
@@ -71,6 +75,14 @@ export default function ReviewList({
       setPage((prevPage) => prevPage + 1);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <section>
