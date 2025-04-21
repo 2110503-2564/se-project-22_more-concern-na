@@ -23,7 +23,7 @@ export default function ReviewCreationForm({
   const { data: session } = useSession();
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement >,
   ) => {
     setReviewData({
       ...reviewData,
@@ -32,6 +32,7 @@ export default function ReviewCreationForm({
   };
 
   const handleSubmit = async () => {
+    onClose();
     const response = await addReview(
       bookingId,
       reviewData,

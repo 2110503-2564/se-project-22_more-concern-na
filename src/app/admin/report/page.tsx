@@ -8,17 +8,21 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { AllReportResponse } from '../../../../interface';
+import Loader from '@/components/Loader';
 
 export default function ManageReportedReviewsPage() {
   const [reportData, setReportData] = useState<AllReportResponse | undefined>();
+  const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchReportedReviews = async () => {
       const res = await getAllReports((session as any)?.user?.token);
       setReportData(res);
+      setLoading(false);
     };
     fetchReportedReviews();
+
   }, []);
 
   const handleIgnore = async (ignore: boolean, reportId: string) => {
@@ -30,6 +34,15 @@ export default function ManageReportedReviewsPage() {
     if (res.success)
       toast.success(`Report ${ignore ? 'ignored' : 'unignored'}`);
   };
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className='bg-bg-box min-h-screen px-6 py-8 text-[--color-foreground]'>
       <Link
