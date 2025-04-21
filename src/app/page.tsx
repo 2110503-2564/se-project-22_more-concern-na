@@ -12,7 +12,7 @@ export default function LandingPage() {
   const [date, setDate] = useState('');
   const [hotels, setHotels] = useState<HotelResponse>({
     success: false,
-    count: 0,
+    total: 0,
     data: [],
     pagination: {
       next: { page: 0, limit: 0 },
