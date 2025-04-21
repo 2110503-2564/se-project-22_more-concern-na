@@ -62,23 +62,12 @@ test.describe('Admin Room Management Functionality', () => {
     // Submit the form using the shadcn/ui AlertDialogAction button
     await page.click('.bg-bg-box button:has-text("Create Room")');
 
-    // Verify the new room appears in the list
-    await page.waitForSelector('text=Deluxe Suite Test', {
-      state: 'visible',
-      timeout: 5000,
-    });
-
     await expect(page.locator('text=Deluxe Suite Test')).toBeVisible();
   });
 
   test('TC4: Admin can edit room details', async ({ page }) => {
     // Navigate to hotel management page
     await page.goto(`/manage/hotels/${hotelId}`);
-
-    await page.reload();
-
-    // Wait for the page to load completely
-    await page.waitForLoadState('networkidle');
 
     // Find a room and click the manage room button
     // Find all room cards, filter to the one with "Deluxe Suite Test", then click its button
@@ -112,11 +101,6 @@ test.describe('Admin Room Management Functionality', () => {
     // Navigate to hotel management page
     await page.goto(`/manage/hotels/${hotelId}`);
 
-    await page.reload();
-
-    // Wait for the page to load completely
-    await page.waitForLoadState('networkidle');
-
     // Verify the updated room details are displayed
     await expect(page.locator('text=Updated Suite Name')).toBeVisible();
 
@@ -130,11 +114,6 @@ test.describe('Admin Room Management Functionality', () => {
   test('TC6: Admin can delete a room with confirmation', async ({ page }) => {
     // Navigate to hotel management page
     await page.goto(`/manage/hotels/${hotelId}`);
-
-    await page.reload();
-
-    // Wait for the page to load completely
-    await page.waitForLoadState('networkidle');
 
     // Find the updated room and click manage
     await page
