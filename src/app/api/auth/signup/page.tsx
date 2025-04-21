@@ -75,6 +75,14 @@ const SignUpPage = () => {
             fullWidth
             style={{ borderColor: 'yellow', borderWidth: 1 }}
             className='p-3 border-blue-300 rounded-md text-lg bg-bg-textfill'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
         <div className='w-full mb-5'>
@@ -88,6 +96,14 @@ const SignUpPage = () => {
             onChange={handleChange}
             required
             className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
         <div className='w-full mb-5'>
@@ -101,6 +117,14 @@ const SignUpPage = () => {
             onChange={handleChange}
             required
             className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
         <div className='w-full mb-5'>
@@ -113,7 +137,14 @@ const SignUpPage = () => {
             value={userInput.password}
             onChange={handleChange}
             required
-            sx={{ caretColor: 'white' }}
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
             className='w-full p-3 border-2 border-blue-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
           />
         </div>
@@ -136,6 +167,14 @@ const SignUpPage = () => {
                 : ''
             }
             className='w-full p-3 border-2 border-blue-300 text-amber-50 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-textfill'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
         <Button
