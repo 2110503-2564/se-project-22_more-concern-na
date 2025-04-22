@@ -49,12 +49,20 @@ export default function ManageHotelDetail({
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
   const isHotelManager = (session as any)?.user?.data?.role === 'hotelManager';
+  const userHotelId = (session as any)?.user?.data?.hotel;
   const router = useRouter();
 
   useEffect(() => {
     const fetchHotel = async () => {
       const resolveParams = await params;
       const hotelId = resolveParams.hotelid;
+
+      if(isHotelManager && userHotelId !== hotelId) {
+        toast.error('You do not have permission to manage this hotel');
+        router.push('/profile');
+        return;
+      }
+
       const response = await getHotel(hotelId);
       setHotel(response);
       setEditName(response.name || '');
