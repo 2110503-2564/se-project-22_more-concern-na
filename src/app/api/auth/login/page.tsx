@@ -49,6 +49,14 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className='w-full p-3 border-2 font-heading bg-bg-textfill border-bg-border rounded-md text-lg focus:outline-none focus:ring-2'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
 
@@ -63,6 +71,14 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             className='w-full p-3 border-2 bg-bg-textfill border-bg-border rounded-md text- focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-bg-placeholder'
+            sx={{
+              '& .MuiInputBase-input': {
+                color: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: '#546975',
+              },
+            }}
           />
         </div>
 
