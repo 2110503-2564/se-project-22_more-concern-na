@@ -120,6 +120,19 @@ export default function HotelDetail({
     setIsConfirmOpen(true);
   };
 
+  const handleNoSessionBook = (e: any) => {
+    e.preventDefault();
+    toast.error('Please login to book', {
+      description: 'You need to be logged in to book a hotel',
+      style: {
+        backgroundColor: '#a52a2a',
+        color: 'white',
+        border: '1px solid var(--color-bg-border)',
+      },
+    });
+    router.push('/api/auth/login');
+  };
+
   const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsConfirmOpen(false);
@@ -406,7 +419,7 @@ export default function HotelDetail({
         <div
           className='absolute inset-0 bg-gray-600 bg-cover bg-center bg-no-repeat'
           // style={{ backgroundImage: `url(${hotel?.picture})` || `url(/defaultHotel.png)` }}
-          style={{backgroundImage: `url(/defaultHotel.png)`}}
+          style={{ backgroundImage: `url(/defaultHotel.png)` }}
         />
         <div className='absolute inset-0 bg-gradient-to-t from-base-gd via-transparent to-transparent'></div>
         <div className='absolute bottom-0 left-0 right-0 p-6 md:p-8'>
@@ -645,14 +658,25 @@ export default function HotelDetail({
                         ${calculateTotalPrice().toLocaleString()}
                       </span>
                     </div>
-                    <Button
-                      className='w-full text-base mt-2'
-                      onClick={handleBooking}
-                      variant='golden'
-                      disabled={!isAvailabilityConfirmed}
-                    >
-                      {session ? 'Book Now' : 'Login to Book'}
-                    </Button>
+                    {session ? (
+                      <Button
+                        className='w-full text-base mt-2'
+                        onClick={handleBooking}
+                        variant='golden'
+                        disabled={!isAvailabilityConfirmed}
+                      >
+                        Book Now
+                      </Button>
+                    ) : (
+                      <Button
+                        className='w-full text-base mt-2'
+                        onClick={handleNoSessionBook}
+                        variant='golden'
+                        disabled={!isAvailabilityConfirmed}
+                      >
+                        Login to Book
+                      </Button>
+                    )}
                     {!isAvailabilityConfirmed &&
                       checkInDate &&
                       checkOutDate && (
