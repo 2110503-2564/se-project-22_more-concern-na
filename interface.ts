@@ -398,7 +398,7 @@ interface UsersPointsData{
   point: number;
 }
 
-interface UsersPointsResponse extends GenericResponse{
+interface UsersPointsResponse extends GenericResponse, Pagination{
   data: UsersPointsData[];
 }
 
