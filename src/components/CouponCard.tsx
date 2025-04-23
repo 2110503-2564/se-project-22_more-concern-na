@@ -22,7 +22,7 @@ export default function CouponCard({id,
     <div className="flex w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gray-900 text-black">
       <div className="flex items-center justify-center bg-gradient-to-r from-gold-gd1 to-gold-gd2 w-1/3 p-4">
         <div className="text-center">
-          <div className="text-4xl font-bold font-heading" data-testid="discount">{discount}%</div>
+          <div className="text-4xl font-bold font-heading" data-testid="discount">{Math.round(discount*100)}%</div>
           <div className="text-sm mt-2 font-heading" data-testid="point">{point} Points</div>
         </div>
       </div>
