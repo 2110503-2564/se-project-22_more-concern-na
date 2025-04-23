@@ -1,9 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Button } from "./ui/button";
-import Image from "next/image";
-import { ArrowBigLeft } from "lucide-react";
+import { SquareChevronLeft, SquareChevronRight } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface PageNavigatorProps {
   page: number;
@@ -11,34 +9,28 @@ interface PageNavigatorProps {
   onNext: () => void;
 }
 
-export default function PageNavigator({ page, onPrev, onNext }: PageNavigatorProps) {
+export default function PageNavigator({
+  page,
+  onPrev,
+  onNext,
+}: PageNavigatorProps) {
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className='flex items-center justify-center gap-4'>
       <Button
-        variant="ghost"
+        variant='ghost'
         onClick={onPrev}
-        className="p-0 hover:bg-transparent"
+        className='p-1 bg-gold-gd1 hover:bg-gold-gd2'
       >
-        <Image
-          src="/previous.png"
-          alt="Previous"
-          width={26}
-          height={23}
-        />
+        <SquareChevronLeft className='text-bg-box' />
       </Button>
-      <span className="text-white font-heading text-2xl">Page {page}</span>
+      <span className='text-white font-detail'>Page {page}</span>
 
       <Button
-        variant="ghost"
+        variant='ghost'
         onClick={onNext}
-        className="p-0 hover:bg-transparent"
+        className='p-1 bg-gold-gd1 hover:bg-gold-gd2'
       >
-        <Image
-          src="/next.png"
-          alt="Next"
-          width={26}
-          height={23}
-        />
+        <SquareChevronRight className='text-bg-box' />
       </Button>
     </div>
   );
