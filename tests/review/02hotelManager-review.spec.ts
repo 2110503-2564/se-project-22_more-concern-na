@@ -46,10 +46,10 @@ test.describe('HotelManager Review Functionality', () => {
       .fill('one two three 4 5 I love you');
     await page.locator('.MuiRating-root > label').nth(3).click();
     await page.getByRole('button', { name: 'Submit Review' }).click();
-    await page.getByRole('button', { name: 'Create' }).click();
+    await page.getByTestId('alert-confirm-button').click();
 
     await expect(
-      page.getByRole('button', { name: 'Create' }),
+      page.getByTestId('alert-confirm-button')
     ).not.toBeVisible();
   });
 
@@ -121,7 +121,7 @@ test.describe('HotelManager Review Functionality', () => {
     const confirmDialog = page.getByText('Do you want to create this item?');
     await expect(confirmDialog).toBeVisible();
 
-    await page.getByRole('button', { name: 'Create' }).click();
+    await page.getByTestId('alert-confirm-button').click();
 
     await expect(confirmDialog).not.toBeVisible();
 
@@ -159,10 +159,11 @@ test.describe('HotelManager Review Functionality', () => {
     );
     await expect(confirmDialog).toBeVisible();
 
-    await page.getByRole('button', { name: 'Save Changes' }).click();
+    const alertConfirmButton = page.getByTestId('alert-confirm-button')
+    await alertConfirmButton.click();
 
     await expect(
-      page.getByRole('button', { name: 'Save Changes', exact: true }).nth(1),
+      alertConfirmButton
     ).not.toBeVisible();
 
     // Verify that the updated reply is visible in the review section
@@ -193,7 +194,7 @@ test.describe('HotelManager Review Functionality', () => {
     );
     await expect(confirmDialog).toBeVisible();
 
-    await page.getByRole('button', { name: 'Yes, Delete' }).click();
+    await page.getByTestId('alert-confirm-button').click();
 
     await expect(confirmDialog).not.toBeVisible();
 
