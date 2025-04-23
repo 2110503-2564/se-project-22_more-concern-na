@@ -64,10 +64,15 @@ export default function AlertConfirmation({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-4'>
-            <AlertDialogCancel className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700' onClick={onCancel}>
+            <AlertDialogCancel
+              className='border-gray-600 font-detail text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700'
+              data-testid='alert-cancel-button'
+              onClick={onCancel}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
+              data-testid='alert-confirm-button'
               onClick={onConfirm}
               className='font-detail text-sm font-medium bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
             >

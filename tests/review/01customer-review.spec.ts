@@ -37,11 +37,12 @@ test.describe('customer review functionality', () => {
     await page.getByRole('textbox', { name: 'Your Review' }).click();
     await page.getByRole('textbox', { name: 'Your Review' }).fill('hohohohoho');
     await page.locator('.MuiRating-root > label').nth(3).click();
+    await page.waitForTimeout(2000);
     await page.getByRole('button', { name: 'Submit Review' }).click();
-    await page.getByRole('button', { name: 'Create' }).click();
+    await page.getByTestId('alert-confirm-button').click();
 
     await expect(
-      page.getByRole('button', { name: 'Create' }),
+      page.getByTestId('alert-confirm-button')
     ).not.toBeVisible();
   });
 
@@ -93,6 +94,7 @@ test.describe('customer review functionality', () => {
   test('TC4: Customer can edit their review', async ({ page }) => {
     await page.goto(`/hotels/${hotelId}`);
     await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
 
     // review before edit
     await expect(page.getByText('Good naja')).toBeVisible();
@@ -122,10 +124,12 @@ test.describe('customer review functionality', () => {
     );
     await expect(confirmDialog).toBeVisible();
 
-    await page.getByRole('button', { name: 'Save Changes' }).first().click();
+    const alertConfirmButton = page.getByTestId('alert-confirm-button');
+
+    await alertConfirmButton.click();
 
     await expect(
-      page.getByRole('button', { name: 'Save Changes' }),
+      alertConfirmButton
     ).not.toBeVisible();
 
     // review after edit
@@ -142,6 +146,7 @@ test.describe('customer review functionality', () => {
   test('TC5: Customer can delete their review', async ({ page }) => {
     await page.goto(`/hotels/${hotelId}`);
     await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
 
     // review before delete
     await expect(page.getByText('Good naja jub')).toBeVisible();
@@ -158,7 +163,8 @@ test.describe('customer review functionality', () => {
     await expect(confirmDialog).toBeVisible();
 
     // Case 1: Cancel delete
-    await page.getByRole('button', { name: 'Cancel' }).first().click();
+    const alertCancelButton = page.getByTestId('alert-cancel-button');
+    await alertCancelButton.click();
     // Confirm that the review is still visible
     await expect(page.getByText('Good naja jub')).toBeVisible();
     await expect(page.getByText('hohohohohoOH')).toBeVisible();
@@ -170,7 +176,7 @@ test.describe('customer review functionality', () => {
     await expect(confirmDialog).toBeVisible();
 
     // Case 2: Confirm delete
-    await page.getByRole('button', { name: 'Yes, Delete' }).first().click();
+    await page.getByTestId('alert-confirm-button').click();
 
     // review after delete
     await expect(page.getByText('Good naja jub')).not.toBeVisible();

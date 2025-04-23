@@ -28,7 +28,14 @@ test.describe("Admin Review Functionality", () => {
     await expect(page.getByText('Sawadee krub')).toBeVisible();
     await expect(page.getByText('one two three 4 5 I love you')).toBeVisible();
 
-    await expect(page.locator('div:nth-child(5) > .relative > .absolute > .flex > svg').first()).toBeVisible();
+    // verify reported review to be visible
+    const reviewCard = page.locator('.relative.bg-\\[\\#434A5B\\]')
+    .filter({ hasText: 'Sawadee krub' })
+    .filter({ hasText: 'one two three 4 5 I love you' });
+    await expect(reviewCard).toHaveCount(1);
+    const trashIcon = reviewCard.locator('.absolute.top-2.right-6 svg.lucide-trash').first();
+    await expect(trashIcon).toBeVisible();
+
   });
 
   test("TC2: Admin can decide to delete reported reviews", async ({ page }) => {
@@ -40,7 +47,11 @@ test.describe("Admin Review Functionality", () => {
     await expect(page.getByText('Sawadee krub')).toBeVisible();
     await expect(page.getByText('one two three 4 5 I love you')).toBeVisible();
 
-    const trashIcon = page.locator('div:nth-child(5) > .relative > .absolute > .flex > svg').first();
+    const reviewCard = page.locator('.relative.bg-\\[\\#434A5B\\]')
+    .filter({ hasText: 'Sawadee krub' })
+    .filter({ hasText: 'one two three 4 5 I love you' });
+    await expect(reviewCard).toHaveCount(1);
+    const trashIcon = reviewCard.locator('.absolute.top-2.right-6 svg.lucide-trash').first();
     await expect(trashIcon).toBeVisible();
     await trashIcon.click();
 
@@ -48,10 +59,11 @@ test.describe("Admin Review Functionality", () => {
       'Are you sure you want to delete this? This action cannot be undone.',
     );
     await expect(confirmDialog).toBeVisible();
-
-    await page.getByRole('button', { name: 'Yes, Delete' }).click();
+    
+    await page.getByTestId('alert-confirm-button').click();
 
     await expect(confirmDialog).not.toBeVisible();
+    await page.waitForTimeout(2000);
 
     await expect(page.getByText('Sawadee krub')).not.toBeVisible();
     await expect(page.getByText('one two three 4 5 I love you')).not.toBeVisible();
@@ -61,8 +73,9 @@ test.describe("Admin Review Functionality", () => {
     await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'Next' }).first().click();
-    await page.waitForTimeout(1000);
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(3000);
+    
     await expect(page.getByText('Sawadee krub')).not.toBeVisible();
     await expect(page.getByText('one two three 4 5 I love you')).not.toBeVisible();
   });
