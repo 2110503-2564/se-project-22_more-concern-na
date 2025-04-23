@@ -21,9 +21,9 @@ const buttonVariants = cva(
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         golden:
-          'font-detail text-sm font-medium bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl',
+          'font-detail text-sm font-medium bg-gradient-to-r from-gold-gd1 to-gold-gd2 cursor-pointer hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl',
         bluely:
-          'bg-bg-btn text-white text-sm px-8 py-2 rounded hover:bg-blue-700',
+          'bg-bg-btn text-white text-sm px-8 py-2 rounded cursor-pointer hover:bg-blue-700',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
