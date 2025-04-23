@@ -75,10 +75,10 @@ export default function NavBar() {
         </DashboardButton>
       )}
       <div
-        className='h-full flex items-center justify-center grow cursor-pointer'
+        className='h-full flex items-center justify-center grow'
         onClick={() => router.push('/')}
       >
-        <Image src={'/mcn-text.png'} alt='MCN Logo' width={150} height={0} />
+        <Image src={'/mcn-text.png'} alt='MCN Logo' width={150} height={0} className='cursor-pointer' />
       </div>
       {isLoggedIn ? (
         <UserBar />
