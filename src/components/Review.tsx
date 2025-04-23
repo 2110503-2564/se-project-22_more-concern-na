@@ -263,7 +263,10 @@ export default function Review({
             </Button>
             <Button
               variant='secondary'
-              onClick={() => setShowReplyCreateForm(false)}
+              onClick={() => {
+                setShowReplyCreateForm(false);
+                setReplyContent(undefined);
+              }}
             >
               Cancel
             </Button>
