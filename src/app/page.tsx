@@ -6,8 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { IHotel, HotelResponse } from '../../interface';
 import { getHotels } from '@/lib/hotelService';
+import Loader from '@/components/Loader';
 
 export default function LandingPage() {
+  const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
   const [hotels, setHotels] = useState<HotelResponse>({
@@ -24,14 +26,23 @@ export default function LandingPage() {
     async function fetchHotels() {
       const res = await getHotels();
       setHotels(res);
+      setLoading(false);
     }
     fetchHotels();
   }, []);
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#0E1623] text-white min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[900px] bg-cover bg-center" style={{ backgroundImage: `url('/img/cityscape.png')` }}>
+      <div className="relative h-[450px] bg-cover bg-center" style={{ backgroundImage: `url('/img/cityscape.png')` }}>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 flex flex-col items-center justify-end h-full px-4">
           {/* <div className="bg-[#0B1120] p-8 w-full max-w-3xl">
@@ -86,8 +97,8 @@ export default function LandingPage() {
 
       {/* Our Best Hotel */}
       <div className="py-16 px-6 md:px-20 flex flex-col items-center">
-        <h2 className="text-5xl font-heading font-bold mb-8">Our Best Hotel</h2>
-        <div className="flex space-x-6 overflow-x-auto pb-4 justify-center">
+        <h2 className="text-5xl font-heading font-bold mb-10">Our Best Hotel</h2>
+        <div className =  "grid grid-cols-3 gap-6 overflow-x-auto pb-4">
           {hotels.data.slice(0, 3).map((hotel: IHotel, index) => (
             <div key={hotel._id} className="min-w-[280px]">
               <div className="text-5xl font-bold font-heading text-yellow-500 mb-2 text-center">
