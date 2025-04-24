@@ -251,7 +251,7 @@ test.describe('Admin Reward Management', () => {
   test('TC4: Admin can paginate through user list', async ({ page }) => {
     await page.goto('/admin/redemption');
 
-    // Check for pagination controls as shown in Figma
+    // Check for pagination controls
     await expect(page.getByText('Page')).toBeVisible();
 
     // Click next button to go to next page (if it's not disabled)
