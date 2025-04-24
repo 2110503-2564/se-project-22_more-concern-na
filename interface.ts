@@ -49,20 +49,20 @@ export interface IHotel {
 }
 
 export interface HotelResponse extends GenericResponse, Pagination {
-    total: number;
-    data: IHotel[]
+  total: number;
+  data: IHotel[];
 }
 export interface HotelAvailabilityResponse extends GenericResponse {
   rooms: RoomAvailability[];
 }
 
 export interface AllReportResponse extends GenericResponse {
-  count:number;
+  count: number;
   reports: {
     reportReason: string;
     data: {
-        hotel: string;
-        report: IReport[];
+      hotel: string;
+      report: IReport[];
     }[];
   }[];
 }
@@ -88,8 +88,8 @@ export interface IUser {
 }
 
 export interface UserResponse extends GenericResponse {
-    total: number;
-    data: IUser[];
+  total: number;
+  data: IUser[];
 }
 
 export interface LoginRequest {
@@ -241,36 +241,36 @@ export interface PBooking {
   rooms: BookingType[];
   createdAt: string;
 }
-export interface BookingResponse extends GenericResponse{
-    total: number;
-    bookings?:PBooking[];
-    booking?:PBooking;
+export interface BookingResponse extends GenericResponse {
+  total: number;
+  bookings?: PBooking[];
+  booking?: PBooking;
 }
-
 
 /////////////////////////////////// SPRINT 2 ////////////////////////////////////////////
 
 //-------GET /redeemables/gifts--------
 
-interface RedeemableGiftsQuery{
+interface RedeemableGiftsQuery {
   page: number;
   pageSize: number;
 }
 
-interface RedeemableGiftsData{
+interface RedeemableGiftsData {
   id: string;
   name: string;
+  picture?: string;
   point: number;
   remain: number;
 }
 
-interface RedeemableGiftsResponse extends GenericResponse, Pagination{
-  data:RedeemableGiftsData[];
+interface RedeemableGiftsResponse extends GenericResponse, Pagination {
+  data: RedeemableGiftsData[];
 }
 
 //--------GET /redeemables/gifts/:id-----------
 
-interface RedeemableGiftResponse extends GenericResponse{
+interface RedeemableGiftResponse extends GenericResponse {
   id: string;
   name: string;
   description?: string;
@@ -281,12 +281,12 @@ interface RedeemableGiftResponse extends GenericResponse{
 
 //--------GET /redeemables/coupons--------
 
-interface RedeemableCouponsQuery{
+interface RedeemableCouponsQuery {
   page: number;
   pageSize: number;
 }
 
-interface RedeemableCouponsData{
+interface RedeemableCouponsData {
   id: string;
   name: string;
   point: number;
@@ -295,7 +295,7 @@ interface RedeemableCouponsData{
   remain: number;
 }
 
-interface RedeemableCouponsResponse extends GenericResponse, Pagination{
+interface RedeemableCouponsResponse extends GenericResponse, Pagination {
   data: RedeemableCouponsData[];
 }
 
@@ -303,12 +303,12 @@ interface RedeemableCouponsResponse extends GenericResponse, Pagination{
 
 type RedeemableType = 'gift' | 'coupon';
 
-interface CreateRedeemableBody{
+interface CreateRedeemableBody {
   type: RedeemableType;
   name: string;
   point: number;
   remain: number;
-  picture?: string; 
+  picture?: string;
   description?: string;
   discount?: number;
   expire?: string;
@@ -316,89 +316,85 @@ interface CreateRedeemableBody{
 
 //-----POST /redeemables/redemption (for user to redeem)----
 
-interface CreateRedeemableRedemptionBody{
-  id:string;
+interface CreateRedeemableRedemptionBody {
+  id: string;
 }
-interface CreateRedeemableRedemptionResponse extends GenericResponse{
+interface CreateRedeemableRedemptionResponse extends GenericResponse {
   remain: number;
 }
 
 //------GET /inventory/gifts-----
 
-interface InventoryGiftsQuery{
+interface InventoryGiftsQuery {
   page: number;
   pageSize: number;
 }
 
-interface InventoryGiftsData{
+interface InventoryGiftsData {
   id: string;
   name: string;
-  point: number;
-  discount: number;
-  expire: string;
-  remain: number;
+  picture?: string;
+  count: number;
 }
 
-interface InventoryGiftsResponse extends GenericResponse, Pagination{
+interface InventoryGiftsResponse extends GenericResponse, Pagination {
   total: number;
   data: InventoryGiftsData[];
 }
 
 //------GET /inventory/coupons-----
 
-interface InventoryCouponsQuery{
+interface InventoryCouponsQuery {
   page: number;
   pageSize: number;
 }
 
-interface InventoryCouponsData{
+interface InventoryCouponsData {
   id: string;
   name: string;
-  point: number;
   discount: number;
   expire: string;
-  remain: number;
+  count: number;
 }
 
-interface InventoryCouponsResponse extends GenericResponse, Pagination{
+interface InventoryCouponsResponse extends GenericResponse, Pagination {
   total: number;
   data: InventoryCouponsData[];
 }
-
 
 //------Admin Sprint2---------//
 
 //-----GET /redeemables/price-to-point-------
 
-interface RedeemablePriceToPointResponse extends GenericResponse{
+interface RedeemablePriceToPointResponse extends GenericResponse {
   priceToPoint: number;
 }
 
 //-----POST /redeemables/price-to-point------
 
-interface CreateRedeemablePriceToPointBody{
+interface CreateRedeemablePriceToPointBody {
   priceToPoint: number;
 }
 
-interface CreateRedeemablePriceToPointResponse extends GenericResponse{
+interface CreateRedeemablePriceToPointResponse extends GenericResponse {
   priceToPoint: number;
 }
 
 //-----GET /users/points-----
 
-interface UsersPointsQuery{
+interface UsersPointsQuery {
   page: number;
   pageSize: number;
 }
 
-interface UsersPointsData{
+interface UsersPointsData {
   id: string;
   name: string;
   email: string;
   point: number;
 }
 
-interface UsersPointsResponse extends GenericResponse, Pagination{
+interface UsersPointsResponse extends GenericResponse, Pagination {
   data: UsersPointsData[];
 }
 
@@ -408,6 +404,6 @@ interface UpdateUserPointBody {
   point: number;
 }
 
-interface UpdateUserPointResponse extends GenericResponse{
+interface UpdateUserPointResponse extends GenericResponse {
   point: number;
 }
