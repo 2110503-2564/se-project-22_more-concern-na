@@ -7,7 +7,7 @@ import {
   HotelReviewsResponse,
   IHotel,
 } from '../../interface';
-import { apiPath } from './shared';
+import { API_BASEURL, apiPath } from './shared';
 
 export const getHotels = async (searchParams?: {
   name?: string;
@@ -16,14 +16,13 @@ export const getHotels = async (searchParams?: {
   limit?: number;
 }): Promise<HotelResponse> => {
   try {
-    const response = await axios.get(apiPath('/hotels'), {
+    const response = await axios.get(apiPath('/hotels?sort=rating'), {
       params: searchParams,
     });
 
     if (response.status !== 200) {
       throw new Error(`Error: ${response.status}`);
     }
-
     return await response.data;
   } catch (error) {
     console.error('Error fetching hotels:', error);

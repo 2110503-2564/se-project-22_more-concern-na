@@ -88,7 +88,7 @@ export default function LandingPage() {
       <div className="py-16 px-6 md:px-20 flex flex-col items-center">
         <h2 className="text-5xl font-heading font-bold mb-8">Our Best Hotel</h2>
         <div className="flex space-x-6 overflow-x-auto pb-4 justify-center">
-          {hotels.data.slice(0, 3).map((hotel: IHotel, index) => (
+          {hotels.data.slice(0,3).map((hotel: IHotel, index) => (
             <div key={hotel._id} className="min-w-[280px]">
               <div className="text-5xl font-bold font-heading text-yellow-500 mb-2 text-center">
                 {String(index + 1).padStart(2, '0')}
