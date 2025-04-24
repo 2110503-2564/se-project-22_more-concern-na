@@ -45,6 +45,7 @@ export interface IHotel {
   rooms: Rooms[];
   ratingSum: number;
   ratingCount: number;
+  rating?:number;
 }
 
 export interface HotelResponse extends GenericResponse, Pagination {
