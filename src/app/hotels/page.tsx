@@ -35,8 +35,8 @@ export default function Hotels() {
       </div>
     );
   }
-
   return (
+    
     <div
       className='
         grid 
