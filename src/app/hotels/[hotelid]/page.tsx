@@ -53,6 +53,7 @@ export default function HotelDetail({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
+  const [isBookingInProgress, setIsBookingInProgress] = useState(false);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -135,6 +136,10 @@ export default function HotelDetail({
 
   const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // Set booking in progress to disable the button
+    setIsBookingInProgress(true);
+    
     setIsConfirmOpen(false);
 
     if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
@@ -146,6 +151,7 @@ export default function HotelDetail({
           border: '1px solid var(--color-bg-border)',
         },
       });
+      setIsBookingInProgress(false);
       return;
     }
 
@@ -186,6 +192,7 @@ export default function HotelDetail({
           setCheckInDate(null);
           setCheckOutDate(null);
           setIsAvailabilityConfirmed(false);
+          setIsBookingInProgress(false);
         }, 1000);
       } else {
         toast.error('Booking Failed', {
@@ -196,6 +203,7 @@ export default function HotelDetail({
             border: '1px solid var(--color-bg-border)',
           },
         });
+        setIsBookingInProgress(false);
       }
     } catch (error: any) {
       console.error('Error creating booking:', error);
@@ -207,6 +215,7 @@ export default function HotelDetail({
           border: '1px solid var(--color-bg-border)',
         },
       });
+      setIsBookingInProgress(false);
     }
   };
 
@@ -663,16 +672,16 @@ export default function HotelDetail({
                         className='w-full text-base mt-2'
                         onClick={handleBooking}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed}
+                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
                       >
-                        Book Now
+                        {isBookingInProgress ? 'Processing...' : 'Book Now'}
                       </Button>
                     ) : (
                       <Button
                         className='w-full text-base mt-2'
                         onClick={handleNoSessionBook}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed}
+                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
                       >
                         Login to Book
                       </Button>
@@ -771,8 +780,9 @@ export default function HotelDetail({
             <AlertDialogAction
               className='bg-gradient-to-r from-gold-gd1 to-gold-gd2 hover:bg-gradient-to-bl hover:from-gold-gd1 hover:to-gold-gd2 text-cardfont-cl'
               onClick={handleConfirmBooking}
+              disabled={isBookingInProgress}
             >
-              Confirm Booking
+              {isBookingInProgress ? 'Processing...' : 'Confirm Booking'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
