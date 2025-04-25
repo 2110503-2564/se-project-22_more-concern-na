@@ -251,12 +251,12 @@ export interface BookingResponse extends GenericResponse {
 
 //-------GET /redeemables/gifts--------
 
-interface RedeemableGiftsQuery {
+export interface RedeemableGiftsQuery {
   page: number;
   pageSize: number;
 }
 
-interface RedeemableGiftsData {
+export interface RedeemableGiftsData {
   id: string;
   name: string;
   picture?: string;
@@ -264,13 +264,13 @@ interface RedeemableGiftsData {
   remain: number;
 }
 
-interface RedeemableGiftsResponse extends GenericResponse, Pagination {
+export interface RedeemableGiftsResponse extends GenericResponse, Pagination {
   data: RedeemableGiftsData[];
 }
 
 //--------GET /redeemables/gifts/:id-----------
 
-interface RedeemableGiftResponse extends GenericResponse {
+export interface RedeemableGiftResponse extends GenericResponse {
   id: string;
   name: string;
   description?: string;
@@ -281,12 +281,12 @@ interface RedeemableGiftResponse extends GenericResponse {
 
 //--------GET /redeemables/coupons--------
 
-interface RedeemableCouponsQuery {
+export interface RedeemableCouponsQuery {
   page: number;
   pageSize: number;
 }
 
-interface RedeemableCouponsData {
+export interface RedeemableCouponsData {
   id: string;
   name: string;
   point: number;
@@ -295,15 +295,15 @@ interface RedeemableCouponsData {
   remain: number;
 }
 
-interface RedeemableCouponsResponse extends GenericResponse, Pagination {
+export interface RedeemableCouponsResponse extends GenericResponse, Pagination {
   data: RedeemableCouponsData[];
 }
 
 //------POST /redeemables/creation (for admin to add redeemables)-----
 
-type RedeemableType = 'gift' | 'coupon';
+export type RedeemableType = 'gift' | 'coupon';
 
-interface CreateRedeemableBody {
+export interface CreateRedeemableBody {
   type: RedeemableType;
   name: string;
   point: number;
@@ -316,40 +316,40 @@ interface CreateRedeemableBody {
 
 //-----POST /redeemables/redemption (for user to redeem)----
 
-interface CreateRedeemableRedemptionBody {
+export interface CreateRedeemableRedemptionBody {
   id: string;
 }
-interface CreateRedeemableRedemptionResponse extends GenericResponse {
+export interface CreateRedeemableRedemptionResponse extends GenericResponse {
   remain: number;
 }
 
 //------GET /inventory/gifts-----
 
-interface InventoryGiftsQuery {
+export interface InventoryGiftsQuery {
   page: number;
   pageSize: number;
 }
 
-interface InventoryGiftsData {
+export interface InventoryGiftsData {
   id: string;
   name: string;
   picture?: string;
   count: number;
 }
 
-interface InventoryGiftsResponse extends GenericResponse, Pagination {
+export interface InventoryGiftsResponse extends GenericResponse, Pagination {
   total: number;
   data: InventoryGiftsData[];
 }
 
 //------GET /inventory/coupons-----
 
-interface InventoryCouponsQuery {
+export interface InventoryCouponsQuery {
   page: number;
   pageSize: number;
 }
 
-interface InventoryCouponsData {
+export interface InventoryCouponsData {
   id: string;
   name: string;
   discount: number;
@@ -357,7 +357,7 @@ interface InventoryCouponsData {
   count: number;
 }
 
-interface InventoryCouponsResponse extends GenericResponse, Pagination {
+export interface InventoryCouponsResponse extends GenericResponse, Pagination {
   total: number;
   data: InventoryCouponsData[];
 }
@@ -366,44 +366,44 @@ interface InventoryCouponsResponse extends GenericResponse, Pagination {
 
 //-----GET /redeemables/price-to-point-------
 
-interface RedeemablePriceToPointResponse extends GenericResponse {
+export interface RedeemablePriceToPointResponse extends GenericResponse {
   priceToPoint: number;
 }
 
 //-----POST /redeemables/price-to-point------
 
-interface CreateRedeemablePriceToPointBody {
+export interface CreateRedeemablePriceToPointBody {
   priceToPoint: number;
 }
 
-interface CreateRedeemablePriceToPointResponse extends GenericResponse {
+export interface CreateRedeemablePriceToPointResponse extends GenericResponse {
   priceToPoint: number;
 }
 
 //-----GET /users/points-----
 
-interface UsersPointsQuery {
+export interface UsersPointsQuery {
   page: number;
   pageSize: number;
 }
 
-interface UsersPointsData {
+export interface UsersPointsData {
   id: string;
   name: string;
   email: string;
   point: number;
 }
 
-interface UsersPointsResponse extends GenericResponse, Pagination {
+export interface UsersPointsResponse extends GenericResponse, Pagination {
   data: UsersPointsData[];
 }
 
 //------PUT /users/points/:id------
 
-interface UpdateUserPointBody {
+export interface UpdateUserPointBody {
   point: number;
 }
 
-interface UpdateUserPointResponse extends GenericResponse {
+export interface UpdateUserPointResponse extends GenericResponse {
   point: number;
 }
