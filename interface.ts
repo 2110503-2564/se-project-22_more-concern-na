@@ -49,20 +49,20 @@ export interface IHotel {
 }
 
 export interface HotelResponse extends GenericResponse, Pagination {
-    total: number;
-    data: IHotel[]
+  total: number;
+  data: IHotel[];
 }
 export interface HotelAvailabilityResponse extends GenericResponse {
   rooms: RoomAvailability[];
 }
 
 export interface AllReportResponse extends GenericResponse {
-  count:number;
+  count: number;
   reports: {
     reportReason: string;
     data: {
-        hotel: string;
-        report: IReport[];
+      hotel: string;
+      report: IReport[];
     }[];
   }[];
 }
@@ -88,8 +88,8 @@ export interface IUser {
 }
 
 export interface UserResponse extends GenericResponse {
-    total: number;
-    data: IUser[];
+  total: number;
+  data: IUser[];
 }
 
 export interface LoginRequest {
@@ -241,8 +241,169 @@ export interface PBooking {
   rooms: BookingType[];
   createdAt: string;
 }
-export interface BookingResponse extends GenericResponse{
-    total: number;
-    bookings?:PBooking[];
-    booking?:PBooking;
+export interface BookingResponse extends GenericResponse {
+  total: number;
+  bookings?: PBooking[];
+  booking?: PBooking;
+}
+
+/////////////////////////////////// SPRINT 2 ////////////////////////////////////////////
+
+//-------GET /redeemables/gifts--------
+
+export interface RedeemableGiftsQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface RedeemableGiftsData {
+  id: string;
+  name: string;
+  picture?: string;
+  point: number;
+  remain: number;
+}
+
+export interface RedeemableGiftsResponse extends GenericResponse, Pagination {
+  data: RedeemableGiftsData[];
+}
+
+//--------GET /redeemables/gifts/:id-----------
+
+export interface RedeemableGiftResponse extends GenericResponse {
+  id: string;
+  name: string;
+  description?: string;
+  point: number;
+  picture?: string;
+  remain: number;
+}
+
+//--------GET /redeemables/coupons--------
+
+export interface RedeemableCouponsQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface RedeemableCouponsData {
+  id: string;
+  name: string;
+  point: number;
+  discount: number;
+  expire: string;
+  remain: number;
+}
+
+export interface RedeemableCouponsResponse extends GenericResponse, Pagination {
+  data: RedeemableCouponsData[];
+}
+
+//------POST /redeemables/creation (for admin to add redeemables)-----
+
+export type RedeemableType = 'gift' | 'coupon';
+
+export interface CreateRedeemableBody {
+  type: RedeemableType;
+  name: string;
+  point: number;
+  remain: number;
+  picture?: string;
+  description?: string;
+  discount?: number;
+  expire?: string;
+}
+
+//-----POST /redeemables/redemption (for user to redeem)----
+
+export interface CreateRedeemableRedemptionBody {
+  id: string;
+}
+export interface CreateRedeemableRedemptionResponse extends GenericResponse {
+  remain: number;
+}
+
+//------GET /inventory/gifts-----
+
+export interface InventoryGiftsQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface InventoryGiftsData {
+  id: string;
+  name: string;
+  picture?: string;
+  count: number;
+}
+
+export interface InventoryGiftsResponse extends GenericResponse, Pagination {
+  total: number;
+  data: InventoryGiftsData[];
+}
+
+//------GET /inventory/coupons-----
+
+export interface InventoryCouponsQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface InventoryCouponsData {
+  id: string;
+  name: string;
+  discount: number;
+  expire: string;
+  count: number;
+}
+
+export interface InventoryCouponsResponse extends GenericResponse, Pagination {
+  total: number;
+  data: InventoryCouponsData[];
+}
+
+//------Admin Sprint2---------//
+
+//-----GET /redeemables/price-to-point-------
+
+export interface RedeemablePriceToPointResponse extends GenericResponse {
+  priceToPoint: number;
+}
+
+//-----POST /redeemables/price-to-point------
+
+export interface CreateRedeemablePriceToPointBody {
+  priceToPoint: number;
+}
+
+export interface CreateRedeemablePriceToPointResponse extends GenericResponse {
+  priceToPoint: number;
+}
+
+//-----GET /users/points-----
+
+export interface UsersPointsQuery {
+  page: number;
+  pageSize: number;
+}
+
+export interface UsersPointsData {
+  id: string;
+  name: string;
+  email: string;
+  point: number;
+}
+
+export interface UsersPointsResponse extends GenericResponse, Pagination {
+  data: UsersPointsData[];
+}
+
+//------PUT /users/points/:id------
+
+export interface UpdateUserPointBody {
+  point: number;
+}
+
+export interface UpdateUserPointResponse extends GenericResponse {
+  point: number;
 }
