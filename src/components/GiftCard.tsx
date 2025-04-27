@@ -25,15 +25,14 @@ export const GiftCard = ({
   const router = useRouter();
 
   const handleClick = () => {
-    //router.push(`/reward/reemables/${id}`);
-    router.push(`/`);
+    router.push(`/reward/redeemables/${id}`);
   };
 
   return (
     <div
       className='flex flex-col w-full max-w-xs rounded-xl overflow-hidden shadow-lg'
       onClick={handleClick}
-      data-testid='giftcard'
+      data-testid={name}
     >
       {/* Top section with points and badge */}
       <div className='relative h-48'>
@@ -74,7 +73,7 @@ export const GiftCard = ({
       </div>
 
       {/* Bottom section with details */}
-      <div className='bg-gradient-to-b from-gold-gd1 to-gold-gd2 p-4 flex flex-col h-48'>
+      <div className='bg-gradient-to-b from-gold-gd1 to-gold-gd2 p-4 flex flex-col'>
         {/* Remaining counter */}
         <div className='text-right mb-2'>
           <span
@@ -88,18 +87,9 @@ export const GiftCard = ({
         {/* Gift name */}
         <h3
           className='font-heading text-cardfont-cl text-3xl mb-2'
-          data-testid='name'
         >
           {name}
         </h3>
-
-        {/* Description */}
-        <p
-          className='font-detail text-cardfont-detail mb-4'
-          data-testid='description'
-        >
-          {description || 'Description'}
-        </p>
 
         {/* Action button - only show when type is 'redeem' */}
         {type === 'redeem' && (

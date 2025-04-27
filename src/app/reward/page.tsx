@@ -56,7 +56,7 @@ export default function RewardsPage() {
               <p className="text-gray-300 font-detail">Use your rewards for discounts, free products, and exclusive experiences</p>
             </div>
           </div>
-          <RedeemableGrid cardType='coupon' cardView='view' rowCount={1}>
+          <RedeemableGrid cardType='coupon' cardView='view' pageSize={2}>
             <div className='flex items-center justify-between'>
               <h2 className='font-heading text-lg'>Coupons</h2>
               <Link href='/reward/redeemables' className='underline text-white font-detail hover:text-gray-400'>
@@ -64,7 +64,7 @@ export default function RewardsPage() {
               </Link>
             </div>
           </RedeemableGrid>
-          <RedeemableGrid cardType='gift' cardView='view' rowCount={1}>
+          <RedeemableGrid cardType='gift' cardView='view' pageSize={2}>
           <div className='flex items-center justify-between'>
               <h2 className='font-heading text-lg'>Gift</h2>
               <Link href='/reward/redeemables' className='underline text-white font-detail hover:text-gray-400'>

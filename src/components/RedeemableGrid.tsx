@@ -10,7 +10,7 @@ import PageNavigator from './PageNavigator';
 
 interface RedeemablesGridProps {
   children: React.ReactNode;
-  rowCount: number;
+  pageSize: number;
   cardType: 'coupon' | 'gift';
   cardView: 'view' | 'redeem';
   disablePage?: boolean;
@@ -18,7 +18,7 @@ interface RedeemablesGridProps {
 
 export default function RedeemableGrid({
   children,
-  rowCount,
+  pageSize,
   cardType,
   cardView,
   disablePage
@@ -34,29 +34,6 @@ export default function RedeemableGrid({
     | undefined
   >(undefined);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
-
-  //   function calculatePageSize() {
-  //     const width = window.innerWidth;
-  //     let itemsPerRow;
-
-  //     if (width < 640) itemsPerRow = 1;
-  //     else if (width < 1024) itemsPerRow = 2;
-  //     else if (width < 1440) itemsPerRow = 3;
-  //     else itemsPerRow = 4;
-
-  //     return itemsPerRow * rowCount;
-  //   }
-
-  //   useEffect(() => {
-  //     const handleResize = () => {
-  //       setPageSize(calculatePageSize());
-  //     };
-
-  //     handleResize();
-  //     window.addEventListener('resize', handleResize);
-  //     return () => window.removeEventListener('resize', handleResize);
-  //   }, [rowCount]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,10 +67,10 @@ export default function RedeemableGrid({
             cardData.length > 0 &&
             cardData.map((item) => {
               return (
-                <div key={item.id} className='flex justify-center'>
+                <div key={item._id} className='flex justify-center'>
                   {cardType === 'coupon' ? (
                     <CouponCard
-                      id={item.id}
+                      id={item._id}
                       name={item.name}
                       point={item.point}
                       discount={(item as RedeemableCouponsData).discount}
@@ -103,7 +80,7 @@ export default function RedeemableGrid({
                     />
                   ) : (
                     <GiftCard
-                      id={item.id}
+                      id={item._id}
                       name={item.name}
                       point={item.point}
                       picture={(item as RedeemableGiftsData).picture}

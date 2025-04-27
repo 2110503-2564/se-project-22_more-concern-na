@@ -1,10 +1,12 @@
+'use client';
+
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 interface GiftDetailProps {
   id: string;
   name: string;
   description?: string;
-  point: string;
+  point: number;
   picture?: string;
   remain?: number;
   type: 'view' | 'redeem';
@@ -22,7 +24,7 @@ export default function GiftDetail({
   return (
     <div className='w-full'>
       {/* Heading outside the box */}
-      <h2 className='text-6xl font-bold font-heading mb-9 ml-6'>Gift Detail</h2>
+      <h2 className='text-6xl font-bold font-heading mb-9 ml-6 text-white'>Gift Detail</h2>
 
       {/* Gift box */}
       <div className='bg-[#0F172A] text-white p-6 border border-gray-700'>
@@ -64,7 +66,7 @@ export default function GiftDetail({
             </p>
 
             {/* Redeem Button positioned to the right */}
-            {type === 'redeem' && parseInt(point) > 0 ? (
+            {type === 'redeem' && point > 0 ? (
               <div className='flex justify-end mt-10'>
                 <Button className='w-50 h-14 text-2xl mr-26 cursor-pointer' variant='golden'>
                   Redeem

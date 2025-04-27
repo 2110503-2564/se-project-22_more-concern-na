@@ -21,16 +21,20 @@ export default function PageNavigator({
         disabled={onPrev === undefined}
         onClick={onPrev}
         className='p-1 bg-gold-gd1 hover:bg-gold-gd2'
+        name='Prev'
+        data-testid='prev-page-btn'
       >
         <SquareChevronLeft className='text-bg-box' />
       </Button>
-      <span className='text-white font-detail'>Page {page}</span>
+      <span className='text-white font-detail' data-testid='pagination-number'>Page {page}</span>
 
       <Button
         variant='ghost'
         disabled={onNext === undefined}
         onClick={onNext}
         className='p-1 bg-gold-gd1 hover:bg-gold-gd2'
+        name='Next'
+        data-testid='next-page-btn'
       >
         <SquareChevronRight className='text-bg-box' />
       </Button>
