@@ -1,6 +1,8 @@
+'use client';
+
 import { getAllCoupons, getAllGifts } from '@/lib/redeemableService';
 import { useEffect, useState } from 'react';
-import { RedeemableCouponsData, RedeemableGiftsData, } from '../../interface';
+import { RedeemableCouponsData, RedeemableGiftsData } from '../../interface';
 import CouponCard from './CouponCard';
 import { GiftCard } from './GiftCard';
 import Loader from './Loader';
@@ -11,6 +13,7 @@ interface RedeemablesGridProps {
   rowCount: number;
   cardType: 'coupon' | 'gift';
   cardView: 'view' | 'redeem';
+  disablePage?: boolean;
 }
 
 export default function RedeemableGrid({
@@ -18,6 +21,7 @@ export default function RedeemableGrid({
   rowCount,
   cardType,
   cardView,
+  disablePage
 }: RedeemablesGridProps) {
   const [cardData, setCardData] = useState<
     RedeemableCouponsData[] | RedeemableGiftsData[] | undefined
@@ -80,46 +84,48 @@ export default function RedeemableGrid({
   return (
     <div className='flex flex-col gap-4'>
       {children}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
-        {cardData ? (
-          cardData.length > 0 &&
-          cardData.map((item) => {
-            return (
-              <div key={item.id} className='flex justify-center'>
-                {cardType === 'coupon' ? (
-                  <CouponCard
-                    id={item.id}
-                    name={item.name}
-                    point={item.point}
-                    discount={(item as RedeemableCouponsData).discount}
-                    expire={(item as RedeemableCouponsData).expire}
-                    remain={item.remain}
-                    type={cardView}
-                  />
-                ) : (
-                  <GiftCard
-                    id={item.id}
-                    name={item.name}
-                    point={item.point}
-                    picture={(item as RedeemableGiftsData).picture}
-                    remain={item.remain}
-                    type={cardView}
-                  />
-                )}
-              </div>
-            );
-          })
-        ) : (
-        <div className='flex items-center justify-center w-full min-h-[200px]'>
-            <Loader />
+      <div className='flex flex-col gap-4 items-center w-full'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
+          {cardData ? (
+            cardData.length > 0 &&
+            cardData.map((item) => {
+              return (
+                <div key={item.id} className='flex justify-center'>
+                  {cardType === 'coupon' ? (
+                    <CouponCard
+                      id={item.id}
+                      name={item.name}
+                      point={item.point}
+                      discount={(item as RedeemableCouponsData).discount}
+                      expire={(item as RedeemableCouponsData).expire}
+                      remain={item.remain}
+                      type={cardView}
+                    />
+                  ) : (
+                    <GiftCard
+                      id={item.id}
+                      name={item.name}
+                      point={item.point}
+                      picture={(item as RedeemableGiftsData).picture}
+                      remain={item.remain}
+                      type={cardView}
+                    />
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className='flex items-center justify-center w-full min-h-[200px]'>
+              <Loader />
+            </div>
+          )}
         </div>
-        )}
+        {!disablePage && <PageNavigator
+          page={page}
+          onNext={handleChangePage('next')}
+          onPrev={handleChangePage('prev')}
+        />}
       </div>
-      <PageNavigator
-        page={page}
-        onNext={handleChangePage('next')}
-        onPrev={handleChangePage('prev')}
-      />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { Button } from './ui/button';
 
 interface CouponCardProps {
@@ -43,7 +44,7 @@ export default function CouponCard({
             {name}
           </div>
           <div className='text-sm font-detail' data-testid='expire'>
-            Expires In: {expire}
+             Expires {dayjs(expire).format('MM-DD-YYYY')}
           </div>
         </div>
         <div className='flex items-center justify-between mt-4'>

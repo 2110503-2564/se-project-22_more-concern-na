@@ -74,7 +74,7 @@ export const GiftCard = ({
       </div>
 
       {/* Bottom section with details */}
-      <div className='bg-gradient-to-b from-gold-gd1 to-gold-gd2 p-4 flex flex-col'>
+      <div className='bg-gradient-to-b from-gold-gd1 to-gold-gd2 p-4 flex flex-col h-48'>
         {/* Remaining counter */}
         <div className='text-right mb-2'>
           <span
@@ -87,7 +87,7 @@ export const GiftCard = ({
 
         {/* Gift name */}
         <h3
-          className='font-heading text-cardfont-cl text-3xl text-center mb-2'
+          className='font-heading text-cardfont-cl text-3xl mb-2'
           data-testid='name'
         >
           {name}
