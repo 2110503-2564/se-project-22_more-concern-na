@@ -34,7 +34,7 @@ test.describe('Redeemables Browsing Functionality', () => {
 
     // Check for pagination
     await expect(page.getByTestId('pagination-number').first()).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Next' }).first()).toBeVisible();
+    await expect(page.getByTestId('next-page-btn').first()).toBeVisible();
   });
 
   //pagination test

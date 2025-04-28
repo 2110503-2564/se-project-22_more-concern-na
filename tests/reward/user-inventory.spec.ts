@@ -63,14 +63,14 @@ test.describe('User Inventory Management', () => {
     await expect(page.getByText('Page 1').first()).toBeVisible();
     
     // Click next button to go to next page
-    await page.getByRole('button', { name: 'Next' }).first().click();
+    await page.getByTestId('next-page-btn').first().click();
     await page.waitForTimeout(500);
     
     // Verify we're on page 2
     await expect(page.getByText('Page 2').first()).toBeVisible();
     
     // Go back to previous page
-    await page.getByRole('button', { name: 'Prev' }).first().click();
+    await page.getByTestId('prev-page-btn').first().click();
     await page.waitForTimeout(500);
     
     // Verify we're back on page 1
