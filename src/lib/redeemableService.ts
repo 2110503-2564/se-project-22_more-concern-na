@@ -1,5 +1,8 @@
+import axios from 'axios';
 import {
+  CreateRedeemableRedemptionResponse,
   RedeemableCouponsResponse,
+  RedeemableGiftResponse,
   RedeemableGiftsResponse,
 } from '../../interface';
 import { apiPath } from './shared';
@@ -57,3 +60,49 @@ export const getAllGifts = async (
     throw error;
   }
 };
+
+export const getGiftById = async (id: string): Promise<RedeemableGiftResponse> => {
+  try {
+    const response = await fetch(apiPath(`/redeemables/gifts/${id}`), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch gift by ID: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as RedeemableGiftResponse;
+  } catch (error) {
+    console.error('Error fetching gift by ID:', error);
+    throw error;
+  }
+}
+
+export const updateRedeemables = async(id: string, token: string): Promise<CreateRedeemableRedemptionResponse> => {
+  try {
+    const response = await axios.put(apiPath(`/redeemables/redemption`), {id}, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+  
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error updating redeemable with id ${id}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+}
