@@ -79,3 +79,27 @@ export const getGiftById = async (id: string): Promise<RedeemableGiftResponse> =
     throw error;
   }
 }
+
+export async function getPriceToPoint(token?: string): Promise<number> {
+  const url = apiPath('/redeemables/price-to-point');
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch priceToPoint: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  if (!('priceToPoint' in data)) {
+    throw new Error('Response does not contain priceToPoint');
+  }
+
+  return data.priceToPoint;
+}

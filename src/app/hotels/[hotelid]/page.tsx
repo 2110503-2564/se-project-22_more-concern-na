@@ -27,12 +27,13 @@ import { IHotel, Rooms } from '../../../../interface';
 import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
 import { checkAvailability, getHotel } from '@/lib/hotelService';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
   HotelAvailabilityResponse,
 } from '../../../../interface';
+import { getPriceToPoint } from '@/lib/redeemableService';
 
 export default function HotelDetail({
   params,
@@ -54,7 +55,7 @@ export default function HotelDetail({
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
-  const [priceToPoint, setPriceToPoint] = useState<number>(10);
+  const [priceToPoint, setPriceToPoint] = useState<number |null>(null);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -80,21 +81,41 @@ export default function HotelDetail({
     fetchHotel();
   }, [params]);
 
+  // useEffect(() => {
+  //   const fetchPriceToPoint = async () => {
+  //     try {
+  //       const response = await fetch('/api/redeemables/price-to-point');
+  //       const data = await response.json();
+  //       if (data.success) {
+  //         setPriceToPoint(data.priceToPoint);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching price to point ratio:', error);
+  //     }
+  //   };
+
+  //   fetchPriceToPoint();
+  // }, []);
+
+  // const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchPriceToPoint = async () => {
+      if (!token) {
+        signIn();
+        return;
+      }
       try {
-        const response = await fetch('/api/redeemables/price-to-point');
-        const data = await response.json();
-        if (data.success) {
-          setPriceToPoint(data.priceToPoint);
-        }
+        const price = await getPriceToPoint(token);
+        console.log('Price to Point:', price);
+        setPriceToPoint(price);
       } catch (error) {
-        console.error('Error fetching price to point ratio:', error);
+        console.error('Failed to fetch priceToPoint:', error);
       }
     };
 
     fetchPriceToPoint();
-  }, []);
+  }, [token]);
 
   const averageRating =
     hotel?.ratingCount && hotel.ratingCount > 0
