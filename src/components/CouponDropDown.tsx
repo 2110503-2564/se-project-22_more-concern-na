@@ -52,7 +52,6 @@ export default function CouponDropDown() {
           <>
             {coupons.length > 0 ? (
               <>
-                <DropdownMenuItem disabled className="font-bold">Coupons</DropdownMenuItem>
                 {coupons.map((coupon) => (
                   <DropdownMenuItem key={`coupon-${coupon.id}`} className="cursor-pointer">
                     {coupon.name}
