@@ -1,3 +1,4 @@
+'use client'
 import dayjs from 'dayjs';
 import { Button } from './ui/button';
 import { useState } from 'react';
@@ -10,6 +11,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { createRedeemInventory } from '@/lib/redeemableService';  
+import { useSession } from 'next-auth/react';
 
 interface CouponCardProps {
   id: string;
@@ -19,6 +22,7 @@ interface CouponCardProps {
   expire: string;
   remain: number;
   type: 'view' | 'redeem';
+  token?: string;
 }
 
 export default function CouponCard({
@@ -31,11 +35,30 @@ export default function CouponCard({
   type,
 }: CouponCardProps) {
   const [showDialog, setShowDialog] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const token = (session as any)?.user?.token;
 
-  const handleRedeem = () => {
-    // Handle redeem logic here
-    // Then show the dialog
-    setShowDialog(true);
+  const handleRedeem = async () => {
+    console.log(token);
+    
+    
+    setIsRedeeming(true);
+    setError(null);
+    
+    try {
+      // Call API to redeem using the service
+      await createRedeemInventory(token, id);
+      
+      // Show success dialog
+      setShowDialog(true);
+    } catch (error) {
+      console.error('Error redeeming coupon:', error);
+      setError(error instanceof Error ? error.message : 'Failed to redeem coupon');
+    } finally {
+      setIsRedeeming(false);
+    }
   };
 
   return (
@@ -77,11 +100,15 @@ export default function CouponCard({
                 className='bg-bg-btn text-white text-sm font-heading px-4 py-1 rounded hover:bg-blue-700'
                 data-testid='redeem-button'
                 onClick={handleRedeem}
+                disabled={isRedeeming}
               >
-                Redeem
+                {isRedeeming ? 'Redeeming...' : 'Redeem'}
               </Button>
             )}
           </div>
+          {error && (
+            <div className="text-red-500 text-sm mt-2">{error}</div>
+          )}
         </div>
       </div>
 

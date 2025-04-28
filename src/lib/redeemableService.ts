@@ -78,4 +78,28 @@ export const getGiftById = async (id: string): Promise<RedeemableGiftResponse> =
     console.error('Error fetching gift by ID:', error);
     throw error;
   }
-}
+};
+
+export const createRedeemInventory = async (token: string, id: string): Promise<any> => {
+  console.log(token);
+  try {
+    const response = await fetch(apiPath('/redeemables/redemption'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ id })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to redeem item: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error redeeming item:', error);
+    throw error;
+  }
+};
