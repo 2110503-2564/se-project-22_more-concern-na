@@ -33,7 +33,7 @@ export default function GiftDetailPage({
             point={giftData.point}
             picture={giftData.picture}
             remain={giftData.remain}
-            type='redeem'
+            type='view'
           />
         </div>
       ) : (

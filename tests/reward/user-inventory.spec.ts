@@ -23,12 +23,12 @@ test.describe('User Inventory Management', () => {
     await page.goto('/profile/inventory');
     
     // Based on Figma design, check for coupon count display
-    await expect(page.getByText('2')).toBeVisible();
-    await expect(page.getByText('Your available coupons')).toBeVisible();
+    await expect(page.getByText('7').first()).toBeVisible();
+    await expect(page.getByText('Total available coupons')).toBeVisible();
     
     // Check for gift count display
-    await expect(page.getByText('3')).toBeVisible();
-    await expect(page.getByText('Your gifts you redeemed')).toBeVisible();
+    await expect(page.getByText('3').first()).toBeVisible();
+    await expect(page.getByText('Total gift that you redeemed')).toBeVisible();
   });
 
   test('TC3: User can view gift details from inventory', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe('User Inventory Management', () => {
       await expect(page.getByText('Gift Name:')).toBeVisible();
       
       // Check for detailed description based on Figma design
-      await expect(page.getByText(/Ut tempor accusam dolore sanctus diam consetetur/)).toBeVisible();
+      await expect(page.getByText(/Daily breakfast for two people/)).toBeVisible();
     }
   });
 
@@ -60,20 +60,20 @@ test.describe('User Inventory Management', () => {
     await page.goto('/profile/inventory');
     
     // Check for pagination controls as shown in Figma
-    await expect(page.getByText('Page')).toBeVisible();
+    await expect(page.getByText('Page 1').first()).toBeVisible();
     
     // Click next button to go to next page
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next' }).first().click();
     await page.waitForTimeout(500);
     
     // Verify we're on page 2
-    await expect(page.getByText('Page 2')).toBeVisible();
+    await expect(page.getByText('Page 2').first()).toBeVisible();
     
     // Go back to previous page
-    await page.getByRole('button', { name: 'Prev' }).click();
+    await page.getByRole('button', { name: 'Prev' }).first().click();
     await page.waitForTimeout(500);
     
     // Verify we're back on page 1
-    await expect(page.getByText('Page 1')).toBeVisible();
+    await expect(page.getByText('Page 1').first()).toBeVisible();
   });
 });

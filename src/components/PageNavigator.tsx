@@ -26,7 +26,7 @@ export default function PageNavigator({
       >
         <SquareChevronLeft className='text-bg-box' />
       </Button>
-      <span className='text-white font-detail' data-testid='pagination-number'>Page {page}</span>
+      <span className='text-white font-detail' data-testid='pagination-number'>{`Page ${page}`}</span>
 
       <Button
         variant='ghost'

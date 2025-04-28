@@ -10,7 +10,7 @@ interface GiftCardProps {
   description?: string;
   picture?: string;
   remain: number;
-  type: 'view' | 'redeem';
+  type: 'view' | 'redeem' | 'inventory';
 }
 
 export const GiftCard = ({
@@ -25,7 +25,9 @@ export const GiftCard = ({
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/reward/redeemables/${id}`);
+    type === 'inventory'
+      ? router.push(`/profile/inventory/${id}`)
+      : router.push(`/reward/redeemables/${id}`);
   };
 
   return (
@@ -85,11 +87,7 @@ export const GiftCard = ({
         </div>
 
         {/* Gift name */}
-        <h3
-          className='font-heading text-cardfont-cl text-3xl mb-2'
-        >
-          {name}
-        </h3>
+        <h3 className='font-heading text-cardfont-cl text-3xl mb-2'>{name}</h3>
 
         {/* Action button - only show when type is 'redeem' */}
         {type === 'redeem' && (

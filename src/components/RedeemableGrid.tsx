@@ -2,17 +2,19 @@
 
 import { getAllCoupons, getAllGifts } from '@/lib/redeemableService';
 import { useEffect, useState } from 'react';
-import { RedeemableCouponsData, RedeemableGiftsData } from '../../interface';
+import { InventoryCouponsData, InventoryData, InventoryGiftsData, RedeemableCouponsData, RedeemableGiftsData, RedeemablesData } from '../../interface';
 import CouponCard from './CouponCard';
 import { GiftCard } from './GiftCard';
 import Loader from './Loader';
 import PageNavigator from './PageNavigator';
+import { getInventoryCoupons, getInventoryGifts } from '@/lib/inventoryService';
+import { useSession } from 'next-auth/react';
 
 interface RedeemablesGridProps {
   children: React.ReactNode;
   pageSize: number;
   cardType: 'coupon' | 'gift';
-  cardView: 'view' | 'redeem';
+  cardView: 'view' | 'redeem' | 'inventory';
   disablePage?: boolean;
 }
 
@@ -24,7 +26,7 @@ export default function RedeemableGrid({
   disablePage
 }: RedeemablesGridProps) {
   const [cardData, setCardData] = useState<
-    RedeemableCouponsData[] | RedeemableGiftsData[] | undefined
+    RedeemablesData[] | InventoryData[] | undefined
   >(undefined);
   const [pagination, setPagination] = useState<
     | {
@@ -34,14 +36,15 @@ export default function RedeemableGrid({
     | undefined
   >(undefined);
   const [page, setPage] = useState(1);
+  const {data: session} = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
       setCardData(undefined);
       const response =
         cardType === 'coupon'
-          ? await getAllCoupons(page, pageSize)
-          : await getAllGifts(page, pageSize);
+          ? (cardView === 'inventory' ? await getInventoryCoupons(page, pageSize, (session as any)?.user?.token) : await getAllCoupons(page, pageSize))
+          : (cardView === 'inventory' ? await getInventoryGifts(page, pageSize, (session as any)?.user?.token) : await getAllGifts(page, pageSize));
       setCardData(response.data);
       setPagination(response.pagination);
     };
@@ -67,24 +70,24 @@ export default function RedeemableGrid({
             cardData.length > 0 &&
             cardData.map((item) => {
               return (
-                <div key={item._id} className='flex justify-center'>
+                <div key={(item as RedeemablesData)._id || (item as InventoryData).id} className='flex justify-center'>
                   {cardType === 'coupon' ? (
                     <CouponCard
-                      id={item._id}
+                      id={(item as RedeemablesData)._id || (item as InventoryData).id}
                       name={item.name}
-                      point={item.point}
+                      point={(item as RedeemablesData).point}
                       discount={(item as RedeemableCouponsData).discount}
                       expire={(item as RedeemableCouponsData).expire}
-                      remain={item.remain}
-                      type={cardView}
+                      remain={(item as RedeemablesData).remain}
+                      type={cardView === 'inventory' ? 'view' : cardView}
                     />
                   ) : (
                     <GiftCard
-                      id={item._id}
+                      id={(item as RedeemablesData)._id || (item as InventoryData).id}
                       name={item.name}
-                      point={item.point}
+                      point={(item as RedeemablesData).point}
                       picture={(item as RedeemableGiftsData).picture}
-                      remain={item.remain}
+                      remain={(item as RedeemablesData).remain}
                       type={cardView}
                     />
                   )}

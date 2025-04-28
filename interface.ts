@@ -299,6 +299,9 @@ export interface RedeemableCouponsResponse extends GenericResponse, Pagination {
   data: RedeemableCouponsData[];
 }
 
+export type InventoryData = InventoryCouponsData | InventoryGiftsData;
+export type RedeemablesData = RedeemableCouponsData | RedeemableGiftsData;
+
 //------POST /redeemables/creation (for admin to add redeemables)-----
 
 export type RedeemableType = 'gift' | 'coupon';

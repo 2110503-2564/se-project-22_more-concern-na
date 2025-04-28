@@ -31,11 +31,23 @@ export default function GiftDetail({
         <div className='flex flex-col md:flex-row items-center gap-6 p-10'>
           
           {/* Picture & Point Section */}
-        <div className="relative flex-shrink-0">
-          <div className="bg-gray-300 rounded-md overflow-hidden">
+        <div className="relative flex-shrink-0 w-64 h-64">
+          <div className="bg-gray-300 rounded-md overflow-hidden w-full h-full">
             {picture ? (
-              <img src={picture} alt={name} width={0} height={0} className="w-full h-full object-cover" />
-            ) :  (<img src={"/defaultHotel.png"} alt={name} width={0} height={0} className="w-100 h-100 object-cover" />)}
+              <img 
+                src={picture} 
+                alt={name} 
+                className="w-full h-full object-cover max-w-full max-h-full" 
+                style={{ objectPosition: 'center' }}
+              />
+            ) : (
+              <img 
+                src={"/defaultHotel.png"} 
+                alt={name} 
+                className="w-full h-full object-cover max-w-full max-h-full" 
+                style={{ objectPosition: 'center' }}
+              />
+            )}
           </div>
           <div className="flex absolute bottom-0 w-full h-10 bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black text-2xl font-light items-center justify-center font-detail py-1 rounded-b-md">
             {point} Points
