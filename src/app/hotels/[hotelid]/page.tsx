@@ -27,13 +27,13 @@ import { IHotel, Rooms } from '../../../../interface';
 import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
 import { checkAvailability, getHotel } from '@/lib/hotelService';
+import { getPriceToPoint } from '@/lib/redeemableService';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
   HotelAvailabilityResponse,
 } from '../../../../interface';
-import { getPriceToPoint } from '@/lib/redeemableService';
 
 export default function HotelDetail({
   params,
@@ -55,7 +55,7 @@ export default function HotelDetail({
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
-  const [priceToPoint, setPriceToPoint] = useState<number |null>(null);
+  const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -80,24 +80,6 @@ export default function HotelDetail({
     };
     fetchHotel();
   }, [params]);
-
-  // useEffect(() => {
-  //   const fetchPriceToPoint = async () => {
-  //     try {
-  //       const response = await fetch('/api/redeemables/price-to-point');
-  //       const data = await response.json();
-  //       if (data.success) {
-  //         setPriceToPoint(data.priceToPoint);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching price to point ratio:', error);
-  //     }
-  //   };
-
-  //   fetchPriceToPoint();
-  // }, []);
-
-  // const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPriceToPoint = async () => {
@@ -809,7 +791,10 @@ export default function HotelDetail({
 
                 {/* New row to show points earned */}
                 <div className='flex justify-between text-sm'>
-                  <span className='text-gold-gd1'>Points you'll earn</span>
+                  <span className='text-gold-gd1 font-semibold'>
+                    Points to Earn:
+                  </span>{' '}
+                  {/* << change text to match test */}
                   <span className='font-medium text-gold-gd1'>
                     {priceToPoint
                       ? Math.floor(calculateTotalPrice() / priceToPoint)
@@ -817,6 +802,11 @@ export default function HotelDetail({
                     points
                   </span>
                 </div>
+
+                {/* ADD this new paragraph as per test requirement */}
+                <p className='text-xs text-gray-400 mt-1'>
+                  The points will be added after check-in
+                </p>
 
                 <p className='text-xs text-gray-400 mt-4'>
                   By confirming this booking, you agree to our terms and
