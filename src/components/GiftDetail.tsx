@@ -1,7 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 interface GiftDetailProps {
   id: string;
   name: string;
@@ -13,6 +24,7 @@ interface GiftDetailProps {
 }
 
 export default function GiftDetail({
+  id,
   name,
   description,
   point,
@@ -20,7 +32,15 @@ export default function GiftDetail({
   remain,
   type,
 }: GiftDetailProps) {
-    const router = useRouter();
+  const router = useRouter();
+  const [showDialog, setShowDialog] = useState(false);
+
+  const handleRedeem = () => {
+    // Handle redeem logic here
+    // Then show the dialog
+    setShowDialog(true);
+  };
+
   return (
     <div className='w-full'>
       {/* Heading outside the box */}
@@ -80,7 +100,11 @@ export default function GiftDetail({
             {/* Redeem Button positioned to the right */}
             {type === 'redeem' && point > 0 ? (
               <div className='flex justify-end mt-10'>
-                <Button className='w-50 h-14 text-2xl mr-26 cursor-pointer' variant='golden'>
+                <Button 
+                  className='w-50 h-14 text-2xl mr-26 cursor-pointer' 
+                  variant='golden'
+                  onClick={handleRedeem}
+                >
                   Redeem
                 </Button>
               </div>
@@ -88,6 +112,20 @@ export default function GiftDetail({
           </div>
         </div>
       </div>
+
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Redemption Successful!</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have successfully redeemed {name}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
