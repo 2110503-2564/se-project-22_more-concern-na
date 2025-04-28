@@ -223,6 +223,7 @@ export interface BookingsRequest {
   price: number;
   startDate: string;
   endDate: string;
+  coupon?: string;
   rooms: {
     roomType: string;
     count: number;
