@@ -54,6 +54,7 @@ export default function HotelDetail({
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
+  const [priceToPoint, setPriceToPoint] = useState<number>(10);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -78,6 +79,22 @@ export default function HotelDetail({
     };
     fetchHotel();
   }, [params]);
+
+  useEffect(() => {
+    const fetchPriceToPoint = async () => {
+      try {
+        const response = await fetch('/api/redeemables/price-to-point');
+        const data = await response.json();
+        if (data.success) {
+          setPriceToPoint(data.priceToPoint);
+        }
+      } catch (error) {
+        console.error('Error fetching price to point ratio:', error);
+      }
+    };
+
+    fetchPriceToPoint();
+  }, []);
 
   const averageRating =
     hotel?.ratingCount && hotel.ratingCount > 0
@@ -136,10 +153,10 @@ export default function HotelDetail({
 
   const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     // Set booking in progress to disable the button
     setIsBookingInProgress(true);
-    
+
     setIsConfirmOpen(false);
 
     if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
@@ -672,7 +689,9 @@ export default function HotelDetail({
                         className='w-full text-base mt-2'
                         onClick={handleBooking}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
+                        disabled={
+                          !isAvailabilityConfirmed || isBookingInProgress
+                        }
                       >
                         {isBookingInProgress ? 'Processing...' : 'Book Now'}
                       </Button>
@@ -681,7 +700,9 @@ export default function HotelDetail({
                         className='w-full text-base mt-2'
                         onClick={handleNoSessionBook}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
+                        disabled={
+                          !isAvailabilityConfirmed || isBookingInProgress
+                        }
                       >
                         Login to Book
                       </Button>
@@ -762,6 +783,17 @@ export default function HotelDetail({
                   <span className='font-bold'>Total Amount</span>
                   <span className='font-bold text-luxe-gold'>
                     ${calculateTotalPrice().toLocaleString()}
+                  </span>
+                </div>
+
+                {/* New row to show points earned */}
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gold-gd1'>Points you'll earn</span>
+                  <span className='font-medium text-gold-gd1'>
+                    {priceToPoint
+                      ? Math.floor(calculateTotalPrice() / priceToPoint)
+                      : 0}{' '}
+                    points
                   </span>
                 </div>
 
