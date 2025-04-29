@@ -162,7 +162,6 @@ export default function HotelDetail({
 
     // Set booking in progress to disable the button
     setIsBookingInProgress(true);
-
     setIsConfirmOpen(false);
 
     if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
@@ -210,12 +209,12 @@ export default function HotelDetail({
           },
         });
 
-        // Reset form data after successful booking
         setTimeout(() => {
           setSelectedRooms([]);
           setCheckInDate(null);
           setCheckOutDate(null);
           setIsAvailabilityConfirmed(false);
+          setSelectedCoupon(null);
           setIsBookingInProgress(false);
         }, 1000);
       } else {
