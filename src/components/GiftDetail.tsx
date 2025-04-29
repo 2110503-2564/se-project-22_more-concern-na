@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { createRedeemInventory } from '@/lib/redeemableService'; 
 import { useSession } from 'next-auth/react';
+import AlertConfirmation from './AlertConfirmation';
+import { toast } from 'sonner';
 
 interface GiftDetailProps {
   id: string;
@@ -49,10 +51,17 @@ export default function GiftDetail({
     
     try {
       // Call API to redeem using the service
-      await createRedeemInventory(token, id);
+      const res = await createRedeemInventory(token, id);
+      if (res) {
+        toast.success('Redemption Successful');
+        router.push('/profile/inventory');
+      } else {
+        toast.error('Failed to redeem gift');
+      }
       
       // Show success dialog
-      setShowDialog(true);
+      setShowDialog(false);
+
     } catch (error) {
       console.error('Error redeeming gift:', error);
       setError(error instanceof Error ? error.message : 'Failed to redeem gift');
@@ -123,7 +132,7 @@ export default function GiftDetail({
                 <Button 
                   className='w-50 h-14 text-2xl mr-26 cursor-pointer' 
                   variant='golden'
-                  onClick={handleRedeem}
+                  onClick={() => setShowDialog(true)}
                   disabled={isRedeeming}
                 >
                   {isRedeeming ? 'Redeeming...' : 'Redeem'}
@@ -137,19 +146,14 @@ export default function GiftDetail({
         </div>
       </div>
 
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Redemption Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have successfully redeemed {name}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>OK</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      <AlertConfirmation
+        onOpen={showDialog}
+        onOpenChange={setShowDialog}
+        type='redeem'
+        onConfirm={handleRedeem}
+        onCancel={() => setShowDialog(false)}
+      />
     </div>
   );
 }

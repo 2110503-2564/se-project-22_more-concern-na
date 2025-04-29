@@ -101,24 +101,21 @@ export const getGiftById = async (
   }
 };
 
-export const createRedeemInventory = async (token: string, id: string): Promise<any> => {
+export const createRedeemInventory = async (token: string, id: string): Promise<boolean> => {
   console.log(token);
   try {
-    const response = await fetch(apiPath('/redeemables/redemption'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+    const response = await axios.post(
+      apiPath(`/redeemables/redemption`),
+      { id },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       },
-      body: JSON.stringify({ id })
-    });
+    );
 
-    if (!response.ok) {
-      throw new Error(`Failed to redeem item: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response.status === 200
   } catch (error) {
     console.error('Error redeeming item:', error);
     throw error;

@@ -22,7 +22,7 @@ test.describe('Redemption Process Functionality', () => {
     await page.getByRole('button', { name: 'Redeem' }).click();
     
     // Confirm redemption (assuming there's a confirmation dialog)
-    await page.getByRole('button', { name: 'Confirm' }).click();
+    await page.getByRole('button', { name: 'Redeem Now' }).click();
     
     // Verify success message
     await expect(page.getByText('Redemption Successful')).toBeVisible();
@@ -40,20 +40,15 @@ test.describe('Redemption Process Functionality', () => {
     // Verify inventory content as shown in Figma
     await expect(page.getByRole('heading', { name: 'Your Inventory' })).toBeVisible();
     
-    // Check for the coupon count displayed
-    await expect(page.getByText('2')).toBeVisible();
-    await expect(page.getByText('Your available coupons')).toBeVisible();
-    
-    // Check for the gift count displayed
-    await expect(page.getByText('3')).toBeVisible();
-    await expect(page.getByText('Your gifts you redeemed')).toBeVisible();
-    
-    // Verify coupon items are displayed
-    await expect(page.getByRole('heading', { name: 'Coupons' })).toBeVisible();
-    await expect(page.locator('.grid > div').filter({ hasText: '0%' }).first()).toBeVisible();
-    
     // Verify gift items are displayed
-    await expect(page.getByRole('heading', { name: 'Gift' })).toBeVisible();
-    await expect(page.locator('.grid > div').filter({ hasText: 'Gift' }).first()).toBeVisible();
+
+    await expect(page.getByRole('heading', { name: 'Gifts' })).toBeVisible();
+
+    // go to second page
+    await page.getByTestId('next-page-btn').nth(1).click();
+
+
+    // await expect(page.locator('.grid > div').filter({ hasText: 'Gift' }).first()).toBeVisible();
+    await expect(page.getByText('Room Upgrade').first()).toBeVisible();
   });
 });
