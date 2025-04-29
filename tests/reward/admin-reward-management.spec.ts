@@ -87,7 +87,7 @@ test.describe('Admin Reward Management', () => {
 
     // >>Test increasing the rate
     await rateInput.clear();
-    await rateInput.fill('1.5');
+    await rateInput.fill('10');
 
     // Save changes
     await page.getByTestId('save-rate-btn').click();
@@ -136,8 +136,8 @@ test.describe('Admin Reward Management', () => {
       .innerText();
     const pointsWithNewRate = parseInt(pointsTextWithNewRate.split(' ')[0]);
 
-    // Verify the points have increased with the higher rate
-    expect(pointsWithNewRate).toBeGreaterThan(pointsWithDefaultRate);
+    // Verify the points have decreased with the higher rate
+    expect(pointsWithNewRate).toBeLessThan(pointsWithDefaultRate);
 
     // >>Test decreasing the rate
     // Cancel the booking
@@ -150,9 +150,8 @@ test.describe('Admin Reward Management', () => {
     // Find the point rate input field
     await expect(rateInput).toBeVisible();
 
-    // Modify rate from 1.5 to 0.5 (decreasing the rate)
     await rateInput.clear();
-    await rateInput.fill('0.5');
+    await rateInput.fill('3');
 
     // Save changes
     await page.getByTestId('save-rate-btn').click();
@@ -206,7 +205,7 @@ test.describe('Admin Reward Management', () => {
     // Cancel the booking
     await page.getByRole('button', { name: 'Cancel' }).click();
 
-    // Finally, reset the rate back to 1 (default)
+    // Finally, reset the rate back to 5 (default)
     await loginAsAdmin(page);
     await page.goto('/admin/redemption');
 
@@ -215,7 +214,7 @@ test.describe('Admin Reward Management', () => {
 
     // Reset rate to 1
     await rateInput.clear();
-    await rateInput.fill('1');
+    await rateInput.fill('5');
 
     // Save changes
     await page.getByTestId('save-rate-btn').click();
