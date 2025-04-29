@@ -49,12 +49,14 @@ export default function BookingDetailPage({
     const checkOutDate = new Date(booking.endDate);
     checkOutDate.setHours(0, 0, 0, 0);
 
-    if (today >= checkInDate && today <= checkOutDate) {
+    if (booking.status === 'reserved') {
       return 'Active';
-    } else if (today < checkInDate) {
+    } else if ( booking.status === 'checkedIn') {
       return 'Upcoming';
-    } else {
+    } else if ( booking.status === 'completed') {
       return 'Completed';
+    } else {
+      console.log("booking is undefined");
     }
   };
 
