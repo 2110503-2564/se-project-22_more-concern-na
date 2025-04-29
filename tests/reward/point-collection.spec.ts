@@ -79,7 +79,7 @@ test.describe('Point Collection Functionality', () => {
     await page.goto('/profile');
 
     // Verify points are displayed in the profile
-    await expect(page.getByTestId('user-point')).toBeVisible();
+    await expect(page.getByText(/Point : \d+/)).toBeVisible();
   });
 
   test('TC3: HotelManager can check-in user and points are awarded', async ({
@@ -94,15 +94,15 @@ test.describe('Point Collection Functionality', () => {
     // Set dates and book a room
     await page.locator('.MuiInputAdornment-root').first().click();
     await page.waitForTimeout(1500);
-    await page.getByRole('button', { name: 'Next month' }).click();
+    // await page.getByRole('button', { name: 'Next month' }).click();
     await page.waitForTimeout(1500);
-    await page.getByRole('gridcell', { name: '20', exact: true }).click();
+    await page.getByRole('gridcell', { name: '29', exact: true }).click();
 
     await page.locator('.MuiInputAdornment-root').nth(1).click();
     await page.waitForTimeout(1500);
-    await page.getByRole('button', { name: 'Next month' }).click();
+    // await page.getByRole('button', { name: 'Next month' }).click();
     await page.waitForTimeout(1500);
-    await page.getByRole('gridcell', { name: '22', exact: true }).click();
+    await page.getByRole('gridcell', { name: '30', exact: true }).click();
 
     await page.getByRole('button', { name: 'Check Available' }).click();
     await page.waitForTimeout(1500);
@@ -115,16 +115,20 @@ test.describe('Point Collection Functionality', () => {
       .click();
 
     await page.getByRole('button', { name: 'Book Now' }).click();
+    await page.waitForTimeout(2000);
+    const pointsText = await page.locator('text=/\\d+ points/').innerText();
+    await page.waitForTimeout(2000);
+    const expectedPoints = parseInt(pointsText.split(' ')[0]);
     await page.getByRole('button', { name: 'Confirm Booking' }).click();
+    await page.waitForTimeout(2000);
 
     // Note the expected points from the confirmation
-    const pointsText = await page.locator('text=/\\d+ points/').innerText();
-    const expectedPoints = parseInt(pointsText.split(' ')[0]);
+    await page.waitForTimeout(1500);
 
     // Check initial points
     await page.goto('/profile');
-    const initialPointsText = await page.locator('text=/P \\d+/').innerText();
-    const initialPoints = parseInt(initialPointsText.replace('P ', ''));
+    const initialPointsText = await page.locator('text=/Point : \\d+/').innerText();
+    const initialPoints = parseInt(initialPointsText.replace('Point : ', ''));
 
     // Now login as hotel manager
     await loginAsHotelManager(page);
@@ -135,13 +139,13 @@ test.describe('Point Collection Functionality', () => {
     // Find the booking we just created (using the dates)
     const bookingCard = page
       .locator('.grid > div')
-      .filter({ hasText: 'check-in: May 20, 2025' })
-      .filter({ hasText: 'check-out: May 22, 2025' });
+      .filter({ hasText: 'check-in: Apr 29, 2025' })
+      .filter({ hasText: 'check-out: Apr 30, 2025' });
 
     // Check in the guest
-    await expect(bookingCard.locator('input[type="checkbox"]')).toBeVisible();
-    await bookingCard.locator('input[type="checkbox"]').check();
-
+    await expect(bookingCard.locator('input[type="checkbox"]').first()).toBeVisible();
+    await bookingCard.locator('input[type="checkbox"]').first().check();
+    await page.waitForTimeout(2000);  
     // Verify success message
     await expect(page.getByText('Guest checked in successfully')).toBeVisible();
 
@@ -150,7 +154,7 @@ test.describe('Point Collection Functionality', () => {
     await page.goto('/profile');
 
     // Check that points were added
-    const finalPointsText = await page.locator('text=/P \\d+/').innerText();
+    const finalPointsText = await page.locator('text=/Point : \\d+/').innerText();
     const finalPoints = parseInt(finalPointsText.replace('P ', ''));
 
     // Verify the points were awarded
@@ -166,8 +170,8 @@ test.describe('Point Collection Functionality', () => {
     await page.goto('/manage/bookings');
     const bookingCardToCancel = page
       .locator('.grid > div')
-      .filter({ hasText: 'check-in: May 20, 2025' })
-      .filter({ hasText: 'check-out: May 22, 2025' });
+      .filter({ hasText: 'check-in: Apr 29, 2025' })
+      .filter({ hasText: 'check-out: Apr 30, 2025' });
     await bookingCardToCancel.getByRole('button').click();
     await page.getByRole('button', { name: 'Cancel Booking' }).click();
     await page.getByTestId('alert-confirm-button').click();
