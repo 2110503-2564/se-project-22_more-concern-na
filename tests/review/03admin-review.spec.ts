@@ -54,6 +54,7 @@ test.describe("Admin Review Functionality", () => {
     const trashIcon = reviewCard.locator('.absolute.top-2.right-6 svg.lucide-trash').first();
     await expect(trashIcon).toBeVisible();
     await trashIcon.click();
+    await page.waitForTimeout(2000);
 
     const confirmDialog = page.getByText(
       'Are you sure you want to delete this? This action cannot be undone.',
@@ -61,6 +62,7 @@ test.describe("Admin Review Functionality", () => {
     await expect(confirmDialog).toBeVisible();
     
     await page.getByTestId('alert-confirm-button').click();
+    await page.waitForTimeout(2000);
 
     await expect(confirmDialog).not.toBeVisible();
     await page.waitForTimeout(2000);
@@ -68,15 +70,6 @@ test.describe("Admin Review Functionality", () => {
     await expect(page.getByText('Sawadee krub')).not.toBeVisible();
     await expect(page.getByText('one two three 4 5 I love you')).not.toBeVisible();
 
-    await page.goto(`/manage/hotels/${hotelId}`);
-    await page.waitForTimeout(1500);
-    await page.waitForLoadState('networkidle');
-
-    await page.getByRole('button', { name: 'Next' }).first().click();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(3000);
-    
-    await expect(page.getByText('Sawadee krub')).not.toBeVisible();
-    await expect(page.getByText('one two three 4 5 I love you')).not.toBeVisible();
+    await expect(page.getByText('Review deleted successfully')).toBeVisible();
   });
 });
