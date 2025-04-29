@@ -27,7 +27,8 @@ import { IHotel, Rooms } from '../../../../interface';
 import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
 import { checkAvailability, getHotel } from '@/lib/hotelService';
-import { useSession } from 'next-auth/react';
+import { getPriceToPoint } from '@/lib/redeemableService';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
@@ -54,6 +55,7 @@ export default function HotelDetail({
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
+  const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -78,6 +80,24 @@ export default function HotelDetail({
     };
     fetchHotel();
   }, [params]);
+
+  useEffect(() => {
+    const fetchPriceToPoint = async () => {
+      if (!token) {
+        signIn();
+        return;
+      }
+      try {
+        const price = await getPriceToPoint(token);
+        console.log('Price to Point:', price);
+        setPriceToPoint(price);
+      } catch (error) {
+        console.error('Failed to fetch priceToPoint:', error);
+      }
+    };
+
+    fetchPriceToPoint();
+  }, [token]);
 
   const averageRating =
     hotel?.ratingCount && hotel.ratingCount > 0
@@ -136,10 +156,10 @@ export default function HotelDetail({
 
   const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     // Set booking in progress to disable the button
     setIsBookingInProgress(true);
-    
+
     setIsConfirmOpen(false);
 
     if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
@@ -672,7 +692,9 @@ export default function HotelDetail({
                         className='w-full text-base mt-2'
                         onClick={handleBooking}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
+                        disabled={
+                          !isAvailabilityConfirmed || isBookingInProgress
+                        }
                       >
                         {isBookingInProgress ? 'Processing...' : 'Book Now'}
                       </Button>
@@ -681,7 +703,9 @@ export default function HotelDetail({
                         className='w-full text-base mt-2'
                         onClick={handleNoSessionBook}
                         variant='golden'
-                        disabled={!isAvailabilityConfirmed || isBookingInProgress}
+                        disabled={
+                          !isAvailabilityConfirmed || isBookingInProgress
+                        }
                       >
                         Login to Book
                       </Button>
@@ -764,6 +788,25 @@ export default function HotelDetail({
                     ${calculateTotalPrice().toLocaleString()}
                   </span>
                 </div>
+
+                {/* New row to show points earned */}
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gold-gd1 font-semibold'>
+                    Points to Earn:
+                  </span>{' '}
+                  {/* << change text to match test */}
+                  <span className='font-medium text-gold-gd1'>
+                    {priceToPoint
+                      ? Math.floor(calculateTotalPrice() / priceToPoint)
+                      : 0}{' '}
+                    points
+                  </span>
+                </div>
+
+                {/* ADD this new paragraph as per test requirement */}
+                <p className='text-xs text-gray-400 mt-1'>
+                  The points will be added after check-in
+                </p>
 
                 <p className='text-xs text-gray-400 mt-4'>
                   By confirming this booking, you agree to our terms and
