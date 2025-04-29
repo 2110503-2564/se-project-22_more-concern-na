@@ -7,6 +7,7 @@ import { updateReply } from '@/lib/reviewService';
 import { useSession } from 'next-auth/react';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
+import { toast } from 'sonner';
 
 interface HotelReplyProps {
   parentId?: string;
@@ -33,6 +34,11 @@ export default function HotelReply({
 
   const handleEdit = async () => {
     setIsEditing(false);
+    if(!editedReply){
+      toast.error('Please fill text in the field');
+      setIsEditing(true);
+      return
+    }
     await updateReply(
       parentId || '',
       { text: editedReply },
