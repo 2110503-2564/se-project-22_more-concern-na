@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { getInventoryCoupons } from '@/lib/inventoryService';
 import { TicketPercent } from 'lucide-react';
+import { signIn, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { InventoryCouponsData } from '../../interface';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { getInventoryCoupons } from '@/lib/inventoryService';
-import { InventoryCouponsData } from '../../interface';
 
 interface CouponDropDownProps {
   onSelect: (coupon: InventoryCouponsData) => void;
@@ -48,7 +48,7 @@ export default function CouponDropDown({ onSelect }: CouponDropDownProps) {
       <DropdownMenuTrigger>
         <TicketPercent />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="start">
+      <DropdownMenuContent className='w-56' align='start'>
         {loading ? (
           <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
         ) : (
@@ -58,10 +58,10 @@ export default function CouponDropDown({ onSelect }: CouponDropDownProps) {
                 {coupons.map((coupon) => (
                   <DropdownMenuItem
                     key={`coupon-${coupon.id}`}
-                    className="cursor-pointer"
+                    className='cursor-pointer'
                     onClick={() => onSelect(coupon)}
                   >
-                    {coupon.name} - {coupon.discount}฿
+                    {coupon.name} - {coupon.discount * 100}%
                   </DropdownMenuItem>
                 ))}
               </>
