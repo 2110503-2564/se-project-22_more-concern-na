@@ -1,4 +1,6 @@
+import axios from 'axios';
 import {
+  CreateRedeemableRedemptionResponse,
   RedeemableCouponsResponse,
   RedeemableGiftResponse,
   RedeemableGiftsResponse,
@@ -78,6 +80,7 @@ export const getGiftById = async (id: string): Promise<RedeemableGiftResponse> =
     console.error('Error fetching gift by ID:', error);
     throw error;
   }
+<<<<<<< HEAD
 };
 
 export const createRedeemInventory = async (token: string, id: string): Promise<any> => {
@@ -103,3 +106,55 @@ export const createRedeemInventory = async (token: string, id: string): Promise<
     throw error;
   }
 };
+=======
+}
+
+export async function getPriceToPoint(token?: string): Promise<number> {
+  const url = apiPath('/redeemables/price-to-point');
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch priceToPoint: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  if (!('priceToPoint' in data)) {
+    throw new Error('Response does not contain priceToPoint');
+  }
+
+  return data.priceToPoint;
+}
+
+export const updateRedeemables = async(id: string, token: string): Promise<CreateRedeemableRedemptionResponse> => {
+  try {
+    const response = await axios.put(apiPath(`/redeemables/redemption`), {id}, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+  
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error updating redeemable with id ${id}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+}
+>>>>>>> origin/fe-ui-feat/integrate-redemption
