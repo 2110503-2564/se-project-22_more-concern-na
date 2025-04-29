@@ -3,17 +3,10 @@ import { BadgeInfo } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { createRedeemInventory } from '@/lib/redeemableService'; 
 import { useSession } from 'next-auth/react';
+import AlertConfirmation from './AlertConfirmation';
+import { toast } from 'sonner';
 
 interface GiftCardProps {
   id: string;
@@ -39,27 +32,50 @@ export const GiftCard = ({
   const [showDialog, setShowDialog] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const token = (session as any)?.user?.token;
+  const userPoints = (session as any)?.user?.data?.point || 0;
+  
+  // Set type to 'view' if user is not logged in
+  const effectiveType = status === 'unauthenticated' ? 'view' : type;
 
   const handleClick = () => {
-    type === 'inventory'
+    effectiveType === 'inventory'
       ? router.push(`/profile/inventory/${id}`)
       : router.push(`/reward/redeemables/${id}`);
   };
 
-  const handleRedeem = async (e: React.MouseEvent) => {
+  const handleRedeemButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Check if user has enough points before showing dialog
+    if (userPoints < point) {
+      toast.error('Insufficient points to redeem this gift');
+      return;
+    }
+    
+    // Only show dialog if user has sufficient points
+    setShowDialog(true);
+  };
+
+  const handleRedeem = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     
     setIsRedeeming(true);
     setError(null);
     
     try {
       // Call API to redeem using the service
-      await createRedeemInventory(token, id);
+      const res = await createRedeemInventory(token, id);
+      if (res) {
+        toast.success('Redemption Successful');
+        router.push('/profile/inventory');
+      } else {
+        toast.error('Failed to redeem gift');
+      }
       
-      // Show success dialog
-      setShowDialog(true);
+      // Hide confirmation dialog
+      setShowDialog(false);
     } catch (error) {
       console.error('Error redeeming gift:', error);
       setError(error instanceof Error ? error.message : 'Failed to redeem gift');
@@ -128,12 +144,12 @@ export const GiftCard = ({
           {/* Gift name */}
           <h3 className='font-heading text-cardfont-cl text-3xl mb-2'>{name}</h3>
 
-          {/* Action button - only show when type is 'redeem' */}
-          {type === 'redeem' && (
+          {/* Action button - only show when type is 'redeem' and user is logged in */}
+          {effectiveType === 'redeem' && (
             <>
               <Button
                 className='w-full bg-bg-btn hover:bg-bg-btn-hover text-white py-2 rounded'
-                onClick={handleRedeem}
+                onClick={handleRedeemButtonClick}
                 disabled={isRedeeming}
                 data-testid='redeem-button'
               >
@@ -147,19 +163,13 @@ export const GiftCard = ({
         </div>
       </div>
 
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Redemption Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have successfully redeemed the {name}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>OK</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertConfirmation
+        onOpen={showDialog}
+        onOpenChange={setShowDialog}
+        type='redeem'
+        onConfirm={handleRedeem}
+        onCancel={() => setShowDialog(false)}
+      />
     </>
   );
 };

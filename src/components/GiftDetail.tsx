@@ -41,11 +41,25 @@ export default function GiftDetail({
   const [showDialog, setShowDialog] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const token = (session as any)?.user?.token;
+  const userPoints = (session as any)?.user?.data?.point || 0;
+  
+  // Set type to 'view' if user is not logged in
+  const effectiveType = status === 'unauthenticated' ? 'view' : type;
+
+  const handleRedeemButtonClick = () => {
+    // Check if user has enough points before showing dialog
+    if (userPoints < point) {
+      toast.error('Insufficient points to redeem this gift');
+      return;
+    }
+    
+    // Only show dialog if user has sufficient points
+    setShowDialog(true);
+  };
 
   const handleRedeem = async () => {
-    
     setIsRedeeming(true);
     setError(null);
     
@@ -110,7 +124,7 @@ export default function GiftDetail({
               data-testid='name'
             >
               {name}
-              {type === 'redeem' && remain !== undefined ? (
+              {effectiveType === 'redeem' && remain !== undefined ? (
                 <span
                   className='text-2xl text-gray-300 font-heading ml-4'
                   data-testid='remain'
@@ -127,12 +141,12 @@ export default function GiftDetail({
             </p>
 
             {/* Redeem Button positioned to the right */}
-            {type === 'redeem' && point > 0 ? (
+            {effectiveType === 'redeem' && point > 0 ? (
               <div className='flex flex-col items-end mt-10'>
                 <Button 
                   className='w-50 h-14 text-2xl mr-26 cursor-pointer' 
                   variant='golden'
-                  onClick={() => setShowDialog(true)}
+                  onClick={handleRedeemButtonClick}
                   disabled={isRedeeming}
                 >
                   {isRedeeming ? 'Redeeming...' : 'Redeem'}

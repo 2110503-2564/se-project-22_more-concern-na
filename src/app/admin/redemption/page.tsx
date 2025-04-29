@@ -15,14 +15,12 @@ export default function AdminRedemptionPage() {
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
   const [page, setPage] = useState(1);
-  const [rate, setRate] = useState<number | undefined>(undefined);
+  const [rate, setRate] = useState<number>(0);
   const [userData, setUserData] = useState<UsersPointsResponse | undefined>(
     undefined,
   );
 
   const fetchData = async () => {
-    setUserData(undefined);
-    setRate(undefined);
     const response = await getUserPoints(page, 5, token);
     const rateResponse = await getPriceToPoint(token);
     setRate(rateResponse);
@@ -91,7 +89,7 @@ export default function AdminRedemptionPage() {
             onChange={(e) => {
               const value = e.target.value;
               if (value === '') {
-                setRate(undefined);
+                setRate(0);
               } else {
                 setRate(parseInt(value));
               }

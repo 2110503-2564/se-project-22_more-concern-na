@@ -2,17 +2,11 @@
 import dayjs from 'dayjs';
 import { Button } from './ui/button';
 import { useState } from 'react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 import { createRedeemInventory } from '@/lib/redeemableService';  
 import { useSession } from 'next-auth/react';
+import AlertConfirmation from './AlertConfirmation';
+import { toast } from 'sonner';
 
 interface CouponCardProps {
   id: string;
@@ -34,25 +28,44 @@ export default function CouponCard({
   remain,
   type,
 }: CouponCardProps) {
+  const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const token = (session as any)?.user?.token;
+  const userPoints = (session as any)?.user?.data?.point || 0;
+  
+  // Set type to 'view' if user is not logged in
+  const effectiveType = status === 'unauthenticated' ? 'view' : type;
+
+  const handleRedeemButtonClick = () => {
+    // Check if user has enough points before showing dialog
+    if (userPoints < point) {
+      toast.error('Insufficient points to redeem this coupon');
+      return;
+    }
+    
+    // Only show dialog if user has sufficient points
+    setShowDialog(true);
+  };
 
   const handleRedeem = async () => {
-    console.log(token);
-    
-    
     setIsRedeeming(true);
     setError(null);
     
     try {
       // Call API to redeem using the service
-      await createRedeemInventory(token, id);
+      const res = await createRedeemInventory(token, id);
+      if (res) {
+        toast.success('Redemption Successful');
+        router.push('/profile/inventory');
+      } else {
+        toast.error('Failed to redeem coupon');
+      }
       
-      // Show success dialog
-      setShowDialog(true);
+      // Hide confirmation dialog
+      setShowDialog(false);
     } catch (error) {
       console.error('Error redeeming coupon:', error);
       setError(error instanceof Error ? error.message : 'Failed to redeem coupon');
@@ -94,12 +107,12 @@ export default function CouponCard({
               {remain} Remaining
             </div>
 
-            {type === 'redeem' && (
+            {effectiveType === 'redeem' && (
               <Button
                 variant='default'
                 className='bg-bg-btn text-white text-sm font-heading px-4 py-1 rounded hover:bg-blue-700'
                 data-testid='redeem-button'
-                onClick={handleRedeem}
+                onClick={handleRedeemButtonClick}
                 disabled={isRedeeming}
               >
                 {isRedeeming ? 'Redeeming...' : 'Redeem'}
@@ -112,19 +125,13 @@ export default function CouponCard({
         </div>
       </div>
 
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Redemption Successful!</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have successfully redeemed the {Math.round(discount * 100)}% discount coupon.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>OK</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertConfirmation
+        onOpen={showDialog}
+        onOpenChange={setShowDialog}
+        type='redeem'
+        onConfirm={handleRedeem}
+        onCancel={() => setShowDialog(false)}
+      />
     </>
   );
 }
