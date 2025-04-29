@@ -12,7 +12,7 @@ import {
 interface AlertConfirmationProps {
   onOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'delete' | 'edit' | 'create';
+  type: 'delete' | 'edit' | 'create' | 'redeem';
   onConfirm: () => void;
   onCancel?: () => void;
 }
@@ -44,6 +44,11 @@ export default function AlertConfirmation({
       titleText = 'Confirm Creation';
       descriptionText = 'Do you want to create this item?';
       confirmButtonText = 'Create';
+      break;
+    case 'redeem':
+      titleText = 'Confirm Redemption';
+      descriptionText = 'Are you sure you want to redeem this item using your points?';
+      confirmButtonText = 'Redeem Now';
       break;
     default:
       titleText = 'Confirm';

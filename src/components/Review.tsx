@@ -61,11 +61,19 @@ export default function Review({
   // --- reply form --- //
   const handleReplySubmit = async () => {
     setShowReplyCreateForm(false);
-    await addReply(
+    if(!replyContent) {
+      toast.error('Please fill text in the field');
+      setShowReplyCreateForm(true);
+      return;
+    }
+    const res = await addReply(
       review._id,
       { text: replyContent || '' },
       (session as any)?.user?.token,
     );
+    if (res.success) {
+      toast.success('Reply added successfully');
+    }
   };
 
   // --- editing --- //
@@ -76,11 +84,19 @@ export default function Review({
 
   const handleSaveEdit = async () => {
     setIsEditing(false);
-    await updateReview(
+    if (title?.trim() === '' || text?.trim() === '' || rating === 0) {
+      toast.error("Can not edit. Please fill in all fields");
+      setIsEditing(true);
+      return;
+    }
+    const res = await updateReview(
       review._id,
       { title, text, rating },
       (session as any)?.user?.token,
     );
+    if (res.success) {
+      toast.success('Review updated successfully');
+    }
   };
 
   const handleCancelEdit = () => {
@@ -94,12 +110,18 @@ export default function Review({
 
   const handleDelete = async () => {
     handleDeleteFromList && handleDeleteFromList(review._id);
-    await deleteReview(review._id, (session as any)?.user?.token);
+    const res = await deleteReview(review._id, (session as any)?.user?.token);
+    if (res.success) {
+      toast.success('Review deleted successfully');
+    }
   };
 
   const handleDeleteReply = async () => {
     setReplyContent(undefined);
-    await deleteReply(review._id, (session as any)?.user?.token);
+    const res = await deleteReply(review._id, (session as any)?.user?.token);
+    if(res.success) {
+      toast.success('Reply deleted successfully');
+    }
   };
 
   const handleReport = async (reportReason: string) => {

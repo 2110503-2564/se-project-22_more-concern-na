@@ -29,11 +29,13 @@ export default function UserPointEntry({
       <input
         type="number"
         className="bg-white text-black font-detail rounded-2xl px-3 py-2 w-36 outline-none border border-bg-border"
+        data-testid="usrPoint-input"
         value={localPoint}
         onChange={(e) => setLocalPoint(e.target.valueAsNumber)}
       />
       <Button
         onClick={() => handleSave(localPoint, id)}
+        data-testid="save-usrPoint-btn"
         className="border border-gold-gd1 text-gold-gd1 hover:bg-gold-gd1 hover:text-black transition w-fit px-7 py-4"
       >
         Save
