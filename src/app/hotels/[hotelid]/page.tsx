@@ -33,7 +33,7 @@ import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
   HotelAvailabilityResponse,
-  InventoryCouponsData
+  InventoryCouponsData,
 } from '../../../../interface';
 
 export default function HotelDetail({
@@ -51,13 +51,14 @@ export default function HotelDetail({
   const [loading, setLoading] = useState(true);
   const [availabilityData, setAvailabilityData] =
     useState<HotelAvailabilityResponse | null>(null);
-
+  const [totalPrice, setTotalPrice] = useState(0);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAvailabilityChecking, setIsAvailabilityChecking] = useState(false);
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
   const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
-  const [selectedCoupon, setSelectedCoupon] = useState<InventoryCouponsData | null>(null);
+  const [selectedCoupon, setSelectedCoupon] =
+    useState<InventoryCouponsData | null>(null);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -188,6 +189,7 @@ export default function HotelDetail({
         startDate: checkInDate.format('YYYY-MM-DD'),
         endDate: checkOutDate.format('YYYY-MM-DD'),
         rooms: rooms,
+        coupon: selectedCoupon?.id,
       };
 
       const response = await createHotelBooking(hotel._id, bookingData, token);
@@ -424,11 +426,14 @@ export default function HotelDetail({
   };
 
   const calculateTotalPrice = () => {
+    let priceTotal = 0;
     const base = selectedRooms.reduce((total, item) => {
-      return total + item.room.price * item.count * nights;
+      priceTotal = total + item.room.price * item.count * nights;
+      return priceTotal;
     }, 0);
+    if (priceTotal !== totalPrice) setTotalPrice(priceTotal);
     const discount = selectedCoupon?.discount ?? 0;
-    return Math.max(base - discount, 0);
+    return Math.max(base - base * discount, 0);
   };
 
   const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
@@ -681,17 +686,18 @@ export default function HotelDetail({
                       </div>
                     ))}
 
-                    <div className="mb-4">
-                      <div className="flex justify-between items-center">
+                    <div className='mb-4'>
+                      <div className='flex justify-between items-center'>
                         <span>Coupon</span>
                         <CouponDropDown onSelect={setSelectedCoupon} />
                       </div>
                       {selectedCoupon ? (
-                        <div className="text-xs text-gold-gd2 mt-1">
-                          Selected Coupon: {selectedCoupon.name} (-{selectedCoupon.discount}฿)
+                        <div className='text-xs text-gold-gd2 mt-1'>
+                          Selected Coupon: {selectedCoupon.name} (-
+                          {selectedCoupon.discount * totalPrice}$)
                         </div>
                       ) : (
-                        <div className="text-xs text-bg-placeholder mt-1">
+                        <div className='text-xs text-bg-placeholder mt-1'>
                           No coupon selected
                         </div>
                       )}
@@ -772,8 +778,10 @@ export default function HotelDetail({
                     </div>
                     <div className='flex justify-between'>
                       <span>Coupon Discount</span>
-                      <span className="font-medium text-red-400">
-                        {selectedCoupon ? `- ${selectedCoupon.discount.toLocaleString()}฿` : '0฿'}
+                      <span className='font-medium text-red-400'>
+                        {selectedCoupon
+                          ? `- ${selectedCoupon.discount.toLocaleString()}$`
+                          : '0$'}
                       </span>
                     </div>
                   </div>
