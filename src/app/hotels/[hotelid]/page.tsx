@@ -158,12 +158,10 @@ export default function HotelDetail({
 
   const handleConfirmBooking = async (e: React.MouseEvent) => {
     e.preventDefault();
-
-    // Set booking in progress to disable the button
+  
     setIsBookingInProgress(true);
-
     setIsConfirmOpen(false);
-
+  
     if (!hotel?._id || !checkInDate || !checkOutDate || !token) {
       toast.error('Booking Failed', {
         description: 'Missing required booking information or not logged in',
@@ -176,27 +174,28 @@ export default function HotelDetail({
       setIsBookingInProgress(false);
       return;
     }
-
+  
     try {
       const rooms = selectedRooms.map((item) => ({
         roomType: item.type,
         count: item.count,
       }));
-
+  
       const bookingData: Omit<BookingsRequest, 'hotel'> = {
         price: calculateTotalPrice(),
         startDate: checkInDate.format('YYYY-MM-DD'),
         endDate: checkOutDate.format('YYYY-MM-DD'),
         rooms: rooms,
+        ...(selectedCoupon ? { couponId: selectedCoupon.id } : {}),
       };
-
+  
       const response = await createHotelBooking(hotel._id, bookingData, token);
-
+  
       if (response.success) {
         toast.success('Booking Confirmed!', {
           description: `Your stay at ${hotel.name} has been successfully booked.`,
           duration: 5000,
-          icon: <Check className='h-5 w-5' />,
+          icon: <Check className="h-5 w-5" />,
           action: {
             label: 'View Booking',
             onClick: () => router.push(`/bookings`),
@@ -208,12 +207,12 @@ export default function HotelDetail({
           },
         });
 
-        // Reset form data after successful booking
         setTimeout(() => {
           setSelectedRooms([]);
           setCheckInDate(null);
           setCheckOutDate(null);
           setIsAvailabilityConfirmed(false);
+          setSelectedCoupon(null);
           setIsBookingInProgress(false);
         }, 1000);
       } else {
@@ -239,7 +238,7 @@ export default function HotelDetail({
       });
       setIsBookingInProgress(false);
     }
-  };
+  };  
 
   const handleCheckAvailable = async () => {
     if (!checkInDate || !checkOutDate || !hotel?._id) return;
