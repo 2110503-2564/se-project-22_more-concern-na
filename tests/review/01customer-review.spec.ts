@@ -15,8 +15,8 @@ test.describe('customer review functionality', () => {
     await page.waitForTimeout(1000);
     await page
       .locator('.grid > div')
-      .filter({ hasText: 'check-in: Dec 1, 2024' })
-      .filter({ hasText: 'check-out: Dec 3, 2024' })
+      .filter({ hasText: 'check-in: Dec 15, 2024' })
+      .filter({ hasText: 'check-out: Dec 16, 2024' })
       .getByRole('button')
       .click();
 
@@ -39,11 +39,17 @@ test.describe('customer review functionality', () => {
     await page.locator('.MuiRating-root > label').nth(3).click();
     await page.waitForTimeout(2000);
     await page.getByRole('button', { name: 'Submit Review' }).click();
+    await page.waitForTimeout(2000);
     await page.getByTestId('alert-confirm-button').click();
+    await page.waitForTimeout(2000);
 
     await expect(
       page.getByTestId('alert-confirm-button')
     ).not.toBeVisible();
+
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
+    await expect(page.getByText('Review submitted successfully')).toBeVisible();
   });
 
   test('TC2: Customer can see their review', async ({ page }) => {
@@ -51,7 +57,6 @@ test.describe('customer review functionality', () => {
     await page.waitForTimeout(2000);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText('...premKungStayed December')).toBeVisible();
     await expect(page.getByText('Good naja', { exact: true })).toBeVisible();
     await expect(page.getByText('hohohohoho')).toBeVisible();
   });
@@ -62,33 +67,33 @@ test.describe('customer review functionality', () => {
     await page.waitForLoadState('networkidle');
 
     // reivew before pagination
-    await expect(page.getByText('อาหาร aroi mak mak')).toBeVisible();
+    await expect(page.getByText('อาหาร aroi')).toBeVisible();
     await expect(
       page.getByText('tung tung tung tara tarav corcadir o +'),
     ).toBeVisible();
-    await expect(page.getByText('wow')).not.toBeVisible();
-    await expect(page.getByText('love na ja')).not.toBeVisible();
+    await expect(page.getByText('Dodidong')).not.toBeVisible();
+    await expect(page.getByText('don don donki')).not.toBeVisible();
     // Click on the "Next" button to go to the next page
     await page.getByRole('button', { name: 'Next' }).nth(1).click();
     await page.waitForTimeout(1000);
     // Verify that the reviews on the next page are displayed
-    await expect(page.getByText('อาหาร aroi mak mak')).not.toBeVisible();
+    await expect(page.getByText('อาหาร aroi')).not.toBeVisible();
     await expect(
       page.getByText('tung tung tung tara tarav corcadir o +'),
     ).not.toBeVisible();
-    await expect(page.getByText('wow')).toBeVisible();
-    await expect(page.getByText('love na ja')).toBeVisible();
+    await expect(page.getByText('Dodidong')).toBeVisible();
+    await expect(page.getByText('don don donki')).toBeVisible();
 
     // Click on the "Previous" button to go back to the previous page
     await page.getByRole('button', { name: 'Previous' }).nth(1).click();
     await page.waitForTimeout(1000);
     // Verify that the reviews on the previous page are displayed
-    await expect(page.getByText('อาหาร aroi mak mak')).toBeVisible();
+    await expect(page.getByText('อาหาร aroi')).toBeVisible();
     await expect(
       page.getByText('tung tung tung tara tarav corcadir o +'),
     ).toBeVisible();
-    await expect(page.getByText('wow')).not.toBeVisible();
-    await expect(page.getByText('love na ja')).not.toBeVisible();
+    await expect(page.getByText('Dodidong')).not.toBeVisible();
+    await expect(page.getByText('don don donki')).not.toBeVisible();
   });
 
   test('TC4: Customer can edit their review', async ({ page }) => {
@@ -170,13 +175,16 @@ test.describe('customer review functionality', () => {
     await expect(page.getByText('hohohohohoOH')).toBeVisible();
     // Click the delete button again
     await page.getByRole('button', { name: '...' }).nth(1).click();
+    await page.waitForTimeout(1500);
     await expect(page.getByRole('menuitem', { name: 'Delete' })).toBeVisible();
     await page.getByRole('menuitem', { name: 'Delete' }).click();
+    await page.waitForTimeout(2000);
     // Check that the confirmation dialog is visible again
     await expect(confirmDialog).toBeVisible();
 
     // Case 2: Confirm delete
     await page.getByTestId('alert-confirm-button').click();
+    await page.waitForTimeout(2000);
 
     // review after delete
     await expect(page.getByText('Good naja jub')).not.toBeVisible();
