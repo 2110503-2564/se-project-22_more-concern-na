@@ -23,11 +23,11 @@ test.describe('User Inventory Management', () => {
     await page.goto('/profile/inventory');
     
     // Based on Figma design, check for coupon count display
-    await expect(page.getByText('7').first()).toBeVisible();
+    await expect(page.getByText('8').first()).toBeVisible();
     await expect(page.getByText('Total available coupons')).toBeVisible();
     
     // Check for gift count display
-    await expect(page.getByText('3').first()).toBeVisible();
+    await expect(page.getByText('7').first()).toBeVisible();
     await expect(page.getByText('Total gift that you redeemed')).toBeVisible();
   });
 

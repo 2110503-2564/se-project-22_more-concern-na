@@ -33,8 +33,7 @@ export default function inventory() {
   }, []);
 
   const handleClick = () => {
-    //router.push('/reward/redeemables');
-    router.push('/');
+    router.push('/reward/redeemables');
   };
 
   return (
