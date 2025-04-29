@@ -12,6 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { createRedeemInventory } from '@/lib/redeemableService'; 
+import { useSession } from 'next-auth/react';
 
 interface GiftCardProps {
   id: string;
@@ -21,6 +23,7 @@ interface GiftCardProps {
   picture?: string;
   remain: number;
   type: 'view' | 'redeem' | 'inventory';
+  token?: string;
 }
 
 export const GiftCard = ({
@@ -34,6 +37,10 @@ export const GiftCard = ({
 }: GiftCardProps) => {
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const token = (session as any)?.user?.token;
 
   const handleClick = () => {
     type === 'inventory'
@@ -41,11 +48,24 @@ export const GiftCard = ({
       : router.push(`/reward/redeemables/${id}`);
   };
 
-  const handleRedeem = (e: React.MouseEvent) => {
+  const handleRedeem = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Handle redeem logic here
-    // Then show the dialog
-    setShowDialog(true);
+    
+    setIsRedeeming(true);
+    setError(null);
+    
+    try {
+      // Call API to redeem using the service
+      await createRedeemInventory(token, id);
+      
+      // Show success dialog
+      setShowDialog(true);
+    } catch (error) {
+      console.error('Error redeeming gift:', error);
+      setError(error instanceof Error ? error.message : 'Failed to redeem gift');
+    } finally {
+      setIsRedeeming(false);
+    }
   };
 
   return (
@@ -110,13 +130,19 @@ export const GiftCard = ({
 
           {/* Action button - only show when type is 'redeem' */}
           {type === 'redeem' && (
-            <Button
-              className='w-full bg-bg-btn hover:bg-bg-btn-hover text-white py-2 rounded'
-              onClick={handleRedeem}
-              data-testid='redeem-button'
-            >
-              Redeem
-            </Button>
+            <>
+              <Button
+                className='w-full bg-bg-btn hover:bg-bg-btn-hover text-white py-2 rounded'
+                onClick={handleRedeem}
+                disabled={isRedeeming}
+                data-testid='redeem-button'
+              >
+                {isRedeeming ? 'Redeeming...' : 'Redeem'}
+              </Button>
+              {error && (
+                <div className="text-red-600 text-sm mt-2">{error}</div>
+              )}
+            </>
           )}
         </div>
       </div>
