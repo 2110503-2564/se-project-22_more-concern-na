@@ -60,6 +60,14 @@ export default function AdminRedemptionPage() {
     }
   };
 
+  if (isLoading) {
+      return (
+        <div className='flex items-center justify-center h-screen'>
+          <Loader />
+        </div>
+      );
+  };
+
   return (
     <div className="min-h-screen px-10 py-8">
       <a
