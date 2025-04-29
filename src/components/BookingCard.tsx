@@ -100,6 +100,7 @@ export const BookingCard = ({
               checked={checkedIn}
               onChange={() => onCheckIn && onCheckIn(id)}
               className='mr-2 h-4 w-4'
+              data-testid='checkin-checkbox'
             />
             <label htmlFor={`checkin-${id}`} className='text-sm text-white'>
               check-in

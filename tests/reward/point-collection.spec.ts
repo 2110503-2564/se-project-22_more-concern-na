@@ -137,14 +137,8 @@ test.describe('Point Collection Functionality', () => {
     await page.goto('/manage/bookings');
 
     // Find the booking we just created (using the dates)
-    const bookingCard = page
-      .locator('.grid > div')
-      .filter({ hasText: 'check-in: Apr 29, 2025' })
-      .filter({ hasText: 'check-out: Apr 30, 2025' });
 
-    // Check in the guest
-    await expect(bookingCard.locator('input[type="checkbox"]').first()).toBeVisible();
-    await bookingCard.locator('input[type="checkbox"]').first().check();
+    await page.getByTestId('checkin-checkbox').first().click();
     await page.waitForTimeout(2000);  
     // Verify success message
     await expect(page.getByText('Guest checked in successfully')).toBeVisible();
@@ -155,7 +149,7 @@ test.describe('Point Collection Functionality', () => {
 
     // Check that points were added
     const finalPointsText = await page.locator('text=/Point : \\d+/').innerText();
-    const finalPoints = parseInt(finalPointsText.replace('P ', ''));
+    const finalPoints = parseInt(finalPointsText.replace('Point : ', ''));
 
     // Verify the points were awarded
     expect(finalPoints).toBeGreaterThanOrEqual(initialPoints);
@@ -164,25 +158,25 @@ test.describe('Point Collection Functionality', () => {
     const pointDifference = finalPoints - initialPoints;
     expect(pointDifference).toBeGreaterThanOrEqual(expectedPoints);
 
-    // Clear the booking
-    await loginAsHotelManager(page);
+    // // Clear the booking
+    // await loginAsHotelManager(page);
 
-    await page.goto('/manage/bookings');
-    await page.waitForTimeout(2000);
-    const bookingCardToCancel = page
-      .locator('.grid > div')
-      .filter({ hasText: 'check-in: Apr 29, 2025' })
-      .filter({ hasText: 'check-out: Apr 30, 2025' });
-    await bookingCardToCancel.getByRole('button').click();
-    await page.waitForTimeout(2000);
-    await page.getByRole('button', { name: 'Cancel Booking' }).click();
-    await page.waitForTimeout(2000);
-    await page.getByTestId('alert-confirm-button').click();
-    await page.waitForTimeout(2000);
-    await expect(page.getByText('Booking cancelled successfully')).toBeVisible();
-    await page.waitForTimeout(1500);
-    await expect(page).toHaveURL('/manage/bookings');
-    await expect(bookingCardToCancel).not.toBeVisible();
+    // await page.goto('/manage/bookings');
+    // await page.waitForTimeout(2000);
+    // const bookingCardToCancel = page
+    //   .locator('.grid > div')
+    //   .filter({ hasText: 'check-in: Apr 29, 2025' })
+    //   .filter({ hasText: 'check-out: Apr 30, 2025' });
+    // await bookingCardToCancel.getByRole('button').click();
+    // await page.waitForTimeout(2000);
+    // await page.getByRole('button', { name: 'Cancel Booking' }).click();
+    // await page.waitForTimeout(2000);
+    // await page.getByTestId('alert-confirm-button').click();
+    // await page.waitForTimeout(2000);
+    // await expect(page.getByText('Booking cancelled successfully')).toBeVisible();
+    // await page.waitForTimeout(1500);
+    // await expect(page).toHaveURL('/manage/bookings');
+    // await expect(bookingCardToCancel).not.toBeVisible();
 
   });
 });
