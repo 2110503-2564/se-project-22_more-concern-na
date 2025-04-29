@@ -50,9 +50,9 @@ export default function BookingDetailPage({
     checkOutDate.setHours(0, 0, 0, 0);
 
     if (booking.status === 'reserved') {
-      return 'Active';
-    } else if ( booking.status === 'checkedIn') {
       return 'Upcoming';
+    } else if ( booking.status === 'checkedIn') {
+      return 'Active';
     } else if ( booking.status === 'completed') {
       return 'Completed';
     } else {

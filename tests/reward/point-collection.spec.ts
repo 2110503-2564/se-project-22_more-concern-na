@@ -168,13 +168,17 @@ test.describe('Point Collection Functionality', () => {
     await loginAsHotelManager(page);
 
     await page.goto('/manage/bookings');
+    await page.waitForTimeout(2000);
     const bookingCardToCancel = page
       .locator('.grid > div')
       .filter({ hasText: 'check-in: Apr 29, 2025' })
       .filter({ hasText: 'check-out: Apr 30, 2025' });
     await bookingCardToCancel.getByRole('button').click();
+    await page.waitForTimeout(2000);
     await page.getByRole('button', { name: 'Cancel Booking' }).click();
+    await page.waitForTimeout(2000);
     await page.getByTestId('alert-confirm-button').click();
+    await page.waitForTimeout(2000);
     await expect(page.getByText('Booking cancelled successfully')).toBeVisible();
     await page.waitForTimeout(1500);
     await expect(page).toHaveURL('/manage/bookings');

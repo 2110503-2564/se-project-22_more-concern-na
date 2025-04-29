@@ -28,7 +28,7 @@ import ReviewList from '@/components/ReviewList';
 import { createHotelBooking } from '@/lib/bookingService';
 import { checkAvailability, getHotel } from '@/lib/hotelService';
 import { getPriceToPoint } from '@/lib/redeemableService';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
@@ -86,10 +86,6 @@ export default function HotelDetail({
 
   useEffect(() => {
     const fetchPriceToPoint = async () => {
-      if (!token) {
-        signIn();
-        return;
-      }
       try {
         const price = await getPriceToPoint(token);
         console.log('Price to Point:', price);

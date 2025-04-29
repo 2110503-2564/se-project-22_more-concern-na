@@ -170,6 +170,7 @@ test.describe('TC1: Customer Booking Functionality', () => {
 
     // Click to update booking
     await page.getByRole('button', { name: 'Edit Booking' }).click();
+    await page.waitForTimeout(1500);
 
     // Select check-in date
     await page.locator('.MuiInputAdornment-root').first().click();

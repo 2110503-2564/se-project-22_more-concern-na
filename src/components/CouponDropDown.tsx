@@ -24,10 +24,6 @@ export default function CouponDropDown({ onSelect }: CouponDropDownProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) {
-      signIn();
-      return;
-    }
 
     async function fetchCoupons() {
       try {

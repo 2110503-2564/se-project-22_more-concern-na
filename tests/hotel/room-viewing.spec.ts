@@ -7,6 +7,7 @@ test.describe('Guest Room Viewing Functionality', () => {
   test('TC1: Guest can view room availability status', async ({ page }) => {
     // Navigate to a specific hotel page
     await page.goto(`/hotels/${hotelId}`);
+    await page.waitForTimeout(1500);
 
     await expect(
       page.getByRole('button', { name: 'Choose date', exact: true }).nth(1),
@@ -15,16 +16,19 @@ test.describe('Guest Room Viewing Functionality', () => {
     // select check-in date
     await page.locator('.MuiInputAdornment-root').first().click();
     await page.waitForTimeout(2000);
-    await page.getByRole('gridcell', { name: '25' }).click();
+    await page.getByRole('button', { name: 'Next month' }).click();
+    await page.waitForTimeout(1500);
+    await page.getByRole('gridcell', { name: '13' }).click();
     await page.waitForTimeout(2000);
 
     // select check-out date
     await page.locator('.MuiInputAdornment-root').nth(1).click();
 
     await page.waitForTimeout(2000);
-    await expect(page.getByRole('gridcell', { name: '29' })).toBeDisabled();
-
-    await page.getByRole('gridcell', { name: '28' }).click();
+    await expect(page.getByRole('gridcell', { name: '18' })).toBeDisabled();
+    await page.getByRole('button', { name: 'Next month' }).click();
+    await page.waitForTimeout(1500);
+    await page.getByRole('gridcell', { name: '14' }).click();
     await page.waitForTimeout(2000);
 
     // Click "Check Available" button
@@ -41,6 +45,7 @@ test.describe('Guest Room Viewing Functionality', () => {
       .filter({ hasText: /^5 rooms availableSelect Room$/ })
       .getByRole('button')
       .click();
+    await page.waitForTimeout(1500);
     await page.getByRole('button', { name: 'Login to Book' }).click();
 
     await expect(
