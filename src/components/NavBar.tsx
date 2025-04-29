@@ -1,6 +1,6 @@
 'use client';
 
-import { Hotel, LogOut, Settings, Wrench } from 'lucide-react';
+import { Hotel, LogOut, Settings, Ticket, Wrench } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -57,7 +57,7 @@ export default function NavBar() {
   let hotelid: string | null;
   hotelid = session ? (session.user as any)?.data.hotel : null;
   return (
-    <nav className='h-16 w-full flex items-center px-4'>
+    <nav className='h-16 w-full flex items-center px-4 gap-2'>
       {role === 'admin' ? (
         <DashboardButton link='/admin'>
           <Wrench />
@@ -78,8 +78,18 @@ export default function NavBar() {
         className='h-full flex items-center justify-center grow'
         onClick={() => router.push('/')}
       >
-        <Image src={'/mcn-text.png'} alt='MCN Logo' width={150} height={0} className='cursor-pointer' />
+        <Image
+          src={'/mcn-text.png'}
+          alt='MCN Logo'
+          width={150}
+          height={0}
+          className='cursor-pointer'
+        />
       </div>
+      <DashboardButton link='/reward'>
+        <Ticket />
+        <span>Rewards</span>
+      </DashboardButton>
       {isLoggedIn ? (
         <UserBar />
       ) : (
