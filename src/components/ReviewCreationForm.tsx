@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
+import { toast } from 'sonner';
 
 export default function ReviewCreationForm({
   bookingId,
@@ -33,14 +34,17 @@ export default function ReviewCreationForm({
 
   const handleSubmit = async () => {
     onClose();
+    if(!reviewData.title || !reviewData.text || reviewData.rating === 0) {
+      setError('Please fill in all fields');
+      toast.error('Please fill in all fields');
+      return;
+    }
     const response = await addReview(
       bookingId,
       reviewData,
       (session as any)?.user?.token,
     );
-    if (!response) {
-      setError('Failed to submit review');
-    }
+    if(response) toast.success('Review submitted successfully');
   };
 
   return (
@@ -123,7 +127,7 @@ export default function ReviewCreationForm({
             Submit Review
           </Button>
 
-          {error && <p className='text-red-600 text-center mt-2'>{error}</p>}
+          {/* {error && <p className='text-red-600 text-center mt-2'>{error}</p>} */}
         </div>
 
         <AlertConfirmation
