@@ -57,7 +57,7 @@ export default function CouponDropDown({ onSelect }: CouponDropDownProps) {
               <>
                 {coupons.map((coupon) => (
                   <DropdownMenuItem
-                    key={`coupon-${coupon._id}`}
+                    key={`coupon-${coupon.id}`}
                     className="cursor-pointer"
                     onClick={() => onSelect(coupon)}
                   >
