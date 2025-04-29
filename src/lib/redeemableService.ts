@@ -80,7 +80,6 @@ export const getGiftById = async (id: string): Promise<RedeemableGiftResponse> =
     console.error('Error fetching gift by ID:', error);
     throw error;
   }
-<<<<<<< HEAD
 };
 
 export const createRedeemInventory = async (token: string, id: string): Promise<any> => {
@@ -106,8 +105,7 @@ export const createRedeemInventory = async (token: string, id: string): Promise<
     throw error;
   }
 };
-=======
-}
+
 
 export async function getPriceToPoint(token?: string): Promise<number> {
   const url = apiPath('/redeemables/price-to-point');
@@ -157,4 +155,3 @@ export const updateRedeemables = async(id: string, token: string): Promise<Creat
     throw error;
   }
 }
->>>>>>> origin/fe-ui-feat/integrate-redemption
