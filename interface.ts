@@ -392,7 +392,7 @@ export interface UsersPointsQuery {
 }
 
 export interface UsersPointsData {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   point: number;

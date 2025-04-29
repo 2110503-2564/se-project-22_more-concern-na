@@ -18,15 +18,14 @@ test.describe('Admin Reward Management', () => {
 
     // Verify we're now on admin dashboard
     await expect(page).toHaveURL('/admin');
+    await page.goto('/admin/redemption');
 
     // Verify redemption management content as shown in Figma
     await expect(
-      page.getByRole('heading', { name: 'Price To Point Rate' }),
-    ).toBeVisible();
-    await expect(page.getByText('Booking Price per Point')).toBeVisible();
+      page.getByTestId('price-to-point-rate')).toBeVisible();
+    await expect(page.getByTestId('booking-price-per-point')).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Manage Redeem Points' }),
-    ).toBeVisible();
+      page.getByTestId('manage-redeem-points')).toBeVisible();
   });
 
   test('TC2: Admin can modify point rate and it affects user point earning', async ({
@@ -230,11 +229,11 @@ test.describe('Admin Reward Management', () => {
     await page.goto('/admin/redemption');
 
     // Verify admin can see user list
-    await expect(page.getByText('premKung')).toBeVisible();
-    await expect(page.getByText('palm')).toBeVisible();
+    await expect(page.getByText('John Doe')).toBeVisible();
+    await expect(page.getByText('Jane Smith')).toBeVisible();
 
     // Verify the point adjustment input is visible
-    const pointInput = page.getByPlaceholder('Edit Points').first();
+    const pointInput = page.getByTestId('usrPoint-input').first();
     await expect(pointInput).toBeVisible();
 
     // Adjust points (add)
@@ -252,10 +251,10 @@ test.describe('Admin Reward Management', () => {
     await page.goto('/admin/redemption');
 
     // Check for pagination controls
-    await expect(page.getByText('Page')).toBeVisible();
+    await expect(page.getByText('Page 1')).toBeVisible();
 
     // Click next button to go to next page (if it's not disabled)
-    const nextButton = page.getByRole('button', { name: 'Next' });
+    const nextButton = page.getByTestId('next-page-btn').first();
     if (await nextButton.isEnabled()) {
       await nextButton.click();
       await page.waitForTimeout(500);
@@ -264,7 +263,7 @@ test.describe('Admin Reward Management', () => {
       await expect(page.getByText('Page 2')).toBeVisible();
 
       // Go back to previous page
-      await page.getByRole('button', { name: 'Prev' }).click();
+      await page.getByTestId('prev-page-btn').click();
       await page.waitForTimeout(500);
 
       // Verify we're back on page 1
@@ -289,7 +288,7 @@ test.describe('Admin Reward Management', () => {
     ).toBeVisible();
 
     // Fill out the form for a coupon based on CouponCardProps interface
-    await page.getByLabel('Name').fill('Special Discount');
+    await page.getByLabel('Name').fill('Special Discount PW');
     await page.getByLabel('Point').fill('500');
     await page.getByLabel('Discount').fill('15');
     await page.getByLabel('Expire').fill('2025-12-31');
@@ -297,13 +296,20 @@ test.describe('Admin Reward Management', () => {
 
     // Submit the form using the AlertDialogAction
     await page.getByRole('button', { name: 'Create Coupon' }).click();
+    
+    // confirmation
+    await page.getByTestId('alert-confirm-button').click();
 
     // Verify success message
     await expect(page.getByText('Coupon created successfully')).toBeVisible();
 
     // Verify new coupon appears in the list
-    await expect(page.getByText('Special Discount')).toBeVisible();
-    await expect(page.getByText('15%')).toBeVisible();
+
+    // navigate to second page
+    await page.getByTestId('next-page-btn').first().click();
+
+    await expect(page.getByText('Special Discount').first()).toBeVisible();
+    await expect(page.getByText('15%').first()).toBeVisible();
   });
 
   test('TC6: Admin can add a new gift', async ({ page }) => {
@@ -331,18 +337,21 @@ test.describe('Admin Reward Management', () => {
     await page
       .getByLabel('Description')
       .fill('Ut tempor accusam dolore sanctus diam consetetur ea accusam');
+    await page.getByLabel('Picture URL (optional)').fill('https://example.com/gift-image.jpg');
     await page.getByLabel('Point Cost').fill('1000');
     await page.getByLabel('Available Count').fill('25');
-    await page.getByLabel('Type').selectOption('gift');
-
-    // Upload image if there's an upload field
-    // This would depend on your implementation
 
     // Submit the form
     await page.getByRole('button', { name: 'Create Gift' }).click();
+    
+    // Confirm in the dialog
+    await page.getByTestId('alert-confirm-button').click();
 
     // Verify success message
     await expect(page.getByText('Gift created successfully')).toBeVisible();
+
+    // go to second page
+    await page.getByTestId('next-page-btn').nth(1).click();
 
     // Verify new gift appears in the list
     await expect(page.getByText(giftName)).toBeVisible();
