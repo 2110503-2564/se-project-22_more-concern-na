@@ -146,6 +146,34 @@ export async function getPriceToPoint(token?: string): Promise<number> {
   return data.priceToPoint;
 }
 
+export const updatePriceToPoint = async (
+  point: number,
+  token: string
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.put(
+      apiPath('/redeemables/price-to-point'),
+      { priceToPoint: point },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    
+    return response.data;
+  } catch (error: any) {
+    console.error('Error updating price to point:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`
+      );
+    }
+    throw error;
+  }
+};
+
 export const updateRedeemables = async(id: string, token: string): Promise<CreateRedeemableRedemptionResponse> => {
   try {
     const response = await axios.post(

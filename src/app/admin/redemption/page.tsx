@@ -4,6 +4,7 @@ import PageNavigator from '@/components/PageNavigator';
 import { Button } from '@/components/ui/button';
 import UserPointEntry from '@/components/UserPointEntry';
 import { getUserPoints, updateUserPoints } from '@/lib/pointService';
+import { getPriceToPoint, updatePriceToPoint } from '@/lib/redeemableService';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -14,13 +15,17 @@ export default function AdminRedemptionPage() {
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
   const [page, setPage] = useState(1);
+  const [rate, setRate] = useState<number | undefined>(undefined);
   const [userData, setUserData] = useState<UsersPointsResponse | undefined>(
     undefined,
   );
 
   const fetchData = async () => {
     setUserData(undefined);
+    setRate(undefined);
     const response = await getUserPoints(page, 5, token);
+    const rateResponse = await getPriceToPoint(token);
+    setRate(rateResponse);
     setUserData(response);
   };
 
@@ -44,6 +49,16 @@ export default function AdminRedemptionPage() {
     if (action === 'prev' && userData?.pagination.prev)
       return () => setPage((prev) => prev - 1);
     return undefined;
+  };
+
+  const handleChangeRate = async () => {
+    const res = await updatePriceToPoint(rate || 10, token);
+    if (res.success) {
+      toast.success('Rate updated successfully');
+      fetchData();
+    } else {
+      toast.error('Failed to update rate');
+    }
   };
 
   return (
@@ -71,8 +86,22 @@ export default function AdminRedemptionPage() {
           <input
             className='bg-bg-textfill rounded-md placeholder:text-bg-placeholder p-2 text-white'
             placeholder='Enter rate'
+            type='number'
+            value={rate}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '') {
+                setRate(undefined);
+              } else {
+                setRate(parseInt(value));
+              }
+            }}
           ></input>
-          <Button variant='golden' data-testid='save-rate-btn'>
+          <Button
+            variant='golden'
+            data-testid='save-rate-btn'
+            onClick={handleChangeRate}
+          >
             Save
           </Button>
         </div>
