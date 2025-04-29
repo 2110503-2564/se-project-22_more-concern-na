@@ -8,6 +8,22 @@ import {
 } from '../../interface';
 import { apiPath } from './shared';
 
+export interface GiftData {
+  name: string;
+  description: string;
+  point: number;
+  remain: number;
+  picture?: string;
+}
+
+export interface CouponData {
+  name: string;
+  point: number;
+  discount: number;
+  expire: string;
+  remain: number;
+}
+
 export const getAllCoupons = async (
   page: number,
   pageSize: number,
@@ -175,6 +191,46 @@ export const addCoupon = async (
     return response.data;
   } catch (error: any) {
     console.error('Error adding coupon:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export const addGift = async (
+  {
+    name,
+    description,
+    point,
+    remain,
+    picture,
+  }: GiftData,
+  token: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.post(
+      apiPath('/redeemables/creation'),
+      {
+        type: 'gift',
+        name,
+        description,
+        point,
+        remain,
+        picture,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error adding gift:', error);
     if (error.response && error.response.data) {
       throw new Error(
         error.response.data.msg || `Error: ${error.response.status}`,

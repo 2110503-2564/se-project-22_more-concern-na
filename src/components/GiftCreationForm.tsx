@@ -4,19 +4,19 @@ import { useState } from 'react';
 import AlertConfirmation from './AlertConfirmation';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { addCoupon } from '@/lib/redeemableService';
+import { addGift } from '@/lib/redeemableService';
 
-export default function CouponCreationForm({
+export default function GiftCreationForm({
   onClose,
 }: {
   onClose: () => void;
 }) {
-  const [couponData, setCouponData] = useState({
+  const [giftData, setGiftData] = useState({
     name: '',
+    description: '',
     point: 0,
-    discount: 1,
-    expire: '',
     remain: 1,
+    picture: '',
   });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,19 +25,19 @@ export default function CouponCreationForm({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setCouponData({
-      ...couponData,
+    setGiftData({
+      ...giftData,
       [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async () => {
     onClose();
-    const response = await addCoupon(couponData, (session as any)?.user?.token);
+    const response = await addGift(giftData, (session as any)?.user?.token);
     if (response.success) {
-      toast.success('Coupon created successfully');
+      toast.success('Gift created successfully');
     } else {
-      toast.error('Failed to create coupon');
+      toast.error('Failed to create gift');
     }
   };
 
@@ -53,7 +53,7 @@ export default function CouponCreationForm({
         </button>
 
         <h2 className='text-2xl font-semibold text-center text-white mb-4 font-heading'>
-          Add New Coupon
+          Add New Redeemable
         </h2>
 
         <div className='space-y-4'>
@@ -62,16 +62,53 @@ export default function CouponCreationForm({
               htmlFor='name'
               className='block text-sm font-medium text-gray-300'
             >
-              Name
+              Gift Name
             </label>
             <input
               type='text'
               id='name'
               name='name'
-              value={couponData.name}
+              value={giftData.name}
               onChange={handleInputChange}
-              placeholder='Add Coupon Name'
+              placeholder='Add Gift Name'
               required
+              className='w-full px-3 py-2 bg-gray-800 border border-bg-border rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500'
+            />
+          </div>
+
+          <div className='space-y-2'>
+            <label
+              htmlFor='description'
+              className='block text-sm font-medium text-gray-300'
+            >
+              Description
+            </label>
+            <textarea
+              id='description'
+              name='description'
+              value={giftData.description}
+              onChange={handleInputChange}
+              placeholder='Add a description'
+              required
+              className='w-full px-3 py-2 bg-gray-800 border border-bg-border rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500'
+              rows={3}
+            />
+          </div>
+
+          <div className='space-y-2'>
+            <label
+              htmlFor='picture'
+              className='block text-sm font-medium text-gray-300'
+            >
+              Picture URL (optional)
+            </label>
+            <input
+              type='text'
+              id='picture'
+              name='picture'
+              value={giftData.picture}
+              onChange={handleInputChange}
+              placeholder='Enter image URL'
               className='w-full px-3 py-2 bg-gray-800 border border-bg-border rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500'
             />
           </div>
@@ -81,13 +118,13 @@ export default function CouponCreationForm({
               htmlFor='point'
               className='block text-sm font-medium text-gray-300'
             >
-              Point
+              Point Cost
             </label>
             <input
               type='number'
               id='point'
               name='point'
-              value={couponData.point}
+              value={giftData.point}
               onChange={handleInputChange}
               min={0}
               placeholder='Required points'
@@ -98,56 +135,16 @@ export default function CouponCreationForm({
 
           <div className='space-y-2'>
             <label
-              htmlFor='discount'
-              className='block text-sm font-medium text-gray-300'
-            >
-              Discount
-            </label>
-            <input
-              type='number'
-              id='discount'
-              name='discount'
-              value={couponData.discount}
-              onChange={handleInputChange}
-              placeholder='Discount amount'
-              min={1}
-              max={100}
-              required
-              className='w-full px-3 py-2 bg-gray-800 border border-bg-border rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500'
-            />
-          </div>
-
-          <div className='space-y-2'>
-            <label
-              htmlFor='expire'
-              className='block text-sm font-medium text-gray-300'
-            >
-              Expire
-            </label>
-            <input
-              type='date'
-              id='expire'
-              name='expire'
-              value={couponData.expire}
-              onChange={handleInputChange}
-              min={new Date().toISOString().split('T')[0]}
-              required
-              className='w-full px-3 py-2 bg-gray-800 border border-bg-border rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500'
-            />
-          </div>
-
-          <div className='space-y-2'>
-            <label
               htmlFor='remain'
               className='block text-sm font-medium text-gray-300'
             >
-              Remain
+              Available Count
             </label>
             <input
               type='number'
               id='remain'
               name='remain'
-              value={couponData.remain}
+              value={giftData.remain}
               onChange={handleInputChange}
               placeholder='Available quantity'
               min={1}
@@ -162,9 +159,9 @@ export default function CouponCreationForm({
           variant='golden'
           className='w-full'
           onClick={() => setIsCreateDialogOpen(true)}
-          disabled={!couponData.name || !couponData.point || !couponData.discount || !couponData.expire || !couponData.remain || couponData.name === '' || couponData.expire === '' || couponData.discount <= 0 || couponData.point < 0 || couponData.remain < 1}
+          disabled={!giftData.name || !giftData.description || !giftData.point || !giftData.remain || giftData.name === '' || giftData.point < 0 || giftData.remain < 1 || giftData.description === ''}
         >
-          Create Coupon
+          Create Gift
         </Button>
 
         {error && <p className='text-red-600 text-center mt-2'>{error}</p>}

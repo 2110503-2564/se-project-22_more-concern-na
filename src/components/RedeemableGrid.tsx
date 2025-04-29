@@ -65,37 +65,39 @@ export default function RedeemableGrid({
     <div className='flex flex-col gap-4'>
       {children}
       <div className='flex flex-col gap-4 items-center w-full'>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           {cardData ? (
             cardData.length > 0 &&
             cardData.map((item) => {
               return (
-                <div key={(item as RedeemablesData)._id || (item as InventoryData).id} className='flex justify-center'>
-                  {cardType === 'coupon' ? (
-                    <CouponCard
-                      id={(item as RedeemablesData)._id || (item as InventoryData).id}
-                      name={item.name}
-                      point={(item as RedeemablesData).point}
-                      discount={(item as RedeemableCouponsData).discount}
-                      expire={(item as RedeemableCouponsData).expire}
-                      remain={(item as RedeemablesData).remain}
-                      type={cardView === 'inventory' ? 'view' : cardView}
-                    />
-                  ) : (
-                    <GiftCard
-                      id={(item as RedeemablesData)._id || (item as InventoryData).id}
-                      name={item.name}
-                      point={(item as RedeemablesData).point}
-                      picture={(item as RedeemableGiftsData).picture}
-                      remain={(item as RedeemablesData).remain}
-                      type={cardView}
-                    />
-                  )}
+                <div key={(item as RedeemablesData)._id || (item as InventoryData).id} className='h-full w-full'>
+                  <div className='h-full flex'>
+                    {cardType === 'coupon' ? (
+                      <CouponCard
+                        id={(item as RedeemablesData)._id || (item as InventoryData).id}
+                        name={item.name}
+                        point={(item as RedeemablesData).point}
+                        discount={(item as RedeemableCouponsData).discount}
+                        expire={(item as RedeemableCouponsData).expire}
+                        remain={(item as RedeemablesData).remain}
+                        type={cardView === 'inventory' ? 'view' : cardView}
+                      />
+                    ) : (
+                      <GiftCard
+                        id={(item as RedeemablesData)._id || (item as InventoryData).id}
+                        name={item.name}
+                        point={(item as RedeemablesData).point}
+                        picture={(item as RedeemableGiftsData).picture}
+                        remain={(item as RedeemablesData).remain}
+                        type={cardView}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })
           ) : (
-            <div className='flex items-center justify-center w-full min-h-[200px]'>
+            <div className='flex items-center justify-center w-full min-h-[200px] col-span-full'>
               <Loader />
             </div>
           )}

@@ -301,15 +301,15 @@ test.describe('Admin Reward Management', () => {
     await page.getByTestId('alert-confirm-button').click();
 
     // Verify success message
-    // await expect(page.getByText('Coupon created successfully')).toBeVisible();
+    await expect(page.getByText('Coupon created successfully')).toBeVisible();
 
     // Verify new coupon appears in the list
 
     // navigate to second page
     await page.getByTestId('next-page-btn').first().click();
 
-    await expect(page.getByText('Special Discount')).toBeVisible();
-    await expect(page.getByText('15%')).toBeVisible();
+    await expect(page.getByText('Special Discount').first()).toBeVisible();
+    await expect(page.getByText('15%').first()).toBeVisible();
   });
 
   test('TC6: Admin can add a new gift', async ({ page }) => {
@@ -337,18 +337,21 @@ test.describe('Admin Reward Management', () => {
     await page
       .getByLabel('Description')
       .fill('Ut tempor accusam dolore sanctus diam consetetur ea accusam');
+    await page.getByLabel('Picture URL (optional)').fill('https://example.com/gift-image.jpg');
     await page.getByLabel('Point Cost').fill('1000');
     await page.getByLabel('Available Count').fill('25');
-    await page.getByLabel('Type').selectOption('gift');
-
-    // Upload image if there's an upload field
-    // This would depend on your implementation
 
     // Submit the form
     await page.getByRole('button', { name: 'Create Gift' }).click();
+    
+    // Confirm in the dialog
+    await page.getByTestId('alert-confirm-button').click();
 
     // Verify success message
     await expect(page.getByText('Gift created successfully')).toBeVisible();
+
+    // go to second page
+    await page.getByTestId('next-page-btn').nth(1).click();
 
     // Verify new gift appears in the list
     await expect(page.getByText(giftName)).toBeVisible();
