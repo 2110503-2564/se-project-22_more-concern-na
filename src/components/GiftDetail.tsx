@@ -1,10 +1,12 @@
+'use client';
+
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 interface GiftDetailProps {
   id: string;
   name: string;
   description?: string;
-  point: string;
+  point: number;
   picture?: string;
   remain?: number;
   type: 'view' | 'redeem';
@@ -22,18 +24,30 @@ export default function GiftDetail({
   return (
     <div className='w-full'>
       {/* Heading outside the box */}
-      <h2 className='text-6xl font-bold font-heading mb-9 ml-6'>Gift Detail</h2>
+      <h2 className='text-6xl font-bold font-heading mb-9 ml-6 text-white'>Gift Detail</h2>
 
       {/* Gift box */}
       <div className='bg-[#0F172A] text-white p-6 border border-gray-700'>
         <div className='flex flex-col md:flex-row items-center gap-6 p-10'>
           
           {/* Picture & Point Section */}
-        <div className="relative flex-shrink-0">
-          <div className="bg-gray-300 rounded-md overflow-hidden">
+        <div className="relative flex-shrink-0 w-64 h-64">
+          <div className="bg-gray-300 rounded-md overflow-hidden w-full h-full">
             {picture ? (
-              <img src={picture} alt={name} width={0} height={0} className="w-full h-full object-cover" />
-            ) :  (<img src={"/defaultHotel.png"} alt={name} width={0} height={0} className="w-100 h-100 object-cover" />)}
+              <img 
+                src={picture} 
+                alt={name} 
+                className="w-full h-full object-cover max-w-full max-h-full" 
+                style={{ objectPosition: 'center' }}
+              />
+            ) : (
+              <img 
+                src={"/defaultHotel.png"} 
+                alt={name} 
+                className="w-full h-full object-cover max-w-full max-h-full" 
+                style={{ objectPosition: 'center' }}
+              />
+            )}
           </div>
           <div className="flex absolute bottom-0 w-full h-10 bg-gradient-to-r from-gold-gd1 to-gold-gd2 text-black text-2xl font-light items-center justify-center font-detail py-1 rounded-b-md">
             {point} Points
@@ -64,7 +78,7 @@ export default function GiftDetail({
             </p>
 
             {/* Redeem Button positioned to the right */}
-            {type === 'redeem' && parseInt(point) > 0 ? (
+            {type === 'redeem' && point > 0 ? (
               <div className='flex justify-end mt-10'>
                 <Button className='w-50 h-14 text-2xl mr-26 cursor-pointer' variant='golden'>
                   Redeem

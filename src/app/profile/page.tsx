@@ -45,7 +45,7 @@ export default function ProfilePage() {
   }, []);
 
   const handleInventoryClick = () => {
-    router.push('/redemption');
+    router.push('/profile/inventory');
   };
 
   const handleEditProfileClick = () => {

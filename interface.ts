@@ -258,7 +258,7 @@ export interface RedeemableGiftsQuery {
 }
 
 export interface RedeemableGiftsData {
-  id: string;
+  _id: string;
   name: string;
   picture?: string;
   point: number;
@@ -272,7 +272,7 @@ export interface RedeemableGiftsResponse extends GenericResponse, Pagination {
 //--------GET /redeemables/gifts/:id-----------
 
 export interface RedeemableGiftResponse extends GenericResponse {
-  id: string;
+  _id: string;
   name: string;
   description?: string;
   point: number;
@@ -288,7 +288,7 @@ export interface RedeemableCouponsQuery {
 }
 
 export interface RedeemableCouponsData {
-  id: string;
+  _id: string;
   name: string;
   point: number;
   discount: number;
@@ -299,6 +299,9 @@ export interface RedeemableCouponsData {
 export interface RedeemableCouponsResponse extends GenericResponse, Pagination {
   data: RedeemableCouponsData[];
 }
+
+export type InventoryData = InventoryCouponsData | InventoryGiftsData;
+export type RedeemablesData = RedeemableCouponsData | RedeemableGiftsData;
 
 //------POST /redeemables/creation (for admin to add redeemables)-----
 

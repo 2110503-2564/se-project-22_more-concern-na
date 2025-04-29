@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { Button } from './ui/button';
 
 interface CouponCardProps {
@@ -20,7 +21,7 @@ export default function CouponCard({
   type,
 }: CouponCardProps) {
   return (
-    <div className='flex w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gray-900 text-black'>
+    <div className='flex w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gray-900 text-black' data-testid={`coupon-${Math.round(discount * 100)}%-${dayjs(expire).format('MM-DD-YYYY')}`}>
       <div className='flex items-center justify-center bg-gradient-to-r from-gold-gd1 to-gold-gd2 w-1/3 p-4'>
         <div className='text-center'>
           <div
@@ -43,7 +44,7 @@ export default function CouponCard({
             {name}
           </div>
           <div className='text-sm font-detail' data-testid='expire'>
-            Expires In: {expire}
+             Expires {dayjs(expire).format('MM-DD-YYYY')}
           </div>
         </div>
         <div className='flex items-center justify-between mt-4'>
