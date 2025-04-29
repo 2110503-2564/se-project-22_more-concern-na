@@ -151,7 +151,7 @@ export async function getPriceToPoint(token?: string): Promise<number> {
 
 export const updateRedeemables = async(id: string, token: string): Promise<CreateRedeemableRedemptionResponse> => {
   try {
-    const response = await axios.put(
+    const response = await axios.post(
       apiPath(`/redeemables/redemption`),
       { id },
       {
