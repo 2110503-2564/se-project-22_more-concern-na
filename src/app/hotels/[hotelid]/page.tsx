@@ -33,6 +33,7 @@ import { useRouter } from 'next/navigation';
 import {
   BookingsRequest,
   HotelAvailabilityResponse,
+  InventoryCouponsData
 } from '../../../../interface';
 
 export default function HotelDetail({
@@ -56,6 +57,7 @@ export default function HotelDetail({
   const [isAvailabilityConfirmed, setIsAvailabilityConfirmed] = useState(false);
   const [isBookingInProgress, setIsBookingInProgress] = useState(false);
   const [priceToPoint, setPriceToPoint] = useState<number | null>(null);
+  const [selectedCoupon, setSelectedCoupon] = useState<InventoryCouponsData | null>(null);
 
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
@@ -422,9 +424,11 @@ export default function HotelDetail({
   };
 
   const calculateTotalPrice = () => {
-    return selectedRooms.reduce((total, item) => {
+    const base = selectedRooms.reduce((total, item) => {
       return total + item.room.price * item.count * nights;
     }, 0);
+    const discount = selectedCoupon?.discount ?? 0;
+    return Math.max(base - discount, 0);
   };
 
   const fullAddress = `${hotel?.buildingNumber} ${hotel?.street}, ${hotel?.district}, ${hotel?.province} ${hotel?.postalCode}`;
@@ -677,9 +681,20 @@ export default function HotelDetail({
                       </div>
                     ))}
 
-                    <div className='flex justify-between'>
-                      <span>Coupon</span>
-                      <CouponDropDown />
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center">
+                        <span>Coupon</span>
+                        <CouponDropDown onSelect={setSelectedCoupon} />
+                      </div>
+                      {selectedCoupon ? (
+                        <div className="text-xs text-gold-gd2 mt-1">
+                          Selected Coupon: {selectedCoupon.name} (-{selectedCoupon.discount}฿)
+                        </div>
+                      ) : (
+                        <div className="text-xs text-bg-placeholder mt-1">
+                          No coupon selected
+                        </div>
+                      )}
                     </div>
                     <div className='flex justify-between pt-2 border-t border-gray-600'>
                       <span className='font-bold'>Total</span>
@@ -754,6 +769,12 @@ export default function HotelDetail({
                     <div className='flex justify-between'>
                       <span>Duration:</span>
                       <span className='font-medium'>{nights} nights</span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Coupon Discount</span>
+                      <span className="font-medium text-red-400">
+                        {selectedCoupon ? `- ${selectedCoupon.discount.toLocaleString()}฿` : '0฿'}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -12,7 +12,11 @@ import {
 import { getInventoryCoupons } from '@/lib/inventoryService';
 import { InventoryCouponsData } from '../../interface';
 
-export default function CouponDropDown() {
+interface CouponDropDownProps {
+  onSelect: (coupon: InventoryCouponsData) => void;
+}
+
+export default function CouponDropDown({ onSelect }: CouponDropDownProps) {
   const { data: session } = useSession();
   const token = (session as any)?.user?.token;
 
@@ -28,7 +32,6 @@ export default function CouponDropDown() {
     async function fetchCoupons() {
       try {
         const couponsResponse = await getInventoryCoupons(1, 50, token);
-
         setCoupons(couponsResponse.data || []);
       } catch (error) {
         console.error('Failed to fetch coupons:', error);
@@ -53,8 +56,12 @@ export default function CouponDropDown() {
             {coupons.length > 0 ? (
               <>
                 {coupons.map((coupon) => (
-                  <DropdownMenuItem key={`coupon-${coupon.id}`} className="cursor-pointer">
-                    {coupon.name}
+                  <DropdownMenuItem
+                    key={`coupon-${coupon._id}`}
+                    className="cursor-pointer"
+                    onClick={() => onSelect(coupon)}
+                  >
+                    {coupon.name} - {coupon.discount}฿
                   </DropdownMenuItem>
                 ))}
               </>
