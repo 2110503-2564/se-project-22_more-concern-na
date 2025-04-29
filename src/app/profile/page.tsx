@@ -45,7 +45,7 @@ export default function ProfilePage() {
   }, []);
 
   const handleInventoryClick = () => {
-    router.push('/redemption');
+    router.push('/profile/inventory');
   };
 
   const handleEditProfileClick = () => {
@@ -102,6 +102,7 @@ export default function ProfilePage() {
                   <p className='text-xl mb-6'>Name : {userProfile.name}</p>
                   <p className='text-xl mb-6'>Email : {userProfile.email}</p>
                   <p className='text-xl mb-6'>Tel : {userProfile.tel} </p>
+                  <p className='text-xl mb-6' data-testid='user-point'>Point : {userProfile.point}</p>
                 </div>
               </div>
 

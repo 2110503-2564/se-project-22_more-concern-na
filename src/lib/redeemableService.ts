@@ -1,8 +1,28 @@
+import axios from 'axios';
 import {
+  CreateRedeemableRedemptionResponse,
+  GenericResponse,
   RedeemableCouponsResponse,
+  RedeemableGiftResponse,
   RedeemableGiftsResponse,
 } from '../../interface';
 import { apiPath } from './shared';
+
+export interface GiftData {
+  name: string;
+  description: string;
+  point: number;
+  remain: number;
+  picture?: string;
+}
+
+export interface CouponData {
+  name: string;
+  point: number;
+  discount: number;
+  expire: string;
+  remain: number;
+}
 
 export const getAllCoupons = async (
   page: number,
@@ -54,6 +74,192 @@ export const getAllGifts = async (
     return data as RedeemableGiftsResponse;
   } catch (error) {
     console.error('Error fetching gifts:', error);
+    throw error;
+  }
+};
+
+export const getGiftById = async (
+  id: string,
+): Promise<RedeemableGiftResponse> => {
+  try {
+    const response = await fetch(apiPath(`/redeemables/gifts/${id}`), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch gift by ID: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as RedeemableGiftResponse;
+  } catch (error) {
+    console.error('Error fetching gift by ID:', error);
+    throw error;
+  }
+};
+
+export const createRedeemInventory = async (token: string, id: string): Promise<any> => {
+  console.log(token);
+  try {
+    const response = await fetch(apiPath('/redeemables/redemption'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ id })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to redeem item: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error redeeming item:', error);
+    throw error;
+  }
+};
+
+export async function getPriceToPoint(token?: string): Promise<number> {
+  const url = apiPath('/redeemables/price-to-point');
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch priceToPoint: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  if (!('priceToPoint' in data)) {
+    throw new Error('Response does not contain priceToPoint');
+  }
+
+  return data.priceToPoint;
+}
+
+export const updateRedeemables = async(id: string, token: string): Promise<CreateRedeemableRedemptionResponse> => {
+  try {
+    const response = await axios.post(
+      apiPath(`/redeemables/redemption`),
+      { id },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error updating redeemable with id ${id}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export const addCoupon = async (
+  {
+    name,
+    point,
+    discount,
+    expire,
+    remain,
+  }: {
+    name: string;
+    point: number;
+    discount: number;
+    expire: string;
+    remain: number;
+  },
+  token: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.post(
+      apiPath('/redeemables/creation'),
+      {
+        type: 'coupon',
+        name,
+        point,
+        discount: discount / 100,
+        expire,
+        remain,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error adding coupon:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export const addGift = async (
+  {
+    name,
+    description,
+    point,
+    remain,
+    picture,
+  }: GiftData,
+  token: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.post(
+      apiPath('/redeemables/creation'),
+      {
+        type: 'gift',
+        name,
+        description,
+        point,
+        remain,
+        picture,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error adding gift:', error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
     throw error;
   }
 };

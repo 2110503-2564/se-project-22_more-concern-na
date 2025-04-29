@@ -79,7 +79,7 @@ test.describe('Point Collection Functionality', () => {
     await page.goto('/profile');
 
     // Verify points are displayed in the profile
-    await expect(page.getByText(/P \0/)).toBeVisible();
+    await expect(page.getByTestId('user-point')).toBeVisible();
   });
 
   test('TC3: HotelManager can check-in user and points are awarded', async ({

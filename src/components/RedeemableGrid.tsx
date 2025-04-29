@@ -1,26 +1,32 @@
+'use client';
+
 import { getAllCoupons, getAllGifts } from '@/lib/redeemableService';
 import { useEffect, useState } from 'react';
-import { RedeemableCouponsData, RedeemableGiftsData, } from '../../interface';
+import { InventoryCouponsData, InventoryData, InventoryGiftsData, RedeemableCouponsData, RedeemableGiftsData, RedeemablesData } from '../../interface';
 import CouponCard from './CouponCard';
 import { GiftCard } from './GiftCard';
 import Loader from './Loader';
 import PageNavigator from './PageNavigator';
+import { getInventoryCoupons, getInventoryGifts } from '@/lib/inventoryService';
+import { useSession } from 'next-auth/react';
 
 interface RedeemablesGridProps {
   children: React.ReactNode;
-  rowCount: number;
+  pageSize: number;
   cardType: 'coupon' | 'gift';
-  cardView: 'view' | 'redeem';
+  cardView: 'view' | 'redeem' | 'inventory';
+  disablePage?: boolean;
 }
 
 export default function RedeemableGrid({
   children,
-  rowCount,
+  pageSize,
   cardType,
   cardView,
+  disablePage
 }: RedeemablesGridProps) {
   const [cardData, setCardData] = useState<
-    RedeemableCouponsData[] | RedeemableGiftsData[] | undefined
+    RedeemablesData[] | InventoryData[] | undefined
   >(undefined);
   const [pagination, setPagination] = useState<
     | {
@@ -30,37 +36,15 @@ export default function RedeemableGrid({
     | undefined
   >(undefined);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
-
-  //   function calculatePageSize() {
-  //     const width = window.innerWidth;
-  //     let itemsPerRow;
-
-  //     if (width < 640) itemsPerRow = 1;
-  //     else if (width < 1024) itemsPerRow = 2;
-  //     else if (width < 1440) itemsPerRow = 3;
-  //     else itemsPerRow = 4;
-
-  //     return itemsPerRow * rowCount;
-  //   }
-
-  //   useEffect(() => {
-  //     const handleResize = () => {
-  //       setPageSize(calculatePageSize());
-  //     };
-
-  //     handleResize();
-  //     window.addEventListener('resize', handleResize);
-  //     return () => window.removeEventListener('resize', handleResize);
-  //   }, [rowCount]);
+  const {data: session} = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
       setCardData(undefined);
       const response =
         cardType === 'coupon'
-          ? await getAllCoupons(page, pageSize)
-          : await getAllGifts(page, pageSize);
+          ? (cardView === 'inventory' ? await getInventoryCoupons(page, pageSize, (session as any)?.user?.token) : await getAllCoupons(page, pageSize))
+          : (cardView === 'inventory' ? await getInventoryGifts(page, pageSize, (session as any)?.user?.token) : await getAllGifts(page, pageSize));
       setCardData(response.data);
       setPagination(response.pagination);
     };
@@ -80,46 +64,50 @@ export default function RedeemableGrid({
   return (
     <div className='flex flex-col gap-4'>
       {children}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
-        {cardData ? (
-          cardData.length > 0 &&
-          cardData.map((item) => {
-            return (
-              <div key={item.id} className='flex justify-center'>
-                {cardType === 'coupon' ? (
-                  <CouponCard
-                    id={item.id}
-                    name={item.name}
-                    point={item.point}
-                    discount={(item as RedeemableCouponsData).discount}
-                    expire={(item as RedeemableCouponsData).expire}
-                    remain={item.remain}
-                    type={cardView}
-                  />
-                ) : (
-                  <GiftCard
-                    id={item.id}
-                    name={item.name}
-                    point={item.point}
-                    picture={(item as RedeemableGiftsData).picture}
-                    remain={item.remain}
-                    type={cardView}
-                  />
-                )}
-              </div>
-            );
-          })
-        ) : (
-        <div className='flex items-center justify-center w-full min-h-[200px]'>
-            <Loader />
+      <div className='flex flex-col gap-4 items-center w-full'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+          {cardData ? (
+            cardData.length > 0 &&
+            cardData.map((item) => {
+              return (
+                <div key={(item as RedeemablesData)._id || (item as InventoryData).id} className='h-full w-full'>
+                  <div className='h-full flex'>
+                    {cardType === 'coupon' ? (
+                      <CouponCard
+                        id={(item as RedeemablesData)._id || (item as InventoryData).id}
+                        name={item.name}
+                        point={(item as RedeemablesData).point}
+                        discount={(item as RedeemableCouponsData).discount}
+                        expire={(item as RedeemableCouponsData).expire}
+                        remain={(item as RedeemablesData).remain}
+                        type={cardView === 'inventory' ? 'view' : cardView}
+                      />
+                    ) : (
+                      <GiftCard
+                        id={(item as RedeemablesData)._id || (item as InventoryData).id}
+                        name={item.name}
+                        point={(item as RedeemablesData).point}
+                        picture={(item as RedeemableGiftsData).picture}
+                        remain={(item as RedeemablesData).remain}
+                        type={cardView}
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className='flex items-center justify-center w-full min-h-[200px] col-span-full'>
+              <Loader />
+            </div>
+          )}
         </div>
-        )}
+        {!disablePage && <PageNavigator
+          page={page}
+          onNext={handleChangePage('next')}
+          onPrev={handleChangePage('prev')}
+        />}
       </div>
-      <PageNavigator
-        page={page}
-        onNext={handleChangePage('next')}
-        onPrev={handleChangePage('prev')}
-      />
     </div>
   );
 }

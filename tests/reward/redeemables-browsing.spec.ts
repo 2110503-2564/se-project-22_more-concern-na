@@ -33,8 +33,8 @@ test.describe('Redeemables Browsing Functionality', () => {
     await expect(giftItems.first()).toBeVisible();
 
     // Check for pagination
-    await expect(page.getByText('Page')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Next' })).toBeVisible();
+    await expect(page.getByTestId('pagination-number').first()).toBeVisible();
+    await expect(page.getByTestId('next-page-btn').first()).toBeVisible();
   });
 
   //pagination test
@@ -80,7 +80,7 @@ test.describe('Redeemables Browsing Functionality', () => {
     await expect(giftItemsP2).not.toBeVisible();
 
     
-  });
+  }); 
 
   test('TC3: Customer can view gift details', async ({ page }) => {
     await loginAsCustomer(page);

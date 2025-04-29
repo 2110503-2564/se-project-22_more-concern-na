@@ -1,5 +1,7 @@
 import React from 'react';
-import { Calendar, Coins, Gift } from 'lucide-react';
+import { Calendar, Coins, Gift} from 'lucide-react';
+import RedeemableGrid from '@/components/RedeemableGrid';
+import Link from 'next/link';
 
 export default function RewardsPage() {
     return (
@@ -7,7 +9,7 @@ export default function RewardsPage() {
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-semibold font-heading mb-2">Reward Information</h1>
-            <p className="text-xl text-gray-300 font-detail">Shop more, get more rewards, enjoy benefits</p>
+            <p className="text-xl text-gray-300 font-detail">Shop, stay, get rewarded using benefits</p>
           </div>
     
           {/* Description Section */}
@@ -54,6 +56,22 @@ export default function RewardsPage() {
               <p className="text-gray-300 font-detail">Use your rewards for discounts, free products, and exclusive experiences</p>
             </div>
           </div>
+          <RedeemableGrid cardType='coupon' cardView='view' pageSize={2}>
+            <div className='flex items-center justify-between'>
+              <h2 className='font-heading text-lg'>Coupons</h2>
+              <Link href='/reward/redeemables' className='underline text-white font-detail hover:text-gray-400'>
+                View all coupons
+              </Link>
+            </div>
+          </RedeemableGrid>
+          <RedeemableGrid cardType='gift' cardView='view' pageSize={2}>
+          <div className='flex items-center justify-between'>
+              <h2 className='font-heading text-lg'>Gift</h2>
+              <Link href='/reward/redeemables' className='underline text-white font-detail hover:text-gray-400'>
+                View all gifts
+              </Link>
+            </div>
+          </RedeemableGrid>
         </div>
       );
 }

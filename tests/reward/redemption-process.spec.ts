@@ -10,7 +10,7 @@ test.describe('Redemption Process Functionality', () => {
     await page.goto('/reward/redeemables');
     
     // Find a gift item with a Redeem button
-    const giftItem = page.locator('button').filter({ hasText: 'Redeem' }).first();
+    const giftItem = page.getByText('Room Upgrade').first()
     
     // Click on the gift to go to details
     await giftItem.click();

@@ -256,3 +256,30 @@ export const completeBooking = async (
     throw error;
   }
 };
+
+export const getCouponDiscount = async (
+  couponId: string,
+  token?: string,
+): Promise<GenericResponse> => {
+  try {
+    const response = await axios.get(apiPath(`/coupons/${couponId}/discount`), {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.data;
+  } catch (error: any) {
+    console.error(`Error fetching discount for coupon ID ${couponId}:`, error);
+    if (error.response && error.response.data) {
+      throw new Error(
+        error.response.data.msg || `Error: ${error.response.status}`,
+      );
+    }
+    throw error;
+  }
+};
