@@ -44,6 +44,7 @@ export default function HotelReply({
       { text: editedReply },
       (session as any)?.user?.token,
     );
+    toast.success('Reply updated successfully');
   };
 
   return (
