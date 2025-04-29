@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import UserPointEntry from "@/components/UserPointEntry";
 import { UserPointEntryProps } from "@/components/UserPointEntry";
+import Loader from "@components/Loader";
 
 export default function AdminRedemptionPage() {
   const [pricePerPoint, setPricePerPoint] = useState("");
   const [userPoints, setUserPoints] = useState<UserPointEntryProps[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASEURL;
 
